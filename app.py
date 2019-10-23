@@ -5,24 +5,8 @@ from elasticsearch import Elasticsearch
 from flask_cors import CORS, cross_origin
 import json
 
-
-#Recognize Entity Name
-from koalanlp import API
-from koalanlp.proc import RoleLabeler
-from koalanlp.proc import EntityRecognizer
-from koalanlp.Util import initialize
-from koalanlp.Util import finalize
-from koalanlp import *
-
-
 #Sentence-tokenizer
 import re
-
-
-#Implement TextRank Summarization
-from gensim.summarization.summarizer import summarize
-from newspaper import Article
-
 
 #Implement KR-Wordrank 
 from krwordrank.hangle import normalize
@@ -167,8 +151,6 @@ def test():
     resultArr = res["hits"]["hits"]
 
     dateArr=[]
-
-    print(resultArr)
 
     dayCntDic={}
 
