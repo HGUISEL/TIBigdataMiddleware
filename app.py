@@ -38,7 +38,49 @@ def hello():
     contents = json.dumps("한글")
     return contents
 
+@app.route('/one', methods=['GET'])
+def one():
+    results = es.get(index='nkdboard', doc_type='nkdboard', id='5db598c32cc6c120bac74bda')
+    texts = json.dumps(results['_source'], ensure_ascii=False)
+    return json.dumps(results, ensure_ascii=False)
 
+
+@app.route('/two', methods=['GET'])
+def two():
+    doc = {
+        'size' : 100,
+        'query': {
+            'match_all' : {}
+       }
+    }
+    results = es.search(index='nkdboard', body=doc,scroll='1m')
+    results = results['hits']['hits']
+    corpusArr=[]
+    for i in results:
+        corpusArr.append(i["_source"]["bodys"])
+
+    # str(len(corpus))
+    """
+    이제 어떻게 해볼까?
+
+    순서
+    1. 먼저... contents array으로 만든다.
+        그리고 ... contents[100]이 있음.
+        이 부분은 어디까지 되었지?
+        아직 header들이 많이 포함되어 있다.
+        header 부분들을 제거하고 오직 string 
+        으로만 된 content array으로 만들어야 한다.
+    2. 개별 content 마다 형태소 분석기를 돌려서 단어 묶음으로 만든다
+        단어 묶음 string object가 된다.
+        그 object array가 100개
+    3. 그 array을... LDA에 넣는다.
+    """
+   
+    return json.dumps(corpusArr, ensure_ascii=False)
+
+
+
+    # return corpusArr
 
 @app.route('/wordrank', methods=['GET'])
 def wordRank():
