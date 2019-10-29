@@ -3,6 +3,11 @@ from flask import Flask, jsonify, request
 from flask_restful import Resource, Api
 from elasticsearch import Elasticsearch
 from flask_cors import CORS, cross_origin
+from  konlpy.tag import Okt
+from collections import Counter
+import random
+
+
 import json
 
 #Sentence-tokenizer
@@ -12,6 +17,38 @@ import re
 from krwordrank.hangle import normalize
 from krwordrank.word import KRWordRank
 
+K=5
+V=0
+document_topics = []
+document_topic_counts = []
+topic_word_counts = []
+topic_counts = []
+document_lengths = []
+
+########################################
+
+def p_topic_given_document(topic, d, alpha=0.1):
+    return ((document_topic_counts[d][topic] + alpha) /
+            (document_lengths[d] + K * alpha))
+
+def p_word_given_topic(word, topic, beta=0.1):
+    return ((topic_word_counts[topic][word] + beta) /
+            (topic_counts[topic] + V * beta))
+
+def topic_weight(d, word, k):
+    return p_word_given_topic(word, k) * p_topic_given_document(k, d)
+
+def choose_new_topic(d, word):
+    return sample_from([topic_weight(d, word, k) for k in range(K)])
+
+def sample_from(weights):
+    total = sum(weights)
+    rnd = total * random.random()
+    for i, w in enumerate(weights):
+        rnd -= w
+        if rnd <= 0:
+            return i
+########################################
 
 
 
@@ -47,6 +84,8 @@ def one():
 
 @app.route('/two', methods=['GET'])
 def two():
+    okt = Okt()
+
     doc = {
         'size' : 100,
         'query': {
@@ -75,8 +114,60 @@ def two():
         그 object array가 100개
     3. 그 array을... LDA에 넣는다.
     """
-   
-    return json.dumps(corpusArr, ensure_ascii=False)
+
+    #phase 2
+    documents = [okt.nouns(corpusArr[cnt]) for cnt in range(len(corpusArr))] 
+
+    global document_topics
+    global document_topic_counts
+    global topic_word_counts
+    global topic_counts
+    global document_lengths
+    global V
+    
+    #phase 3
+    random.seed(0)
+    document_topics = [[random.randrange(K) for word in document]
+                        for document in documents]
+    document_topic_counts = [Counter() for _ in documents]
+    topic_word_counts = [Counter() for _ in range(K)]
+    topic_counts = [0 for _ in range(K)]
+    document_lengths = [len(document) for document in documents]
+    distinct_words = set(word for document in documents for word in document)
+    V = len(distinct_words)
+    D = len(documents)
+
+    for d in range(D):
+        for word, topic in zip(documents[d], document_topics[d]):
+            document_topic_counts[d][topic] += 1
+            topic_word_counts[topic][word] += 1
+            topic_counts[topic] += 1
+
+    for iter in range(1000):
+        for d in range(D):
+            for i, (word, topic) in enumerate(zip(documents[d],
+                                                document_topics[d])):
+                document_topic_counts[d][topic] -= 1
+                topic_word_counts[topic][word] -= 1
+                topic_counts[topic] -= 1
+                document_lengths[d] -= 1
+                new_topic = choose_new_topic(d, word)
+                document_topics[d][i] = new_topic
+                document_topic_counts[d][new_topic] += 1
+                topic_word_counts[new_topic][word] += 1
+                topic_counts[new_topic] += 1
+                document_lengths[d] += 1
+
+    for i in range(D):
+        print(document_topic_counts[i])
+        print("\n")
+
+    for i in range(K):
+        print(topic_word_counts[i])
+        print("\n")
+
+
+    return json.dumps("documents", ensure_ascii=False)
 
 
 
@@ -264,3 +355,7 @@ def after_request(response):
     return response
 
 app.run(port=5000, debug=True)
+
+
+
+
