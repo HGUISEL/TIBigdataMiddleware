@@ -1,10 +1,11 @@
 from datetime import datetime
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, Response
 from flask_restful import Resource, Api
 from elasticsearch import Elasticsearch
 from flask_cors import CORS, cross_origin
 from  konlpy.tag import Okt
 from collections import Counter
+from operator import itemgetter
 import random
 
 
@@ -16,6 +17,11 @@ import re
 #Implement KR-Wordrank 
 from krwordrank.hangle import normalize
 from krwordrank.word import KRWordRank
+
+app = Flask(__name__)
+# app.config['TESTING'] = True
+app.config['JSON_AS_ASCII'] = False
+app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 
 K=5
 V=0
@@ -82,12 +88,17 @@ def one():
     return json.dumps(results, ensure_ascii=False)
 
 
+
+
 @app.route('/two', methods=['GET'])
 def two():
+    app = Flask(__name__)
+    app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
+
     okt = Okt()
 
     doc = {
-        'size' : 100,
+        'size' : 30,
         'query': {
             'match_all' : {}
        }
@@ -96,7 +107,7 @@ def two():
     results = results['hits']['hits']
     corpusArr=[]
     for i in results:
-        corpusArr.append(i["_source"]["bodys"])
+        corpusArr.append(i['_source']['bodys'])
 
     # str(len(corpus))
     """
@@ -145,8 +156,7 @@ def two():
 
     for iter in range(1000):
         for d in range(D):
-            for i, (word, topic) in enumerate(zip(documents[d],
-                                                document_topics[d])):
+            for i, (word, topic) in enumerate(zip(documents[d],document_topics[d])):
                 document_topic_counts[d][topic] -= 1
                 topic_word_counts[topic][word] -= 1
                 topic_counts[topic] -= 1
@@ -158,20 +168,79 @@ def two():
                 topic_counts[new_topic] += 1
                 document_lengths[d] += 1
 
+    doc_top=[]
     for i in range(D):
-        print(document_topic_counts[i])
-        print("\n")
+        doc_top.append(document_topic_counts[i])
 
-    for i in range(K):
-        print(topic_word_counts[i])
-        print("\n")
+    # for i in range(K):
+        # print(topic_word_counts[i])
+        # print("\n")
 
+    # print(doc_top)
+    # sort(doc_top[i], key = itemgetter('')
+    tpl=[]
+    for i in enumerate(document_topic_counts):
+        tpl.append ((i[0],(i[1].most_common(1)[0][0])))
+    tpl_s=sorted(tpl, key=itemgetter(1))
 
-    return json.dumps("documents", ensure_ascii=False)
+    # for i in range(D):
+        # print (doc_top[i].key()[0])
+
+    idx = -1
+    arr=[]
+    for i in range(D):
+        if idx != (tpl_s[i][1]):
+    #         print([tpl_s[i][0]])
+            arr.append([tpl_s[i][0]])
+            idx=tpl_s[i][1]
+        else:
+            arr[-1].append(tpl_s[i][0])
+
+    
+    summ = []
+    innerSumm=[]
+    for i in arr:
+        # print("\n\n\nsimilar documents : ")
+        for j in i:
+            innerSumm.append({"documents #" + str(j) : documents[j]})
+            # print("\ndocuments #", j)
+            # print(documents[j])
+        summ.append({"similar documents" : innerSumm})
+        innerSumm=[]
+
+    # print(summ)
+    # print(document_topic_counts)
+    # print(arr)
+    return json.dumps(summ, ensure_ascii=False, sort_keys = False, indent = 4)
 
 
 
     # return corpusArr
+
+@app.route('/three', methods=['GET'])
+def three():
+    app = Flask(__name__)
+    app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
+
+    okt = Okt()
+
+    doc = {
+        'size' : 30,
+        'query': {
+            'match_all' : {}
+       }
+    }
+    results = es.search(index='nuacboard', body=doc,scroll='1m')
+    results = results['hits']['hits'][0]['_source']['file_extracted_content']
+    # corpusArr=[]
+    # for i in results:
+        # corpusArr.append(i['hits']["_source"]["bodys"])
+    
+    return json.dumps(results, ensure_ascii=False,indent = 4)
+    # return jsonify(json.dumps(results, ensure_ascii=False))
+    # response = Response(results,content_type="application/json; charset=utf-8" )
+    # return response
+
 
 @app.route('/wordrank', methods=['GET'])
 def wordRank():
