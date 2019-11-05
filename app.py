@@ -92,13 +92,20 @@ def one():
 
 @app.route('/two', methods=['GET'])
 def two():
+
+    #parameters
+    num_size = 15
+    num_iter = 200
+
+
+
     app = Flask(__name__)
     app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 
     okt = Okt()
 
     doc = {
-        'size' : 30,
+        'size' : num_size,
         'query': {
             'match_all' : {}
        }
@@ -110,21 +117,7 @@ def two():
         corpusArr.append(i['_source']['bodys'])
 
     # str(len(corpus))
-    """
-    이제 어떻게 해볼까?
-
-    순서
-    1. 먼저... contents array으로 만든다.
-        그리고 ... contents[100]이 있음.
-        이 부분은 어디까지 되었지?
-        아직 header들이 많이 포함되어 있다.
-        header 부분들을 제거하고 오직 string 
-        으로만 된 content array으로 만들어야 한다.
-    2. 개별 content 마다 형태소 분석기를 돌려서 단어 묶음으로 만든다
-        단어 묶음 string object가 된다.
-        그 object array가 100개
-    3. 그 array을... LDA에 넣는다.
-    """
+    
 
     #phase 2
     documents = [okt.nouns(corpusArr[cnt]) for cnt in range(len(corpusArr))] 
@@ -154,7 +147,7 @@ def two():
             topic_word_counts[topic][word] += 1
             topic_counts[topic] += 1
 
-    for iter in range(1000):
+    for iter in range(num_iter):
         for d in range(D):
             for i, (word, topic) in enumerate(zip(documents[d],document_topics[d])):
                 document_topic_counts[d][topic] -= 1
@@ -225,16 +218,19 @@ def three():
     okt = Okt()
 
     doc = {
-        'size' : 30,
+        'size' : 10,
         'query': {
             'match_all' : {}
        }
     }
     results = es.search(index='nuacboard', body=doc,scroll='1m')
-    results = results['hits']['hits'][0]['_source']['file_extracted_content']
+    # results = results['hits']['hits']
+    # results = results['hits']['hits'][0]['_source']['file_extracted_content']
     # corpusArr=[]
     # for i in results:
-        # corpusArr.append(i['hits']["_source"]["bodys"])
+        # if i == 1
+            # results = i
+        # corpusArr.append(i['_source'])
     
     return json.dumps(results, ensure_ascii=False,indent = 4)
     # return jsonify(json.dumps(results, ensure_ascii=False))
