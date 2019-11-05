@@ -44,37 +44,40 @@ def hello():
 def wordRank():
 
     #Retreive text from elasticsearch
-    results = es.get(index='crawling', doc_type='nkdboard', id='5d76f149a2e5d0edebd8522f')
+    results = es.get(index='nkdboard', doc_type='nkdboard', id='5db598c32cc6c120bac74bc9')
     texts = json.dumps(results['_source'], ensure_ascii=False)
     
-    # #split the text by sentences
-    # sentences = re.split(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', texts)
+    #split the text by sentences
+    sentences = re.split(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', texts)
     
 
-    # #normalize the text
-    # texts = [normalize(text, number=True) for text in sentences]
-    
-    # wordrank_extractor = KRWordRank(
-    #     min_count = 7,  # Minimum frequency of word
-    #     max_length=10,  # Maximum length of word
-    #     verbose = True
-    # )
+    #normalize the text
+    texts = [normalize(text, number=True) for text in sentences]
 
-    # beta = 0.85  # Decaying factor beta of PageRank
-    # max_iter = 10
+    
+    wordrank_extractor = KRWordRank(
+        min_count = 3,  # Minimum frequency of word
+        max_length=10,  # Maximum length of word
+        verbose = True
+    )
+
+    beta = 0.85  # Decaying factor beta of PageRank
+    max_iter = 10
   
-    # keywords, rank, graph = wordrank_extractor.extract(texts, beta, max_iter)
+    keywords, rank, graph = wordrank_extractor.extract(texts, beta, max_iter)
     
-    # result=[]
-    # dic={}
-    # #Make a dictionary [word, weight]
-    # for word, r in sorted(keywords.items(), key=lambda x:x[1], reverse=True)[:30]:
-    #     dic["y"]=r
-    #     dic["label"]=word
-    #     result.append(dic)
-    #     dic={}
+    
+    result=[]
+    dic={}
+    #Make a dictionary [word, weight]
+    for word, r in sorted(keywords.items(), key=lambda x:x[1], reverse=True)[:30]:
+        dic["y"]=r
+        dic["label"]=word
+        result.append(dic)
+        dic={}
+    
 
-    return json.dumps(results, ensure_ascii=False)
+    return json.dumps(result, ensure_ascii=False)
 
 
 
@@ -146,7 +149,7 @@ def test():
         "size" : 1000,
     }
     
-    res= es.search(index="crawling", body=body)
+    res= es.search(index="nkdboard", body=body)
 
     resultArr = res["hits"]["hits"]
 
