@@ -209,9 +209,12 @@ def two():
     }
     results = es.search(index='nkdboard', body=doc)
     result = results['hits']['hits']
-    corpusArr=[]
-    for i in result:
-        corpusArr.append(i["_source"]["post_body"])
+    corpusContentArr=[]
+    corpusTitleArr=[]
+    for oneDoc in result:
+        oneDoc = oneDoc["_source"]
+        corpusContentArr.append(oneDoc["post_body"])
+        corpusTitleArr.append((oneDoc["post_title"]))
 
 #query whith DOES have a filed "file_extracted_content"
     doc = {
@@ -232,11 +235,14 @@ def two():
     }
     results = es.search(index='nkdboard', body=doc)
     result = results['hits']['hits']
-    for i in result:
-        corpusArr.append(i["_source"]["file_extracted_content"])
+    for oneDoc in result:
+        oneDoc = oneDoc["_source"]
+        corpusContentArr.append(oneDoc["file_extracted_content"])
+        corpusTitleArr.append((oneDoc["post_title"]))
+
     #phase 2
 
-    documents = [okt.nouns(corpusArr[cnt]) for cnt in range(len(corpusArr))]
+    documents = [okt.nouns(corpusContentArr[cnt]) for cnt in range(len(corpusContentArr))]
 
     global document_topics
     global document_topic_counts
@@ -300,13 +306,13 @@ def two():
     innerSumm=[]
     for i in arr:
         for j in i:
-            innerSumm.append(j)
+            innerSumm.append((j,corpusTitleArr[j]))
         summ.append(innerSumm)
         innerSumm=[]
 
     with open('../../handong/UniCenter/src/assets/special_first/data.json', 'w', -1, "utf-8") as f:
-        json.dump(arr, f,ensure_ascii=False)
-    return json.dumps(arr, ensure_ascii=False, sort_keys = False, indent = 4)
+        json.dump(summ, f,ensure_ascii=False)
+    return json.dumps(summ, ensure_ascii=False, sort_keys = False, indent = 4)
 
 
 
