@@ -96,10 +96,9 @@ def esTest():
     app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 
     okt = Okt() 
-
-    #query whith does not have a filed "file_extracted_content"
+#query whith does not have a filed "file_extracted_content"
     doc = {
-        'size' : 10,
+        'size' : 20,
         'query': {
             # 'match_all' : {}
             # "exists":{
@@ -115,16 +114,22 @@ def esTest():
             }
        }
     }
-    results = es.search(index='kolofoboard', body=doc)
+    results = es.search(index='nkdboard', body=doc)
     result = results['hits']['hits']
-    docArr=[]
+    corpusContentArr=[]
+    courpusArr=[]
+    corpusTitleArr=[]
     for oneDoc in result:
         oneDoc = oneDoc["_source"]
-        docArr.append((oneDoc["post_title"],oneDoc["post_body"]))
+        courpusArr.append((oneDoc["post_title"], oneDoc["post_body"]))
+        # corpusContentArr.append(oneDoc["post_body"])
+        # corpusTitleArr.append((oneDoc["post_title"]))
 
+    with open('rawData.json', 'w', -1, "utf-8") as f:
+        json.dump(courpusArr, f,ensure_ascii=False)
 #query whith DOES have a filed "file_extracted_content"
     doc = {
-        'size' : 10,
+        'size' : 20,
         'query': {
             "exists":{
                 "field" : "file_extracted_content"
@@ -139,20 +144,21 @@ def esTest():
             # }
        }
     }
-    results = es.search(index='kolofoboard', body=doc)
+    results = es.search(index='nkdboard', body=doc)
+    print(results)
     result = results['hits']['hits']
-    for oneDoc in result:
-        oneDoc = oneDoc["_source"]
-        docArr.append((oneDoc["post_title"],oneDoc["file_extracted_content"]))
 
-    # print(docArr)
-    # results = results['hits']['hits'][2]["_source"]["post_body"]
-    print(len(docArr))
+    # for oneDoc in result:
+    #     oneDoc = oneDoc["_source"]
+    #     corpusContentArr.append(oneDoc["file_extracted_content"])
+    #     corpusTitleArr.append((oneDoc["post_title"]))
+    
+#    result_title_content = []
+#    result_title_content.append(corpu)
 
-    with open('file2.json', 'w', -1, "utf-8") as f:
-        json.dump(docArr, f,ensure_ascii=False)
-    with open('../../handong/UniCenter/src/assets/special_first/file2.json', 'w', -1, "utf-8") as f:
-        json.dump(docArr, f,ensure_ascii=False)
+   
+    # with open('../../handong/UniCenter/src/assets/special_first/file2.json', 'w', -1, "utf-8") as f:
+    #     json.dump(docArr, f,ensure_ascii=False)
     return json.dumps("download done! : ", ensure_ascii=False)
 
 #########################################
@@ -234,11 +240,15 @@ def two():
        }
     }
     results = es.search(index='nkdboard', body=doc)
+    print(results)
     result = results['hits']['hits']
+
     for oneDoc in result:
         oneDoc = oneDoc["_source"]
         corpusContentArr.append(oneDoc["file_extracted_content"])
         corpusTitleArr.append((oneDoc["post_title"]))
+    
+   
 
     #phase 2
 
@@ -309,9 +319,11 @@ def two():
             innerSumm.append((j,corpusTitleArr[j]))
         summ.append(innerSumm)
         innerSumm=[]
-
+    
+    with open('rawData.json', 'w', -1, "utf-8") as f:
+        json.dumps(result, f,ensure_ascii=False)
     with open('../../handong/UniCenter/src/assets/special_first/data.json', 'w', -1, "utf-8") as f:
-        json.dump(summ, f,ensure_ascii=False)
+        json.dumps(summ, f,ensure_ascii=False)
     return json.dumps(summ, ensure_ascii=False, sort_keys = False, indent = 4)
 
 
@@ -341,9 +353,7 @@ def three():
         # corpusArr.append(i['_source'])
     
     return json.dumps(debug, ensure_ascii=False,indent = 4)
-    # return jsonify(json.dumps(results, ensure_ascii=False))
-    # response = Response(results,content_type="application/json; charset=utf-8" )
-    # return response
+
 
 
 @app.route('/wordrank', methods=['GET'])
