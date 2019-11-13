@@ -23,7 +23,7 @@ app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 
-K=5
+K=10
 V=0
 document_topics = []
 document_topic_counts = []
@@ -87,40 +87,156 @@ def one():
     texts = json.dumps(results['_source'], ensure_ascii=False)
     return json.dumps(results, ensure_ascii=False)
 
+#########################################
+# 191112 ES Test
+@app.route('/esTest', methods=['GET'])
+def esTest():
 
+    app = Flask(__name__)
+    app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
+
+    okt = Okt() 
+
+    #query whith does not have a filed "file_extracted_content"
+    doc = {
+        'size' : 10,
+        'query': {
+            # 'match_all' : {}
+            # "exists":{
+            #     "field" : "file_extracted_content"
+            # },
+            "bool": {
+                "must_not": {
+                    "exists": {
+                        "field": "file_extracted_content"
+                    }
+                
+                }
+            }
+       }
+    }
+    results = es.search(index='kolofoboard', body=doc)
+    result = results['hits']['hits']
+    docArr=[]
+    for oneDoc in result:
+        oneDoc = oneDoc["_source"]
+        docArr.append((oneDoc["post_title"],oneDoc["post_body"]))
+
+#query whith DOES have a filed "file_extracted_content"
+    doc = {
+        'size' : 10,
+        'query': {
+            "exists":{
+                "field" : "file_extracted_content"
+            }
+            # "bool": {
+            #     "must_not": {
+            #         "exists": {
+            #             "field": "file_extracted_content"
+            #         }
+                
+            #     }
+            # }
+       }
+    }
+    results = es.search(index='kolofoboard', body=doc)
+    result = results['hits']['hits']
+    for oneDoc in result:
+        oneDoc = oneDoc["_source"]
+        docArr.append((oneDoc["post_title"],oneDoc["file_extracted_content"]))
+
+    # print(docArr)
+    # results = results['hits']['hits'][2]["_source"]["post_body"]
+    print(len(docArr))
+
+    with open('file2.json', 'w', -1, "utf-8") as f:
+        json.dump(docArr, f,ensure_ascii=False)
+    with open('../../handong/UniCenter/src/assets/special_first/file2.json', 'w', -1, "utf-8") as f:
+        json.dump(docArr, f,ensure_ascii=False)
+    return json.dumps("download done! : ", ensure_ascii=False)
+
+#########################################
 
 
 @app.route('/two', methods=['GET'])
 def two():
 
     #parameters
-    num_size = 15
-    num_iter = 200
+    num_size = 1000
+    num_iter = 100
 
 
 
     app = Flask(__name__)
     app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 
-    okt = Okt()
+    okt = Okt() 
 
-    doc = {
-        'size' : num_size,
-        'query': {
-            'match_all' : {}
-       }
-    }
-    results = es.search(index='nkdboard', body=doc,scroll='1m')
-    results = results['hits']['hits']
-    corpusArr=[]
-    for i in results:
-        corpusArr.append(i['_source']['bodys'])
+# Older Version
+    # doc = {
+    #     'size' : num_size,
+    #     'query': {
+    #         'match_all' : {}
+    #    }
+    # }
+    # results = es.search(index='nkdboard', body=doc)
+    
+    # results = results['hits']['hits']
+    # corpusArr=[]
+    # for i in results:
+    #     corpusArr.append(i['_source']['bodys'])
 
     # str(len(corpus))
-    
 
+#New Version 191112
+#query whith does not have a filed "file_extracted_content"
+    doc = {
+        'size' : 20,
+        'query': {
+            # 'match_all' : {}
+            # "exists":{
+            #     "field" : "file_extracted_content"
+            # },
+            "bool": {
+                "must_not": {
+                    "exists": {
+                        "field": "file_extracted_content"
+                    }
+                
+                }
+            }
+       }
+    }
+    results = es.search(index='nkdboard', body=doc)
+    result = results['hits']['hits']
+    corpusArr=[]
+    for i in result:
+        corpusArr.append(i["_source"]["post_body"])
+
+#query whith DOES have a filed "file_extracted_content"
+    doc = {
+        'size' : 20,
+        'query': {
+            "exists":{
+                "field" : "file_extracted_content"
+            }
+            # "bool": {
+            #     "must_not": {
+            #         "exists": {
+            #             "field": "file_extracted_content"
+            #         }
+                
+            #     }
+            # }
+       }
+    }
+    results = es.search(index='nkdboard', body=doc)
+    result = results['hits']['hits']
+    for i in result:
+        corpusArr.append(i["_source"]["file_extracted_content"])
     #phase 2
-    documents = [okt.nouns(corpusArr[cnt]) for cnt in range(len(corpusArr))] 
+
+    documents = [okt.nouns(corpusArr[cnt]) for cnt in range(len(corpusArr))]
 
     global document_topics
     global document_topic_counts
@@ -165,25 +281,15 @@ def two():
     for i in range(D):
         doc_top.append(document_topic_counts[i])
 
-    # for i in range(K):
-        # print(topic_word_counts[i])
-        # print("\n")
-
-    # print(doc_top)
-    # sort(doc_top[i], key = itemgetter('')
     tpl=[]
     for i in enumerate(document_topic_counts):
         tpl.append ((i[0],(i[1].most_common(1)[0][0])))
     tpl_s=sorted(tpl, key=itemgetter(1))
 
-    # for i in range(D):
-        # print (doc_top[i].key()[0])
-
     idx = -1
     arr=[]
     for i in range(D):
         if idx != (tpl_s[i][1]):
-    #         print([tpl_s[i][0]])
             arr.append([tpl_s[i][0]])
             idx=tpl_s[i][1]
         else:
@@ -193,18 +299,14 @@ def two():
     summ = []
     innerSumm=[]
     for i in arr:
-        # print("\n\n\nsimilar documents : ")
         for j in i:
-            innerSumm.append({"documents #" + str(j) : documents[j]})
-            # print("\ndocuments #", j)
-            # print(documents[j])
-        summ.append({"similar documents" : innerSumm})
+            innerSumm.append(j)
+        summ.append(innerSumm)
         innerSumm=[]
 
-    # print(summ)
-    # print(document_topic_counts)
-    # print(arr)
-    return json.dumps(summ, ensure_ascii=False, sort_keys = False, indent = 4)
+    with open('../../handong/UniCenter/src/assets/special_first/data.json', 'w', -1, "utf-8") as f:
+        json.dump(arr, f,ensure_ascii=False)
+    return json.dumps(arr, ensure_ascii=False, sort_keys = False, indent = 4)
 
 
 
@@ -232,7 +334,7 @@ def three():
             # results = i
         # corpusArr.append(i['_source'])
     
-    return json.dumps(results, ensure_ascii=False,indent = 4)
+    return json.dumps(debug, ensure_ascii=False,indent = 4)
     # return jsonify(json.dumps(results, ensure_ascii=False))
     # response = Response(results,content_type="application/json; charset=utf-8" )
     # return response
