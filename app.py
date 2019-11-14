@@ -23,40 +23,6 @@ app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 
-K=10
-V=0
-document_topics = []
-document_topic_counts = []
-topic_word_counts = []
-topic_counts = []
-document_lengths = []
-
-########################################
-
-def p_topic_given_document(topic, d, alpha=0.1):
-    return ((document_topic_counts[d][topic] + alpha) /
-            (document_lengths[d] + K * alpha))
-
-def p_word_given_topic(word, topic, beta=0.1):
-    return ((topic_word_counts[topic][word] + beta) /
-            (topic_counts[topic] + V * beta))
-
-def topic_weight(d, word, k):
-    return p_word_given_topic(word, k) * p_topic_given_document(k, d)
-
-def choose_new_topic(d, word):
-    return sample_from([topic_weight(d, word, k) for k in range(K)])
-
-def sample_from(weights):
-    total = sum(weights)
-    rnd = total * random.random()
-    for i, w in enumerate(weights):
-        rnd -= w
-        if rnd <= 0:
-            return i
-########################################
-
-
 
 #Url address of Elasticsearch
 
@@ -152,181 +118,12 @@ def esTest():
     #     oneDoc = oneDoc["_source"]
     #     corpusContentArr.append(oneDoc["file_extracted_content"])
     #     corpusTitleArr.append((oneDoc["post_title"]))
-    
-#    result_title_content = []
-#    result_title_content.append(corpu)
-
    
     # with open('../../handong/UniCenter/src/assets/special_first/file2.json', 'w', -1, "utf-8") as f:
     #     json.dump(docArr, f,ensure_ascii=False)
     return json.dumps("download done! : ", ensure_ascii=False)
 
 #########################################
-
-
-@app.route('/two', methods=['GET'])
-def two():
-
-    #parameters
-    num_size = 1000
-    num_iter = 100
-
-
-
-    app = Flask(__name__)
-    app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
-
-    okt = Okt() 
-
-# Older Version
-    # doc = {
-    #     'size' : num_size,
-    #     'query': {
-    #         'match_all' : {}
-    #    }
-    # }
-    # results = es.search(index='nkdboard', body=doc)
-    
-    # results = results['hits']['hits']
-    # corpusArr=[]
-    # for i in results:
-    #     corpusArr.append(i['_source']['bodys'])
-
-    # str(len(corpus))
-
-#New Version 191112
-#query whith does not have a filed "file_extracted_content"
-    doc = {
-        'size' : 20,
-        'query': {
-            # 'match_all' : {}
-            # "exists":{
-            #     "field" : "file_extracted_content"
-            # },
-            "bool": {
-                "must_not": {
-                    "exists": {
-                        "field": "file_extracted_content"
-                    }
-                
-                }
-            }
-       }
-    }
-    results = es.search(index='nkdboard', body=doc)
-    result = results['hits']['hits']
-    corpusContentArr=[]
-    corpusTitleArr=[]
-    for oneDoc in result:
-        oneDoc = oneDoc["_source"]
-        corpusContentArr.append(oneDoc["post_body"])
-        corpusTitleArr.append((oneDoc["post_title"]))
-
-#query whith DOES have a filed "file_extracted_content"
-    doc = {
-        'size' : 20,
-        'query': {
-            "exists":{
-                "field" : "file_extracted_content"
-            }
-            # "bool": {
-            #     "must_not": {
-            #         "exists": {
-            #             "field": "file_extracted_content"
-            #         }
-                
-            #     }
-            # }
-       }
-    }
-    results = es.search(index='nkdboard', body=doc)
-    print(results)
-    result = results['hits']['hits']
-
-    for oneDoc in result:
-        oneDoc = oneDoc["_source"]
-        corpusContentArr.append(oneDoc["file_extracted_content"])
-        corpusTitleArr.append((oneDoc["post_title"]))
-    
-   
-
-    #phase 2
-
-    documents = [okt.nouns(corpusContentArr[cnt]) for cnt in range(len(corpusContentArr))]
-
-    global document_topics
-    global document_topic_counts
-    global topic_word_counts
-    global topic_counts
-    global document_lengths
-    global V
-    
-    #phase 3
-    random.seed(0)
-    document_topics = [[random.randrange(K) for word in document]
-                        for document in documents]
-    document_topic_counts = [Counter() for _ in documents]
-    topic_word_counts = [Counter() for _ in range(K)]
-    topic_counts = [0 for _ in range(K)]
-    document_lengths = [len(document) for document in documents]
-    distinct_words = set(word for document in documents for word in document)
-    V = len(distinct_words)
-    D = len(documents)
-
-    for d in range(D):
-        for word, topic in zip(documents[d], document_topics[d]):
-            document_topic_counts[d][topic] += 1
-            topic_word_counts[topic][word] += 1
-            topic_counts[topic] += 1
-
-    for iter in range(num_iter):
-        for d in range(D):
-            for i, (word, topic) in enumerate(zip(documents[d],document_topics[d])):
-                document_topic_counts[d][topic] -= 1
-                topic_word_counts[topic][word] -= 1
-                topic_counts[topic] -= 1
-                document_lengths[d] -= 1
-                new_topic = choose_new_topic(d, word)
-                document_topics[d][i] = new_topic
-                document_topic_counts[d][new_topic] += 1
-                topic_word_counts[new_topic][word] += 1
-                topic_counts[new_topic] += 1
-                document_lengths[d] += 1
-
-    doc_top=[]
-    for i in range(D):
-        doc_top.append(document_topic_counts[i])
-
-    tpl=[]
-    for i in enumerate(document_topic_counts):
-        tpl.append ((i[0],(i[1].most_common(1)[0][0])))
-    tpl_s=sorted(tpl, key=itemgetter(1))
-
-    idx = -1
-    arr=[]
-    for i in range(D):
-        if idx != (tpl_s[i][1]):
-            arr.append([tpl_s[i][0]])
-            idx=tpl_s[i][1]
-        else:
-            arr[-1].append(tpl_s[i][0])
-
-    
-    summ = []
-    innerSumm=[]
-    for i in arr:
-        for j in i:
-            innerSumm.append((j,corpusTitleArr[j]))
-        summ.append(innerSumm)
-        innerSumm=[]
-    
-    with open('rawData.json', 'w', -1, "utf-8") as f:
-        json.dump(result, f,ensure_ascii=False)
-    with open('../../handong/UniCenter/src/assets/special_first/data.json', 'w', -1, "utf-8") as f:
-        json.dump(summ, f,ensure_ascii=False)
-    return json.dumps(summ, ensure_ascii=False, sort_keys = False, indent = 4)
-
-
 
 
 
@@ -471,7 +268,7 @@ def three():
     for i, topic_list in enumerate(ldamodel[corpus]):
         if i==5:
             break
-        print(i,'번째 문서의 topic 비율은',topic_list)
+        # print(i,'번째 문서의 topic 비율은',topic_list)
     #topic_like : 문서 당 최대 경향 토픽만을 산출하기
 
     topic_like=[]
@@ -561,6 +358,12 @@ def three():
     with open('../../handong/UniCenter/src/assets/special_first/data.json', 'w', -1, "utf-8") as f:
         json.dump(sameTopicDocArrTitle, f,ensure_ascii=False)
     return json.dumps(sameTopicDocArrTitle, ensure_ascii=False,indent = 4)
+    
+
+
+
+
+
 
 @app.route('/wordrank', methods=['GET'])
 def wordRank():
