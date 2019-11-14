@@ -369,93 +369,148 @@ def three():
 def wordRank():
 
     #Retreive text from elasticsearch
-    results = es.get(index='crawling', doc_type='nkdboard', id='5d76f149a2e5d0edebd8522f')
+    results = es.get(index='nkdboard', doc_type='nkdboard', id='5db598c32cc6c120bac74bc9')
     texts = json.dumps(results['_source'], ensure_ascii=False)
     
-    # #split the text by sentences
-    # sentences = re.split(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', texts)
+    #split the text by sentences
+    sentences = re.split(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', texts)
     
 
-    # #normalize the text
-    # texts = [normalize(text, number=True) for text in sentences]
-    
-    # wordrank_extractor = KRWordRank(
-    #     min_count = 7,  # Minimum frequency of word
-    #     max_length=10,  # Maximum length of word
-    #     verbose = True
-    # )
+    #normalize the text
+    texts = [normalize(text, number=True) for text in sentences]
 
-    # beta = 0.85  # Decaying factor beta of PageRank
-    # max_iter = 10
+    
+    wordrank_extractor = KRWordRank(
+        min_count = 3,  # Minimum frequency of word
+        max_length=10,  # Maximum length of word
+        verbose = True
+    )
+
+    beta = 0.85  # Decaying factor beta of PageRank
+    max_iter = 10
   
-    # keywords, rank, graph = wordrank_extractor.extract(texts, beta, max_iter)
-    
-    # result=[]
-    # dic={}
-    # #Make a dictionary [word, weight]
-    # for word, r in sorted(keywords.items(), key=lambda x:x[1], reverse=True)[:30]:
-    #     dic["y"]=r
-    #     dic["label"]=word
-    #     result.append(dic)
-    #     dic={}
-
-    return json.dumps(results, ensure_ascii=False)
-
-
-
-# # @app.route('/ext', methods=['GET'])
-# # def extractEntity():
+    keywords, rank, graph = wordrank_extractor.extract(texts, beta, max_iter)
     
     
-# #     # ETRI API KEY
-# #     API_KEY = '2aca8d0f-ccdb-4074-ba54-de2b3c2a7bec'
-# #      #Retreive text from elasticsearch
-# #     results = es.get(index='text', doc_type='text', id='1')
-# #     texts = json.dumps(results['_source']["attachment"]["content"], ensure_ascii=False)
-
-# #     recognizer = EntityRecognizer(API.ETRI, API_KEY)
-
-# #     parsed = recognizer.analyze("안녕하세요 문재인입니다. 하늘에 계신 우리아버지여.")
+    result=[]
+    dic={}
+    #Make a dictionary [word, weight]
+    for word, r in sorted(keywords.items(), key=lambda x:x[1], reverse=True)[:30]:
+        dic["y"]=r
+        dic["label"]=word
+        result.append(dic)
+        dic={}
     
-# #     print(parsed)
-# #     for entity in parsed[0].getEntities():
-# #         print(entity)
+
+    return json.dumps(result, ensure_ascii=False)
 
 
+@app.route('/keywordGraph', methods=['POST', 'GET'])
+@cross_origin(app)
+def draw():
+    if request.method=='POST':
+        result=request.json
+        keyword=result["keyword"]
+
+    wholeDataArr=[]
+    searchDataArr=[]
+
+    resultArr=[]
+
+    startYear = 1950
+    offset=10
 
 
-# #     return "Good"
+    #From 1950 ~ 2020
+    for i in range (0,7): 
+
+        allDocs = {
+            "query" : {
+                "bool" : {
+                    "must" : {
+                        "match_all" : {}
+                    },
+                     "filter" : [
+                    {"range" : {
+                        "dates" : {
+                                "gte" : "1950-01||/M",
+                                "lte" : "1950-01||/M",
+                                "format": "yyyy-MM"
+                            }
+                    }}
+                ]
+                }
+            }
+        }
+
+     
+        allDocs["query"]["bool"]["filter"][0]["range"]["dates"]["gte"]= str(startYear+(i*offset))+"-01||/M"
+        allDocs["query"]["bool"]["filter"][0]["range"]["dates"]["lte"]= str(startYear+((i+1) *offset))+"-01||/M"
+
+        res = es.search(index="nkdboard", body=allDocs)
+        numOfDocs = res["hits"]["total"]["value"]
+        wholeDataArr.append(numOfDocs)
+        print(numOfDocs)
+
+        searchDocs = {
+            "query" : {
+                "bool" : {
+                    "must" : [
+                        {"match" : {"bodys" : ""}}
+                    ],
+                     "filter" : [
+                    {"range" : {
+                        "dates" : {
+                                "gte" : "1950-01||/M",
+                                "lte" : "1950-01||/M",
+                                "format": "yyyy-MM"
+                            }
+                    }}
+                ]
+                }
+            }
+        }
+
+        searchDocs["query"]["bool"]["filter"][0]["range"]["dates"]["gte"]= str(startYear+(i*offset))+"-01||/M"
+        searchDocs["query"]["bool"]["filter"][0]["range"]["dates"]["lte"]= str(startYear+((i+1) *offset))+"-01||/M"
+        searchDocs["query"]["bool"]["must"][0]["match"]["bodys"] = keyword
+
+    
+
+        res = es.search(index="nkdboard", body=searchDocs)
+        numOfDocs = res["hits"]["total"]["value"]
+        searchDataArr.append(numOfDocs)
+
+        print(numOfDocs)
 
 
-# @app.route('/term')
-# def term():
-#     finalize()
-#     return "Terminated"
+    dic={}
+    resultWholeArr=[]
+    resultSearchArr=[]
+    # Angular Data Format{ y: 150, label: "Dec" }
+    for i in range (0,7):
+        dic["y"] = wholeDataArr[i]
+        dic["label"] = str(startYear+(i*offset))
 
+        
+        resultWholeArr.append(dic)
+        dic={}
+        dic["y"] = searchDataArr[i]
+        dic["label"] = str(startYear+(i*offset))
+        resultSearchArr.append(dic)
 
-# @app.route('/', methods=['GET'])
-# def index():
-#     results = es.get(index='text', doc_type='text', id='1')
+        dic={}
+
+    
+    resultArr.append(resultWholeArr)
+    resultArr.append(resultSearchArr)
+
+    print(resultArr)
    
-#     return json.dumps(results['_source'], ensure_ascii=False)
-
-# @app.route('/search', methods=['POST', 'GET'])
-# def search():
-    
-#     keyword=request.json["keyword"]
-#     body= {
-#         "query" : {
-#             "match_all":{
-                
-#             }
-#         }
-#     }
-
-#     res = es.search(index="text", body=body)
-
-#     return json.dumps(res["hits"]["hits"], ensure_ascii=False)
 
 
+
+    return json.dumps(resultArr, ensure_ascii=False)
 
 @app.route('/test', methods=['POST', 'GET'])
 def test():
@@ -471,7 +526,7 @@ def test():
         "size" : 1000,
     }
     
-    res= es.search(index="crawling", body=body)
+    res= es.search(index="nkdboard", body=body)
 
     resultArr = res["hits"]["hits"]
 
@@ -541,8 +596,8 @@ def test():
 @app.after_request
 def after_request(response):
     
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    # response.headers.add('Access-Control-Allow-Origin', '*')
+    # response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
     return response
 
