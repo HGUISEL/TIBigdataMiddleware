@@ -51,7 +51,7 @@ def nkdbFile(SIZE):
     return esQuary(doc)
 
 
-def esGetDocs(sizeDoc):
+def esGetDocsNameBody(sizeDoc):
     # app = Flask(__name__)
     # app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 

@@ -1,64 +1,118 @@
 from datetime import datetime
 import esFunc
 
+
+def esGetDocs(sizeDoc):
+
+    contents = []
+    titles = []
+
+    ########################################################
+    """
+    파일이 있는 문서와 없는 문서가 있다.
+    둘 다 elasticsearch에서 가지고 오고 싶으면 both = 1
+    only Yes 첨부파일 : fileY = 1
+    아니면 fileN = 0
+
+    """
+    ########################################################
+
+    both = 0
+    fileY = 0
+
+    # dont touch this.
+    fileN = 1
+
+    if fileY == 1:
+        fileN = 0
+    else:
+        fileN = 1
+
+    if both == 1:
+        fileY = 1
+        fileN = 1
+
+
+# 전처리
+# 현재 상태 : 문서 뭉치 : [[제목,내용],[제목,내용],...]
+# LDA작업은 문서의 내용을 가지고 하므로, 제목과 내용을 분리시켜야 한다.
+# 제목을 다루는 array와 내용을 가지는 array을 따로 분리.
+# 아랫 단에서 제목과 문서의 빈도 수를 묶을 때 제목을 다시 사용.
+
+# 첨부파일이 없는 문서들
+    if fileN == 1:
+        result = esFunc.nkdbNoFile(sizeDoc)
+
+        for oneDoc in result:
+            oneDoc = oneDoc["_source"]
+            
+            if oneDoc["post_body"]:# 내용이 비어있는 문서는 취하지 않는다. if string ="", retrn false.
+                contents.append(oneDoc["post_body"])
+                titles.append((oneDoc["post_title"]))
+
+
+# 첨부파일이 존재하는 문서들
+    if fileY == 1:
+        result = esFunc.nkdbFile(sizeDoc)
+
+        # 전처리 2 for 첨부파일이 있는 데이터
+        for oneDoc in result:
+            oneDoc = oneDoc["_source"]
+            
+            if oneDoc["file_extracted_content"]:# 내용이 비어있는 문서는 취하지 않는다. if string ="", retrn false.
+                contents.append(oneDoc["file_extracted_content"])
+                titles.append((oneDoc["post_title"]))
+
+    return titles, contents
+
+
 ################################################
 """
 LDA 잠재 디리클레 할당
 2019.11.14.
 """
 ################################################
-# time taken evaluation
+def LDA():
+    # time taken evaluation
     start = time.time()
 
-# variables
+    # variables
     NUM_DOC = 30
     NUM_TOPICS = 5
     NUM_ITER = 10
     # ES_INDEX = 'nkdboard'
     ES_INDEX = 'kolofoboard'
 
-# Phase 1 : ES에서 문서 쿼리 및 content와 title 분리 전처리
+    # Phase 1 : ES에서 문서 쿼리 및 content와 title 분리 전처리
 
 
-# Query to ES New Version 191227
-# query whith does not have a filed "file_extracted_content"
+    # Query to ES New Version 191227
+    # query whith does not have a filed "file_extracted_content"
 
     contents = []
     titles = []
 
+    esFunc.nNoFile
     results = es.search(index=ES_INDEX, body=doc)
     result = results['hits']['hits']
 
-# 전처리
-# 현재 상태 : [[제목,내용],[제목,내용],...]
-# LDA작업은 문서의 내용을 가지고 하므로, 제목과 내용을 분리시켜야 한다.
-# 제목을 다루는 array와 내용을 가지는 array을 따로 분리.
-# 아랫 단에서 제목과 문서의 빈도 수를 묶을 때 제목을 다시 사용.
 
-    for oneDoc in result:
-        oneDoc = oneDoc["_source"]
-        # 내용이 비어있는 문서는 취하지 않는다. if string ="", retrn false.
-        if oneDoc["post_body"]:
-            contents.append(oneDoc["post_body"])
-            titles.append((oneDoc["post_title"]))
-
-
-# query whith DOES have a filed "file_extracted_content"
-# 쿼리 내용 : 첨부파일 있는 문서들을 가져온다
+    # query whith DOES have a filed "file_extracted_content"
+    # 쿼리 내용 : 첨부파일 있는 문서들을 가져온다
     doc = {
-        'size': NUM_DOC ,  #NUM_DOC/2,
+        'size': NUM_DOC,  # NUM_DOC/2,
         'query': {
             "exists": {
-                "field": "file_extracted_content"
-            }
+                    "field": "file_extracted_content"
+                }
             # "bool": {
-            #     "must_not": {
-            #         "exists": {
-            #             "field": "file_extracted_content"
-            #         }
+                #     "must_not": {
+                #         "exists": {
+                #             "field": "file_extracted_content"
+                #         }
 
-            #     }
-            # }
+                #     }
+                # }
             }
         }
     results = es.search(index=ES_INDEX, body=doc)
@@ -74,11 +128,11 @@ LDA 잠재 디리클레 할당
             titles.append((oneDoc["post_title"]))
 
 
-#알고리즘 정확성을 확인하기 위해 일부러 문서 순서를 섞는다.     
+# 알고리즘 정확성을 확인하기 위해 일부러 문서 순서를 섞는다.
     Corpus = []
     for i in range(len(contents)):
-        Corpus.append((titles[i],contents[i]))
-    
+        Corpus.append((titles[i], contents[i]))
+
     import random
     random.shuffle(Corpus)
 
@@ -88,10 +142,6 @@ LDA 잠재 디리클레 할당
     # print(titles)#순서가 뒤바뀐 문서 set을 출력
 
     # print(len(contents))
-
-
-
-
 
 
 # # phase 2 형태소 분석기
@@ -254,7 +304,7 @@ LDA 잠재 디리클레 할당
 #     for i in ldamodel.get_document_topics(corpus):
 #         for j in i:
 #             dictii[0]
-    
+
 #     """
 #     list = []
 #     for i in ldamodel.get_document_topics(corpus):
