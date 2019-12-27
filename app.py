@@ -48,85 +48,42 @@ import esFunc
 @app.route('/esTest1227', methods=['GET'])
 def esTest1227():
     result = esFunc.nkdbFile(3)
+    # result = esFunc.nkdbNoFile(3)
+
     return json.dumps( result, ensure_ascii=False)
 
 
 #########################################
-# 191112 ES Test
+# 191227 ES Test update : use esFunc module
 @app.route('/esTest', methods=['GET'])
 def esTest():
+    sizeDoc = 1
+    # app = Flask(__name__)
+    # app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 
-    app = Flask(__name__)
-    app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
-
-    okt = Okt()
 # query whith does not have a filed "file_extracted_content"
-    doc = {
-        'size': 100,
-        'query': {
-            # 'match_all' : {}
-            # "exists":{
-            #     "field" : "file_extracted_content"
-            # },
-            "bool": {
-                "must_not": {
-                    "exists": {
-                        "field": "file_extracted_content"
-                    }
+    
+    result = esFunc.nkdbNoFile(sizeDoc)
 
-                }
-            }
-        }
-    }
-    results = es.search(index='nkdboard', body=doc)
-    result = results['hits']['hits']
     corpusContentArr = []
     courpusArr = []
     corpusTitleArr = []
-    # for oneDoc in result:
-    #     oneDoc = oneDoc["_source"]
-    #     courpusArr.append((oneDoc["post_title"], oneDoc["post_body"]))
-    #     # corpusContentArr.append(oneDoc["post_body"])
-        # corpusTitleArr.append((oneDoc["post_title"]))
 
-    # with open('rawData.json', 'w', -1, "utf-8") as f:
-    #     json.dump(courpusArr, f, ensure_ascii=False)
-
-
-
+    for oneDoc in result:
+        oneDoc = oneDoc["_source"]
+        courpusArr.append((oneDoc["post_title"], oneDoc["post_body"]))
+  
 # query whith DOES have a filed "file_extracted_content"
-    doc = {
-        'size': 20,
-        'query': {
-            "exists": {
-                "field": "file_extracted_content"
-            }
-            # "bool": {
-            #     "must_not": {
-            #         "exists": {
-            #             "field": "file_extracted_content"
-            #         }
-
-            #     }
-            # }
-        }
-    }
-    results = es.search(index='kolofoboard', body=doc)
-    # print(results)
-    result = results['hits']['hits']
+   
+    result = esFunc.nkdbFile(sizeDoc)
 
     for oneDoc in result:
         oneDoc = oneDoc["_source"]
         courpusArr.append((oneDoc["post_title"], oneDoc["file_extracted_content"]))
 
-        # corpusContentArr.append(oneDoc["file_extracted_content"])
-        # corpusTitleArr.append((oneDoc["post_title"]))
-    
     with open('rawData.json', 'w', -1, "utf-8") as f:
             json.dump(courpusArr, f, ensure_ascii=False)
     
-    # with open('../../handong/UniCenter/src/assets/special_first/file2.json', 'w', -1, "utf-8") as f:
-    #     json.dump(docArr, f,ensure_ascii=False)
     return json.dumps("download done! : ", ensure_ascii=False)
 
 #########################################
@@ -157,26 +114,9 @@ def three():
 # Phase 1 : ES에서 문서 쿼리 및 content와 title 분리 전처리
 
 
-# Query to ES New Version 191112
+# Query to ES New Version 191227
 # query whith does not have a filed "file_extracted_content"
-# 쿼리 내용: 첨부파일이 없는 문서들을 가지고 온다
-    doc = {
-        'size': 0, #NUM_DOC/2,
-        'query': {
-            # 'match_all' : {}
-            # "exists":{
-            #     "field" : "file_extracted_content"
-            # },
-            "bool": {
-                "must_not": {
-                    "exists": {
-                        "field": "file_extracted_content"
-                    }
 
-                }
-            }
-        }
-    }
     contents = []
     titles = []
 

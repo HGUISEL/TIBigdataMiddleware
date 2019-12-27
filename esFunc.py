@@ -6,12 +6,15 @@ es = Elasticsearch(backEndUrl)
 INDEX = "nkdb"
 
 
-def esClean(data):
+def esClean(doc):
+    data = es.search(index=INDEX, body=doc)
+    # data = data['hits']['hits'][0]["_source"]
     data = data['hits']['hits']
-    # print(data)
+
     return data
 
-def nkdbFile(SIZE):
+
+def nkdbNoFile(SIZE):
     doc = {
         'size': SIZE,
         'query': {
@@ -29,12 +32,13 @@ def nkdbFile(SIZE):
             }
         }
     }
-    results = es.search(index=INDEX, body=doc)
-    
-    data = esClean(results)
-    return data
 
-def nkdbNoFile(SIZE):
+    return esClean(doc)
+
+
+# Query to ES New Version 191227
+# query whith does not have a filed "file_extracted_content"
+def nkdbFile(SIZE):
     doc = {
         'size': SIZE,
         'query': {
@@ -43,7 +47,5 @@ def nkdbNoFile(SIZE):
             }
         }
     }
-    results = es.search(index=INDEX, body=doc)
-
-    esClean(results)
-    return
+    # return esClean(doc)["file_extracted_content"]
+    return esClean(doc)
