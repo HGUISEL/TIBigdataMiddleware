@@ -1,11 +1,14 @@
 from datetime import datetime
 import esFunc
+import time
+
 
 
 def esGetDocs(sizeDoc):
 
     contents = []
     titles = []
+    corpus = []
 
     ########################################################
     """
@@ -47,8 +50,10 @@ def esGetDocs(sizeDoc):
             oneDoc = oneDoc["_source"]
             
             if oneDoc["post_body"]:# 내용이 비어있는 문서는 취하지 않는다. if string ="", retrn false.
-                contents.append(oneDoc["post_body"])
-                titles.append((oneDoc["post_title"]))
+                corpus.append(oneDoc["post_body"],(oneDoc["post_title"])
+                # contents.append(oneDoc["post_body"])
+                # titles.append((oneDoc["post_title"]))
+                
 
 
 # 첨부파일이 존재하는 문서들
@@ -60,18 +65,18 @@ def esGetDocs(sizeDoc):
             oneDoc = oneDoc["_source"]
             
             if oneDoc["file_extracted_content"]:# 내용이 비어있는 문서는 취하지 않는다. if string ="", retrn false.
-                contents.append(oneDoc["file_extracted_content"])
-                titles.append((oneDoc["post_title"]))
+                corpus.append(oneDoc["file_extracted_content"], oneDoc["post_title"]))
+                # contents.append()
+                # titles.append(()
 
-    return titles, contents
+    return corpus
 
 
 ################################################
 """
 LDA 잠재 디리클레 할당
-2019.11.14.
+2019.12.27.
 """
-################################################
 def LDA():
     # time taken evaluation
     start = time.time()
@@ -89,49 +94,52 @@ def LDA():
     # Query to ES New Version 191227
     # query whith does not have a filed "file_extracted_content"
 
-    contents = []
-    titles = []
+    # titles = esGetDocs()[0]
+    # contents = esGetDocs()[1]
 
-    esFunc.nNoFile
-    results = es.search(index=ES_INDEX, body=doc)
-    result = results['hits']['hits']
+    # esFunc.n?NoFile
+    # results = es.search(index=ES_INDEX, body=doc)
+    # result = results['hits']['hits']
 
 
     # query whith DOES have a filed "file_extracted_content"
     # 쿼리 내용 : 첨부파일 있는 문서들을 가져온다
-    doc = {
-        'size': NUM_DOC,  # NUM_DOC/2,
-        'query': {
-            "exists": {
-                    "field": "file_extracted_content"
-                }
-            # "bool": {
-                #     "must_not": {
-                #         "exists": {
-                #             "field": "file_extracted_content"
-                #         }
+    # doc = {
+    #     'size': NUM_DOC,  # NUM_DOC/2,
+    #     'query': {
+    #         "exists": {
+    #                 "field": "file_extracted_content"
+    #             }
+    #         # "bool": {
+    #             #     "must_not": {
+    #             #         "exists": {
+    #             #             "field": "file_extracted_content"
+    #             #         }
 
-                #     }
-                # }
-            }
-        }
-    results = es.search(index=ES_INDEX, body=doc)
-    result = results['hits']['hits']
+    #             #     }
+    #             # }
+    #         }
+    #     }
+    # results = es.search(index=ES_INDEX, body=doc)
+    # result = results['hits']['hits']
 
 
 # 전처리 2 for 첨부파일이 있는 데이터
-    for oneDoc in result:
-        oneDoc = oneDoc["_source"]
-        # 내용이 비어있는 문서는 취하지 않는다. if string ="", retrn false.
-        if oneDoc["file_extracted_content"]:
-            contents.append(oneDoc["file_extracted_content"])
-            titles.append((oneDoc["post_title"]))
+    # for oneDoc in result:
+    #     oneDoc = oneDoc["_source"]
+    #     # 내용이 비어있는 문서는 취하지 않는다. if string ="", retrn false.
+    #     if oneDoc["file_extracted_content"]:
+    #         contents.append(oneDoc["file_extracted_content"])
+    #         titles.append((oneDoc["post_title"]))
+
 
 
 # 알고리즘 정확성을 확인하기 위해 일부러 문서 순서를 섞는다.
-    Corpus = []
-    for i in range(len(contents)):
-        Corpus.append((titles[i], contents[i]))
+    # Corpus
+    Corpus = esGetDocs(2)
+    print(type(Corpus))
+    # for i in range(len(contents)):
+    #     Corpus.append((titles[i], contents[i]))
 
     import random
     random.shuffle(Corpus)
