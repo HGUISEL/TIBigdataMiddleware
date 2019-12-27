@@ -23,7 +23,6 @@ app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 
 
 # Url address of Elasticsearch
-
 serverUrl = "http://203.252.103.86:8080"
 # localUrl="http://localhost:9200"
 
@@ -43,12 +42,14 @@ def hello():
     return contents
 
 
-@app.route('/one', methods=['GET'])
-def one():
-    results = es.get(index='nkdboard', doc_type='nkdboard',
-                     id='5db598c32cc6c120bac74bda')
-    texts = json.dumps(results['_source'], ensure_ascii=False)
-    return json.dumps(results, ensure_ascii=False)
+
+#191227 ES Test
+import esFunc
+@app.route('/esTest1227', methods=['GET'])
+def esTest1227():
+    result = esFunc.nkdbFile(3)
+    return json.dumps( result, ensure_ascii=False)
+
 
 #########################################
 # 191112 ES Test
@@ -61,7 +62,7 @@ def esTest():
     okt = Okt()
 # query whith does not have a filed "file_extracted_content"
     doc = {
-        'size': 20,
+        'size': 100,
         'query': {
             # 'match_all' : {}
             # "exists":{
@@ -82,14 +83,17 @@ def esTest():
     corpusContentArr = []
     courpusArr = []
     corpusTitleArr = []
-    for oneDoc in result:
-        oneDoc = oneDoc["_source"]
-        courpusArr.append((oneDoc["post_title"], oneDoc["post_body"]))
-        # corpusContentArr.append(oneDoc["post_body"])
+    # for oneDoc in result:
+    #     oneDoc = oneDoc["_source"]
+    #     courpusArr.append((oneDoc["post_title"], oneDoc["post_body"]))
+    #     # corpusContentArr.append(oneDoc["post_body"])
         # corpusTitleArr.append((oneDoc["post_title"]))
 
-    with open('rawData.json', 'w', -1, "utf-8") as f:
-        json.dump(courpusArr, f, ensure_ascii=False)
+    # with open('rawData.json', 'w', -1, "utf-8") as f:
+    #     json.dump(courpusArr, f, ensure_ascii=False)
+
+
+
 # query whith DOES have a filed "file_extracted_content"
     doc = {
         'size': 20,
@@ -107,15 +111,20 @@ def esTest():
             # }
         }
     }
-    results = es.search(index='nkdboard', body=doc)
-    print(results)
+    results = es.search(index='kolofoboard', body=doc)
+    # print(results)
     result = results['hits']['hits']
 
-    # for oneDoc in result:
-    #     oneDoc = oneDoc["_source"]
-    #     corpusContentArr.append(oneDoc["file_extracted_content"])
-    #     corpusTitleArr.append((oneDoc["post_title"]))
+    for oneDoc in result:
+        oneDoc = oneDoc["_source"]
+        courpusArr.append((oneDoc["post_title"], oneDoc["file_extracted_content"]))
 
+        # corpusContentArr.append(oneDoc["file_extracted_content"])
+        # corpusTitleArr.append((oneDoc["post_title"]))
+    
+    with open('rawData.json', 'w', -1, "utf-8") as f:
+            json.dump(courpusArr, f, ensure_ascii=False)
+    
     # with open('../../handong/UniCenter/src/assets/special_first/file2.json', 'w', -1, "utf-8") as f:
     #     json.dump(docArr, f,ensure_ascii=False)
     return json.dumps("download done! : ", ensure_ascii=False)
@@ -139,9 +148,9 @@ def three():
     start = time.time()
 
 # variables
-    NUM_DOC = 100
+    NUM_DOC = 30
     NUM_TOPICS = 5
-    NUM_ITER = 50
+    NUM_ITER = 10
     # ES_INDEX = 'nkdboard'
     ES_INDEX = 'kolofoboard'
 
@@ -152,7 +161,7 @@ def three():
 # query whith does not have a filed "file_extracted_content"
 # 쿼리 내용: 첨부파일이 없는 문서들을 가지고 온다
     doc = {
-        'size': NUM_DOC/2,
+        'size': 0, #NUM_DOC/2,
         'query': {
             # 'match_all' : {}
             # "exists":{
@@ -191,7 +200,7 @@ def three():
 # query whith DOES have a filed "file_extracted_content"
 # 쿼리 내용 : 첨부파일 있는 문서들을 가져온다
     doc = {
-        'size': NUM_DOC/2,
+        'size': NUM_DOC ,  #NUM_DOC/2,
         'query': {
             "exists": {
                 "field": "file_extracted_content"
@@ -232,7 +241,7 @@ def three():
         contents[i] = Corpus[i][1]
     # print(titles)#순서가 뒤바뀐 문서 set을 출력
 
-    print(len(contents))
+    # print(len(contents))
 
 # phase 2 형태소 분석기
 
@@ -285,16 +294,16 @@ def three():
 
     # LDA 결과 출력
     for i, topic_list in enumerate(ldamodel[corpus]):
-        if i == 5:
-            break
-        # print(i,'번째 문서의 topic 비율은',topic_list)
+        # if i == 5:
+            # break
+        print(i,'번째 문서의 topic 비율은',topic_list)
     # topic_like : 문서 당 최대 경향 토픽만을 산출하기
 
     topic_like = []
     for i, topic_list in enumerate(ldamodel[corpus]):  # 문서 당 토픽 확률 분포 출력
         # if i==5:
             # break
-        # print(i,'번째 문서의 최대 경향 topic',topic_list[0][0])
+        print(i,'번째 문서의 최대 경향 topic',topic_list[0][0])
         topic_like.append((i, topic_list[0][0]))
     # print(topic_like)
 
@@ -388,7 +397,32 @@ def three():
 # return
     with open('../../handong/UniCenter/src/assets/special_first/data.json', 'w', -1, "utf-8") as f:
         json.dump(sameTopicDocArrTitle, f, ensure_ascii=False)
-    return json.dumps(sameTopicDocArrTitle, ensure_ascii=False, indent=4)
+    print("documents topics: ")
+    """
+    코푸스의 길이 : 문서의 길이
+    for i in ldamodel.get_document_topics(corpus):
+        for j in i:
+            dictii[0]
+    
+    """
+    list = []
+    for i in ldamodel.get_document_topics(corpus):
+        for j,k in enumerate(i):
+            if j > 5:
+                break
+            list.append(dictionary.get(k[0]))
+        print(list)
+        list = []
+    # print(dictionary.get ( ldamodel.get_document_topics(corpus[8]) [0][0]))
+    # print("topic analysis: ")
+    # print(ldamodel.get_topic_terms(0))
+    print("show topics")
+    for i in ldamodel.show_topics():
+        print("documents ",i[0]," topics : ", i[1])
+    # print()
+    # return json.dumps(sameTopicDocArrTitle, ensure_ascii=False, indent=4)
+    return json.dumps("done", ensure_ascii=False, indent=4)
+
 
 
 @app.route('/wordrank', methods=['GET'])
