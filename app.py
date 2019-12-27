@@ -368,9 +368,14 @@ def three():
 @app.route('/wordrank', methods=['GET'])
 def wordRank():
 
+<<<<<<< HEAD
     # Retreive text from elasticsearch
     results = es.get(index='nkdboard', doc_type='nkdboard',
                      id='5db598c32cc6c120bac74bc9')
+=======
+    #Retreive text from elasticsearch
+    results = es.get(index='nkdboard', doc_type='nkdboard', id='5dc9fc5033ec463330e97e94')
+>>>>>>> f1267446f03c56f734835b50ddc61dd0cebdfccc
     texts = json.dumps(results['_source'], ensure_ascii=False)
 
     # split the text by sentences
@@ -426,11 +431,19 @@ def draw():
                     "must": {
                         "match_all": {}
                     },
+<<<<<<< HEAD
                     "filter": [
                         {"range": {
                             "dates": {
                                 "gte": "1950-01||/M",
                                 "lte": "1950-01||/M",
+=======
+                     "filter" : [
+                    {"range" : {
+                        "post_date" : {
+                                "gte" : "1950-01||/M",
+                                "lte" : "1950-01||/M",
+>>>>>>> f1267446f03c56f734835b50ddc61dd0cebdfccc
                                 "format": "yyyy-MM"
                             }
                         }}
@@ -439,10 +452,16 @@ def draw():
             }
         }
 
+<<<<<<< HEAD
         allDocs["query"]["bool"]["filter"][0]["range"]["dates"]["gte"] = str(
             startYear+(i*offset))+"-01||/M"
         allDocs["query"]["bool"]["filter"][0]["range"]["dates"]["lte"] = str(
             startYear+((i+1) * offset))+"-01||/M"
+=======
+     
+        allDocs["query"]["bool"]["filter"][0]["range"]["post_date"]["gte"]= str(startYear+(i*offset))+"-01||/M"
+        allDocs["query"]["bool"]["filter"][0]["range"]["post_date"]["lte"]= str(startYear+((i+1) *offset))+"-01||/M"
+>>>>>>> f1267446f03c56f734835b50ddc61dd0cebdfccc
 
         res = es.search(index="nkdboard", body=allDocs)
         numOfDocs = res["hits"]["total"]["value"]
@@ -450,6 +469,7 @@ def draw():
         print(numOfDocs)
 
         searchDocs = {
+<<<<<<< HEAD
             "query": {
                 "bool": {
                     "must": [
@@ -460,6 +480,18 @@ def draw():
                             "dates": {
                                 "gte": "1950-01||/M",
                                 "lte": "1950-01||/M",
+=======
+            "query" : {
+                "bool" : {
+                    "must" : [
+                        {"match" : {"post_body" : ""}}
+                    ],
+                     "filter" : [
+                    {"range" : {
+                        "post_date" : {
+                                "gte" : "1950-01||/M",
+                                "lte" : "1950-01||/M",
+>>>>>>> f1267446f03c56f734835b50ddc61dd0cebdfccc
                                 "format": "yyyy-MM"
                             }
                         }}
@@ -468,11 +500,17 @@ def draw():
             }
         }
 
+<<<<<<< HEAD
         searchDocs["query"]["bool"]["filter"][0]["range"]["dates"]["gte"] = str(
             startYear+(i*offset))+"-01||/M"
         searchDocs["query"]["bool"]["filter"][0]["range"]["dates"]["lte"] = str(
             startYear+((i+1) * offset))+"-01||/M"
         searchDocs["query"]["bool"]["must"][0]["match"]["bodys"] = keyword
+=======
+        searchDocs["query"]["bool"]["filter"][0]["range"]["post_date"]["gte"]= str(startYear+(i*offset))+"-01||/M"
+        searchDocs["query"]["bool"]["filter"][0]["range"]["post_date"]["lte"]= str(startYear+((i+1) *offset))+"-01||/M"
+        searchDocs["query"]["bool"]["must"][0]["match"]["post_body"] = keyword
+>>>>>>> f1267446f03c56f734835b50ddc61dd0cebdfccc
 
         res = es.search(index="nkdboard", body=searchDocs)
         numOfDocs = res["hits"]["total"]["value"]
@@ -526,7 +564,7 @@ def test():
     dayCntDic = {}
 
     for i in resultArr:
-        dateArr.append(i["_source"]["dates"])
+        dateArr.append(i["_source"]["post_date"])
 
     for i in dateArr:
         day = i[8:10]
