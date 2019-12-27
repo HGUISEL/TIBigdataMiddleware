@@ -1,4 +1,5 @@
 from elasticsearch import Elasticsearch
+import json
 
 backEndUrl = "http://203.252.103.86:8080"
 es = Elasticsearch(backEndUrl)
@@ -6,7 +7,7 @@ es = Elasticsearch(backEndUrl)
 INDEX = "nkdb"
 
 
-def esClean(doc):
+def esQuary(doc):
     data = es.search(index=INDEX, body=doc)
     # data = data['hits']['hits'][0]["_source"]
     data = data['hits']['hits']
@@ -33,7 +34,7 @@ def nkdbNoFile(SIZE):
         }
     }
 
-    return esClean(doc)
+    return esQuary(doc)
 
 
 # Query to ES New Version 191227
@@ -47,5 +48,32 @@ def nkdbFile(SIZE):
             }
         }
     }
-    # return esClean(doc)["file_extracted_content"]
-    return esClean(doc)
+    return esQuary(doc)
+
+
+def esGetDocs(sizeDoc):
+    # app = Flask(__name__)
+    # app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
+
+    corpusArr = []
+
+# query whith does not have a filed "file_extracted_content"
+    result = nkdbNoFile(sizeDoc)
+
+    for oneDoc in result:
+        oneDoc = oneDoc["_source"]
+        corpusArr.append((oneDoc["post_title"], oneDoc["post_body"]))
+
+# query whith DOES have a filed "file_extracted_content"
+    result = nkdbFile(sizeDoc)
+
+    for oneDoc in result:
+        oneDoc = oneDoc["_source"]
+        corpusArr.append((oneDoc["post_title"], oneDoc["file_extracted_content"]))
+
+
+# store data as a file
+    with open('rawData.json', 'w', -1, "utf-8") as f:
+            json.dump(corpusArr, f, ensure_ascii=False)
+
+    return 
