@@ -14,6 +14,7 @@ NUM_ITER = 10
 ES_INDEX = 'kolofoboard'
 titles = []
 contents = []
+start = None
 
 def DBG(whatToBbg):
     print("\n\n\n\n#####DEBUG-MODE#####")
@@ -35,7 +36,7 @@ def showTime(start):
     # print("time :", hours, " hours : ", minuts, " minutes : ", seconds, " seconds")
 
 # Phase 1 : ES에서 문서 쿼리 및 content와 title 분리 전처리
-def loadData(titles, contents):
+def loadData():
     #if internet connection failed to backend    
     import json
     import sys
@@ -67,12 +68,13 @@ def loadData(titles, contents):
 
     # print(titles)#순서가 뒤바뀐 문서 set을 출력
     print("문서 로드 완료!")
+    print("투입된 문서의 수 : %d" %(NUM_DOC))
     # print(len(contents))
 
     return NUM_DOC
 
 # phase 2 형태소 분석기 + 내용 없는 문서 지우기
-def dataPrePrcs(contents,NUM_DOC, start):
+def dataPrePrcs():
     
     # 형태소 분석기 instance
     okt = Okt()
@@ -110,15 +112,16 @@ def dataPrePrcs(contents,NUM_DOC, start):
     print("데이터 전처리 완료!")
     return tokenized_doc
 
-def readyData(titles, contents, start):
+def readyData():
+    global NUM_DOC
     # Phase 1 : ES에서 문서 쿼리 및 content와 title 분리 전처리
-    NUM_DOC = loadData(titles, contents)
+    NUM_DOC = loadData()
 
     # phase 2 형태소 분석기 + 내용 없는 문서 지우기
-    tokenized_doc = dataPrePrcs(contents, start)
-    return NUM_DOC, tokenized_doc
+    tokenized_doc = dataPrePrcs()
+    return tokenized_doc
 
-def runLda(titles, tokenized_doc, NUM_DOC, start):  
+def runLda(tokenized_doc):  
     # LDA 알고리즘
     from gensim import corpora
     dictionary = corpora.Dictionary(tokenized_doc)
@@ -154,7 +157,7 @@ def runLda(titles, tokenized_doc, NUM_DOC, start):
         print(i,'번째 문서의 최대 경향 topic',topic_list[0][0])
         topic_like.append((i, topic_list[0][0]))
     # print(topic_like)
-    DBG(type(topic_like))
+    # DBG(type(topic_like))
 
     # 같은 토픽 별로 정렬
     print()
@@ -250,7 +253,7 @@ def runLda(titles, tokenized_doc, NUM_DOC, start):
     
     with open('../../handong/UniCenter/src/assets/special_first/data.json', 'w', -1, "utf-8") as f:
         json.dump(sameTopicDocArrTitle, f, ensure_ascii=False)
-    print("documents topics: ")
+    # print("documents topics: ")
     """
     코푸스의 길이 : 문서의 길이
     for i in ldamodel.get_document_topics(corpus):
@@ -258,26 +261,29 @@ def runLda(titles, tokenized_doc, NUM_DOC, start):
             dictii[0]
 
     """
-    list = []
-    for i in ldamodel.get_document_topics(corpus):
-        for j,k in enumerate(i):
-            if j > 5:
-                break
-            list.append(dictionary.get(k[0]))
-        print(list)
-        list = []
+    # list = []
+    # for i in ldamodel.get_document_topics(corpus):
+    #     for j,k in enumerate(i):
+    #         if j > 5:
+    #             break
+    #         list.append(dictionary.get(k[0]))
+    #     print(list)
+    #     list = []
+
     # print(dictionary.get ( ldamodel.get_document_topics(corpus[8]) [0][0]))
     # print("topic analysis: ")
     # print(ldamodel.get_topic_terms(0))
+    print("\n")
     print("show topics")
     for i in ldamodel.show_topics():
         print("documents ",i[0]," topics : ", i[1])
     # print()
     # return json.dumps(sameTopicDocArrTitle, ensure_ascii=False, indent=4)
-    return json.dumps("done", ensure_ascii=False, indent=4)
+    # return json.dumps("done", ensure_ascii=False, indent=4)
+    # return json.dump(sameTopicDocArrTitle, f, ensure_ascii=False)
+    return sameTopicDocArrTitle
 
-
-    return
+    # return
 
 
 ################################################
@@ -289,9 +295,10 @@ LDA 잠재 디리클레 할당
 
 
 def LDA():
-    global NUM_DOC
+    # global NUM_DOC
 
     # time taken evaluation
+    global start
     start = time.time()
 
     # # variables
@@ -308,163 +315,11 @@ def LDA():
 
     # Phase 1 : ES에서 문서 쿼리 및 content와 title 분리 전처리
     # phase 2 형태소 분석기 + 내용 없는 문서 지우기
-    _NUM_DOC, tokenized_doc = readyData(titles, contents, start)
-    NUM_DOC = _NUM_DOC
+    tokenized_doc = readyData()
+   
     # LDA 알고리즘
-    runLda(tokenized_doc, NUM_DOC, start)
+    result = runLda(tokenized_doc)
+
+    print("Program Fin!")
     
-
-#     from gensim import corpora
-#     dictionary = corpora.Dictionary(tokenized_doc)
-#     corpus = [dictionary.doc2bow(text) for text in tokenized_doc]
-
-#     # print(len(corpus))
-#     # print(corpus)
-#     # print(dictionary[66])
-#     # len(dictionary)
-
-#     import gensim
-#     ldamodel = gensim.models.ldamodel.LdaModel(
-#         corpus, num_topics=NUM_TOPICS, id2word=dictionary, passes=NUM_ITER)
-#     topics = ldamodel.print_topics(num_words=10)
-
-#     for i, topic in topics:
-#         print(i,"번째 토픽을 구성하는 단어: ", topic)
-#         print()
-#     # print(ldamodel[corpus][0])
-
-#     # LDA 결과 출력
-#     for i, topic_list in enumerate(ldamodel[corpus]):
-#         # if i == 5:
-#             # break
-#         print(i,'번째 문서의 topic 비율은',topic_list)
-
-#     # topic_like : 문서 당 최대 경향 토픽만을 산출하기
-#     print()
-#     topic_like = []
-#     for i, topic_list in enumerate(ldamodel[corpus]):  # 문서 당 토픽 확률 분포 출력
-#         # if i==5:
-#             # break
-#         print(i,'번째 문서의 최대 경향 topic',topic_list[0][0])
-#         topic_like.append((i, topic_list[0][0]))
-#     # print(topic_like)
-#     DBG(type(topic_like))
-
-#     # 같은 토픽 별로 정렬
-#     print()
-#     from operator import itemgetter
-#     topic_like = sorted(topic_like, key=itemgetter(1))
-#     # print(topic_like)
-
-#     # 최대 경향 토픽을 기준으로 같은 토픽에 있는 문서들을 정리
-#     """
-#     [
-#         [//새로운 토픽
-#             0,1,2,3,4//문서 01,2,3,4가 같은 토픽
-#         ],
-#         [
-#             //새로운 토픽
-#             5,6,7,8,9// 문서 5,6,7,8,9가 같은 토픽
-#         ],
-#         ...
-#     ]
-#     """
-#     num_docs = len(topic_like)
-#     idx = -1
-#     sameTopicDocArr = []
-#     for i in range(num_docs):
-#         if idx != (topic_like[i][1]):  # 지금 보고 있는 문서번호가 새로운 주제 번호라면  새로운 토픽 종류 추가!
-#             sameTopicDocArr.append([topic_like[i][0]])
-#             idx = topic_like[i][1]  # 현재 관심있는 문서 번호 업데이트
-#         else:
-#             # 계속 보고 있던 주제라면 그대로 추가.
-#             sameTopicDocArr[-1].append(topic_like[i][0])
-#     # print(sameTopicDocArr)
-
-# # 우선순위!
-# # r같은 토픽에 있는 문서들의 내용을 묶어서 출력
-# # contents는 문서들의 내용을 가지고 있다.
-# # title은 문서의 제목을 가지고 있다.
-#     # for topic in sameTopicDocArr:
-#         # print("같은 주제들")
-#         # for doc in topic:
-#             # print(titles[doc])
-#         # print("")
-
-# # 동일한 주제에 있는 문서들의 내용을 묶어서 표현
-#     # for topic in sameTopicDocArr:
-#     # print("같은 주제들")
-#     # for doc in topic:
-#     #     print(contents[doc])
-#     # print("")
-
-
-# # 같은 토픽에 있는 문서들을 정리 + 문서의 제목과 함께 엮어서 pair으로 묶는다.
-#     """
-#     [
-#         [//새로운 토픽
-#             0,1,2,3,4//문서 01,2,3,4가 같은 토픽
-#         ],
-#         [
-#             //새로운 토픽
-#             5,6,7,8,9// 문서 5,6,7,8,9가 같은 토픽
-#         ],
-#         ...
-#     ]
-#     """
-
-#     num_docs = len(topic_like)
-#     idx = -1
-#     sameTopicDocArrTitle = []
-#     for i in range(num_docs):
-#         docIndex = topic_like[i][0]
-#         # 지금 보고 있는 문서번호가 관심 있는 주제에 속한다면, 같은 토픽에 추가! topic_like = [ (문서번호, 주제), (문서 번호, 주제),...]
-#         if idx != (topic_like[i][1]):
-#             # topic_like에서 i번째 문서의 번호
-#             sameTopicDocArrTitle.append([(docIndex, titles[docIndex],tokenized_doc[docIndex])])
-#             idx = topic_like[i][1]  # 현재 관심있는 문서 번호 업데이트
-#         else:
-#             # sameTopicDocArrTitle 맨 마지막에 새로운 문서번호로 추가!
-#             sameTopicDocArrTitle[-1].append((docIndex, titles[docIndex],tokenized_doc[docIndex]))
-#     # print(sameTopicDocArrTitle)
-
-# # time taken evaluation
-#     seconds = time.time() - start
-#     m, s = divmod(seconds, 60)
-#     h, m = divmod(m, 60)
-#     print("투입된 문서의 수 : %d\n설정된 Iteratin 수 : %d\n설전된 토픽의 수 : %d" %(NUM_DOC, NUM_ITER, NUM_TOPICS))
-#     print("%d 시간 : %02d 분 : %02d 초 " % (h, m, s))
-#     # minuts = seconds / 60
-#     # seconds = seconds % 2
-#     # hours = minuts / 60
-#     # minuts = minuts % 60
-#     # print("time :", hours, " hours : ", minuts, " minutes : ", seconds, " seconds")
-    
-    
-#     with open('../../handong/UniCenter/src/assets/special_first/data.json', 'w', -1, "utf-8") as f:
-#         json.dump(sameTopicDocArrTitle, f, ensure_ascii=False)
-#     print("documents topics: ")
-#     """
-#     코푸스의 길이 : 문서의 길이
-#     for i in ldamodel.get_document_topics(corpus):
-#         for j in i:
-#             dictii[0]
-
-#     """
-#     list = []
-#     for i in ldamodel.get_document_topics(corpus):
-#         for j,k in enumerate(i):
-#             if j > 5:
-#                 break
-#             list.append(dictionary.get(k[0]))
-#         print(list)
-#         list = []
-#     # print(dictionary.get ( ldamodel.get_document_topics(corpus[8]) [0][0]))
-#     # print("topic analysis: ")
-#     # print(ldamodel.get_topic_terms(0))
-#     print("show topics")
-#     for i in ldamodel.show_topics():
-#         print("documents ",i[0]," topics : ", i[1])
-#     # print()
-#     # return json.dumps(sameTopicDocArrTitle, ensure_ascii=False, indent=4)
-#     return json.dumps("done", ensure_ascii=False, indent=4)
+    return result

@@ -70,12 +70,16 @@ LDA 잠재 디리클레 할당 모듈화
 """
 ################################################
 # With LDA gensim library
+import LDA
 @app.route('/lda', methods=['GET'])
 def three():
     app = Flask(__name__)
     app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
+    
+    result = LDA.LDA()
+    # print
+    return json.dumps(result, ensure_ascii=False)
 
-    return
 
 
 
