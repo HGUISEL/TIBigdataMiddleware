@@ -35,7 +35,7 @@ def nkdbNoFile(SIZE):
     }
 
     return esQuary(doc)
-    
+
 def nkdbFile(SIZE):
     doc = {
         'size': SIZE,
@@ -45,8 +45,8 @@ def nkdbFile(SIZE):
             }
         }
     }
-    # return esClean(doc)["file_extracted_content"]
-    return esClean(doc)
+    # return esQuary(doc)["file_extracted_content"]
+    return esQuary(doc)
 
 # Query to ES New Version 191227
 # query whith does not have a filed "file_extracted_content"
@@ -111,38 +111,11 @@ def esGetDocs(sizeDoc):
                 corpus.append( (oneDoc["post_title"], oneDoc["file_extracted_content"]) )
 
     # print(corpus)
-    with open('rawData.json', 'w', -1, "utf-8") as f:
-        json.dump(corpusArr, f, ensure_ascii=False)
+    
     return corpus
 
-"""
 
-
-def esGetDocsNameBody(sizeDoc):
-    # app = Flask(__name__)
-    # app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
-
-    corpusArr = []
-
-# query whith does not have a filed "file_extracted_content"
-    result = nkdbNoFile(sizeDoc)
-
-    for oneDoc in result:
-        oneDoc = oneDoc["_source"]
-        corpusArr.append((oneDoc["post_title"], oneDoc["post_body"]))
-
-# query whith DOES have a filed "file_extracted_content"
-    result = nkdbFile(sizeDoc)
-
-    for oneDoc in result:
-        oneDoc = oneDoc["_source"]
-        corpusArr.append((oneDoc["post_title"], oneDoc["file_extracted_content"]))
-
-
-# store data as a file
-    with open('rawData.json', 'w', -1, "utf-8") as f:
-            json.dump(corpusArr, f, ensure_ascii=False)
-
-    return 
-"""
-
+def esGetDocsSave(sizeDoc):
+    data = esGetDocs(sizeDoc)
+    with open('./Datas/rawData'+str(sizeDoc)+".json", 'w', -1, "utf-8") as f:
+        json.dump(data, f, ensure_ascii=False)

@@ -3,6 +3,11 @@ import esFunc
 import time
 from konlpy.tag import Okt
 
+def DBG(whatToBbg):
+    print("\n\n\n\n#####DEBUG-MODE#####")
+    print(whatToBbg)
+    print("#####DEBUG-MODE#####\n\n\n\n")
+    return 
 
 # time taken evaluation
 def showTime(start):
@@ -41,18 +46,19 @@ def LDA():
     #if internet connection failed to backend    
     import json
     import sys
+    import traceback
     try :
+        raise(Exception)
         corpus = esFunc.esGetDocs(NUM_DOC)
         print("connection to Backend server succeed!")
     except:
-    # except Exception as e: # show the simplest error expresion...
-        # print("\n#######ERROR-REPORT#######\n",sys.exc_info(),"\n###################")
-        print('Error: {}. {}, line: {}'.format(sys.exc_info()[0],
-                                         sys.exc_info()[1],
-                                         sys.exc_info()[2].tb_lineno))
-        # print(e)
-        with open("rawData.json", "rt", encoding="UTF8") as f:
+        traceback.print_exc()
+
+        with open("./Datas/rawData3.json", "rt", encoding="UTF8") as f:
             corpus = json.load(f)
+        
+        # DBG(len(corpus))
+        NUM_DOC = len(corpus)
         print("connection to Backend server failed!")
 
     # 알고리즘 정확성을 확인하기 위해 일부러 문서 순서를 섞는다.
