@@ -1,75 +1,23 @@
 from datetime import datetime
 import esFunc
 import time
+from konlpy.tag import Okt
 
 
-
-def esGetDocs(sizeDoc):
-
-    contents = []
-    titles = []
-    corpus = []
-
-    ########################################################
-    """
-    파일이 있는 문서와 없는 문서가 있다.
-    둘 다 elasticsearch에서 가지고 오고 싶으면 both = 1
-    only Yes 첨부파일 : fileY = 1
-    아니면 fileN = 0
-
-    """
-    ########################################################
-
-    both = 0
-    fileY = 0
-
-    # dont touch this.
-    fileN = 1
-
-    if fileY == 1:
-        fileN = 0
-    else:
-        fileN = 1
-
-    if both == 1:
-        fileY = 1
-        fileN = 1
+# time taken evaluation
+def showTime(start):
+    seconds = time.time() - start
+    m, s = divmod(seconds, 60)
+    h, m = divmod(m, 60)
+    # print("투입된 문서의 수 : %d\n설정된 Iteratin 수 : %d\n설전된 토픽의 수 : %d" %(NUM_DOC, NUM_ITER, NUM_TOPICS))
+    print("%d 시간 : %02d 분 : %02d 초 " % (h, m, s))
+    # minuts = seconds / 60
+    # seconds = seconds % 2
+    # hours = minuts / 60
+    # minuts = minuts % 60
+    # print("time :", hours, " hours : ", minuts, " minutes : ", seconds, " seconds")
 
 
-# 전처리
-# 현재 상태 : 문서 뭉치 : [[제목,내용],[제목,내용],...]
-# LDA작업은 문서의 내용을 가지고 하므로, 제목과 내용을 분리시켜야 한다.
-# 제목을 다루는 array와 내용을 가지는 array을 따로 분리.
-# 아랫 단에서 제목과 문서의 빈도 수를 묶을 때 제목을 다시 사용.
-
-# 첨부파일이 없는 문서들
-    if fileN == 1:
-        result = esFunc.nkdbNoFile(sizeDoc)
-
-        for oneDoc in result:
-            oneDoc = oneDoc["_source"]
-            
-            if oneDoc["post_body"]:# 내용이 비어있는 문서는 취하지 않는다. if string ="", retrn false.
-                corpus.append(oneDoc["post_body"],(oneDoc["post_title"])
-                # contents.append(oneDoc["post_body"])
-                # titles.append((oneDoc["post_title"]))
-                
-
-
-# 첨부파일이 존재하는 문서들
-    if fileY == 1:
-        result = esFunc.nkdbFile(sizeDoc)
-
-        # 전처리 2 for 첨부파일이 있는 데이터
-        for oneDoc in result:
-            oneDoc = oneDoc["_source"]
-            
-            if oneDoc["file_extracted_content"]:# 내용이 비어있는 문서는 취하지 않는다. if string ="", retrn false.
-                corpus.append(oneDoc["file_extracted_content"], oneDoc["post_title"]))
-                # contents.append()
-                # titles.append(()
-
-    return corpus
 
 
 ################################################
@@ -82,105 +30,81 @@ def LDA():
     start = time.time()
 
     # variables
-    NUM_DOC = 30
+    NUM_DOC = 10
     NUM_TOPICS = 5
     NUM_ITER = 10
     # ES_INDEX = 'nkdboard'
     ES_INDEX = 'kolofoboard'
 
-    # Phase 1 : ES에서 문서 쿼리 및 content와 title 분리 전처리
+# Phase 1 : ES에서 문서 쿼리 및 content와 title 분리 전처리
+        
+    #if internet connection failed to backend    
+    import json
+    import sys
+    try :
+        corpus = esFunc.esGetDocs(NUM_DOC)
+        print("connection to Backend server succeed!")
+    except:
+    # except Exception as e: # show the simplest error expresion...
+        # print("\n#######ERROR-REPORT#######\n",sys.exc_info(),"\n###################")
+        print('Error: {}. {}, line: {}'.format(sys.exc_info()[0],
+                                         sys.exc_info()[1],
+                                         sys.exc_info()[2].tb_lineno))
+        # print(e)
+        with open("rawData.json", "rt", encoding="UTF8") as f:
+            corpus = json.load(f)
+        print("connection to Backend server failed!")
 
-
-    # Query to ES New Version 191227
-    # query whith does not have a filed "file_extracted_content"
-
-    # titles = esGetDocs()[0]
-    # contents = esGetDocs()[1]
-
-    # esFunc.n?NoFile
-    # results = es.search(index=ES_INDEX, body=doc)
-    # result = results['hits']['hits']
-
-
-    # query whith DOES have a filed "file_extracted_content"
-    # 쿼리 내용 : 첨부파일 있는 문서들을 가져온다
-    # doc = {
-    #     'size': NUM_DOC,  # NUM_DOC/2,
-    #     'query': {
-    #         "exists": {
-    #                 "field": "file_extracted_content"
-    #             }
-    #         # "bool": {
-    #             #     "must_not": {
-    #             #         "exists": {
-    #             #             "field": "file_extracted_content"
-    #             #         }
-
-    #             #     }
-    #             # }
-    #         }
-    #     }
-    # results = es.search(index=ES_INDEX, body=doc)
-    # result = results['hits']['hits']
-
-
-# 전처리 2 for 첨부파일이 있는 데이터
-    # for oneDoc in result:
-    #     oneDoc = oneDoc["_source"]
-    #     # 내용이 비어있는 문서는 취하지 않는다. if string ="", retrn false.
-    #     if oneDoc["file_extracted_content"]:
-    #         contents.append(oneDoc["file_extracted_content"])
-    #         titles.append((oneDoc["post_title"]))
-
-
-
-# 알고리즘 정확성을 확인하기 위해 일부러 문서 순서를 섞는다.
-    # Corpus
-    Corpus = esGetDocs(2)
-    print(type(Corpus))
-    # for i in range(len(contents)):
-    #     Corpus.append((titles[i], contents[i]))
-
+    # 알고리즘 정확성을 확인하기 위해 일부러 문서 순서를 섞는다.
     import random
-    random.shuffle(Corpus)
+    random.shuffle(corpus)
 
-    for i in range(len(contents)):
-        titles[i] = Corpus[i][0]
-        contents[i] = Corpus[i][1]
-    # print(titles)#순서가 뒤바뀐 문서 set을 출력
+    titles = []
+    contents = []
+    
+    for idx, doc in enumerate(corpus):
+        titles.append(doc[0])
+        contents.append(doc[1])
 
+    print(titles)#순서가 뒤바뀐 문서 set을 출력
+    
     # print(len(contents))
 
 
-# # phase 2 형태소 분석기
+# phase 2 형태소 분석기
 
-# # 형태소 분석기 instance
-#     okt = Okt()
+# 형태소 분석기 instance
+    okt = Okt()
 
-#     # colab에서 가져온 내용
-#     # contents=[]
-#     # title=[]
-#     # for d in data:
-#     #     if d[1]:#내용이 비어있는 문서는 취하지 않는다. if string ="", retrn false.
-#     #         contents.append(d[1])
-#     #         title.append(d[0])
+    # colab에서 가져온 내용
+    # contents=[]
+    # title=[]
+    # for d in data:
+    #     if d[1]:#내용이 비어있는 문서는 취하지 않는다. if string ="", retrn false.
+    #         contents.append(d[1])
+    #         title.append(d[0])
 
-#     # con = [ con for con in contents if con]#내용이 비어 있는 빈문서 지우기. 해당 index을 구해서 제목에서 그 부분도 지워야 한다.
-#     # print(len(contents))
-#     # print(contents)
+    # con = [ con for con in contents if con]#내용이 비어 있는 빈문서 지우기. 해당 index을 구해서 제목에서 그 부분도 지워야 한다.
+    # print(len(contents))
+    # print(contents)
 
-#     # print(title)
-#     tokenized_doc = [okt.nouns(contents[cnt]) for cnt in range(len(contents))]
-#     # print(tokenized_doc)
-#     # len(tokenized_docㅡ
-#     # len(tokenized_doc[0])
+    # print(title)
+    tokenized_doc = [okt.nouns(contents[cnt]) for cnt in range(len(contents))]
 
-# # 한글자 단어들 지우기!
-#     num_doc = len(tokenized_doc)
-#     for i in range(num_doc):
-#         tokenized_doc[i] = [word for word in tokenized_doc[i] if len(word) > 1]
-#     # len(tokenized_doc)
-#     # print(tokenized_doc)
+    print("형태소 분석 완료!")
+    print("투입된 문서의 수 : %d" %(NUM_DOC))
+    showTime(start)
+
+    # print(tokenized_doc)
+    # len(tokenized_docㅡ
+    # len(tokenized_doc[0])
+
+# 한글자 단어들 지우기!
+    # num_doc = len(tokenized_doc)
+    # for i in range(num_doc):
+    #     tokenized_doc[i] = [word for word in tokenized_doc[i] if len(word) > 1]
+    # # len(tokenized_doc)
+    # # print(tokenized_doc)
 
 # # LDA 알고리즘
 #     from gensim import corpora
