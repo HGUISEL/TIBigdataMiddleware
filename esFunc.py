@@ -14,17 +14,6 @@ def esQuary(doc):
 
     return data
 
-# def nkdbFile(SIZE):
-#     doc = {
-#         'size': SIZE,
-#         'query': {
-#             "exists": {
-#                 "field": "file_extracted_content"
-#             }
-#         }
-#     }
-#     return esQuary(doc)
-
 
 def nkdbNoFile(SIZE):
     doc = {
@@ -46,7 +35,18 @@ def nkdbNoFile(SIZE):
     }
 
     return esQuary(doc)
-
+    
+def nkdbFile(SIZE):
+    doc = {
+        'size': SIZE,
+        'query': {
+            "exists": {
+                "field": "file_extracted_content"
+            }
+        }
+    }
+    # return esClean(doc)["file_extracted_content"]
+    return esClean(doc)
 
 # Query to ES New Version 191227
 # query whith does not have a filed "file_extracted_content"
@@ -145,3 +145,4 @@ def esGetDocsNameBody(sizeDoc):
 
     return 
 """
+
