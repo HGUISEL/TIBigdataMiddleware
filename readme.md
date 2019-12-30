@@ -1,6 +1,6 @@
 ## flask Architecture
-app.py
-    ----esFunc.py
-    ----LDA.py
-    ----Datas
-        ----rawData.json
+app.py<br>
+    ----esFunc.py<br>
+    ----LDA.py<br>
+    ----Datas<br>
+    <t>----rawData.json<br>
