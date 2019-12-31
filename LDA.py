@@ -6,9 +6,12 @@ import json
 import sys
 import traceback
 
+# Frontend directory to store LDA result
+DIR_FE = "../Front_KUBIC/src/assets/special_first/data.json"
+
  # variables
-NUM_DOC = 10
-NUM_TOPICS = 5
+NUM_DOC = 5
+NUM_TOPICS = 3
 NUM_ITER = 10
 # ES_INDEX = 'nkdboard'
 ES_INDEX = 'kolofoboard'
@@ -48,7 +51,7 @@ def loadData():
     except:
         traceback.print_exc()
 
-        with open("./Datas/rawData3.json", "rt", encoding="UTF8") as f:
+        with open("./Datas/rawData.json", "rt", encoding="UTF8") as f:
             corpus = json.load(f)
         
         # DBG(len(corpus))
@@ -124,8 +127,8 @@ def readyData():
 def runLda(tokenized_doc):  
     # LDA 알고리즘
     from gensim import corpora
-    dictionary = corpora.Dictionary(tokenized_doc)
-    corpus = [dictionary.doc2bow(text) for text in tokenized_doc]
+    dictionary = corpora.Dictionary(tokenized_doc)#문서 별 각 단어에 고유 id 부여
+    corpus = [dictionary.doc2bow(text) for text in tokenized_doc]# 문서를 벡터화?
 
     # print(len(corpus))
     # print(corpus)
@@ -139,7 +142,6 @@ def runLda(tokenized_doc):
 
     for i, topic in topics:
         print(i,"번째 토픽을 구성하는 단어: ", topic)
-        print()
     # print(ldamodel[corpus][0])
 
     # LDA 결과 출력
@@ -148,22 +150,34 @@ def runLda(tokenized_doc):
             # break
         print(i,'번째 문서의 topic 비율은',topic_list)
 
-    # topic_like : 문서 당 최대 경향 토픽만을 산출하기
-    print()
-    topic_like = []
-    for i, topic_list in enumerate(ldamodel[corpus]):  # 문서 당 토픽 확률 분포 출력
-        # if i==5:
-            # break
-        print(i,'번째 문서의 최대 경향 topic',topic_list[0][0])
-        topic_like.append((i, topic_list[0][0]))
-    # print(topic_like)
-    # DBG(type(topic_like))
 
+
+
+
+
+    # topic_lkdhd : topic_likelyhood, 문서 당 최대 경향 토픽만을 산출하기
     # 같은 토픽 별로 정렬
     print()
+    topic_lkdhd = []
     from operator import itemgetter
-    topic_like = sorted(topic_like, key=itemgetter(1))
-    # print(topic_like)
+    for i, topic_list in enumerate(ldamodel[corpus]):
+        # if i == 5:
+            # break
+        topic_list = sorted(topic_list, key=itemgetter(1), reverse = True) 
+        # print(i,'번째 문서의 최대 경향 topic',topic_list[0][0])
+        print(i,'번째 문서의 최대 경향 순서 topic 정렬',topic_list)
+        topic_lkdhd.append((i, topic_list[0][0]))
+        # print(i,'번째 문서의 topic 비율은',topic_list)
+    # print(topic_lkdhd)
+
+    # print()
+    # for i, topic_list in enumerate(ldamodel[corpus]):  # 문서 당 토픽 확률 분포 출력
+        # if i==5:
+            # break
+    # print(topic_lkdhd)
+    # DBG(type(topic_lkdhd))
+
+   
 
     # 최대 경향 토픽을 기준으로 같은 토픽에 있는 문서들을 정리
     """
@@ -178,17 +192,17 @@ def runLda(tokenized_doc):
         ...
     ]
     """
-    num_docs = len(topic_like)
-    idx = -1
-    sameTopicDocArr = []
-    for i in range(num_docs):
-        if idx != (topic_like[i][1]):  # 지금 보고 있는 문서번호가 새로운 주제 번호라면  새로운 토픽 종류 추가!
-            sameTopicDocArr.append([topic_like[i][0]])
-            idx = topic_like[i][1]  # 현재 관심있는 문서 번호 업데이트
-        else:
-            # 계속 보고 있던 주제라면 그대로 추가.
-            sameTopicDocArr[-1].append(topic_like[i][0])
-    # print(sameTopicDocArr)
+    # num_docs = len(topic_lkdhd)
+    # idx = -1
+    # sameTopicDocArr = []
+    # for i in range(num_docs):
+    #     if idx != (topic_lkdhd[i][1]):  # 지금 보고 있는 문서번호가 새로운 주제 번호라면  새로운 토픽 종류 추가!
+    #         sameTopicDocArr.append([topic_lkdhd[i][0]])
+    #         idx = topic_lkdhd[i][1]  # 현재 관심있는 문서 번호 업데이트
+    #     else:
+    #         # 계속 보고 있던 주제라면 그대로 추가.
+    #         sameTopicDocArr[-1].append(topic_lkdhd[i][0])
+    # # print(sameTopicDocArr)
 
     # 우선순위!
     # r같은 토픽에 있는 문서들의 내용을 묶어서 출력
@@ -208,6 +222,10 @@ def runLda(tokenized_doc):
         # print("")
 
 
+    # tokenized_doc에는 개별 문서들의 단어들이 tokenized되어 저장되어 있다.
+
+
+
     # 같은 토픽에 있는 문서들을 정리 + 문서의 제목과 함께 엮어서 pair으로 묶는다.
     """
     [
@@ -222,16 +240,16 @@ def runLda(tokenized_doc):
     ]
     """
 
-    num_docs = len(topic_like)
+    num_docs = len(topic_lkdhd)
     idx = -1
     sameTopicDocArrTitle = []
     for i in range(num_docs):
-        docIndex = topic_like[i][0]
-        # 지금 보고 있는 문서번호가 관심 있는 주제에 속한다면, 같은 토픽에 추가! topic_like = [ (문서번호, 주제), (문서 번호, 주제),...]
-        if idx != (topic_like[i][1]):
-            # topic_like에서 i번째 문서의 번호
+        docIndex = topic_lkdhd[i][0]
+        # 지금 보고 있는 문서번호가 관심 있는 주제에 속한다면, 같은 토픽에 추가! topic_lkdhd = [ (문서번호, 주제), (문서 번호, 주제),...]
+        if idx != (topic_lkdhd[i][1]):
+            # topic_lkdhd에서 i번째 문서의 번호
             sameTopicDocArrTitle.append([(docIndex, titles[docIndex],tokenized_doc[docIndex])])
-            idx = topic_like[i][1]  # 현재 관심있는 문서 번호 업데이트
+            idx = topic_lkdhd[i][1]  # 현재 관심있는 문서 번호 업데이트
         else:
             # sameTopicDocArrTitle 맨 마지막에 새로운 문서번호로 추가!
             sameTopicDocArrTitle[-1].append((docIndex, titles[docIndex],tokenized_doc[docIndex]))
@@ -251,7 +269,7 @@ def runLda(tokenized_doc):
     # print("time :", hours, " hours : ", minuts, " minutes : ", seconds, " seconds")
     
     
-    with open('../../handong/UniCenter/src/assets/special_first/data.json', 'w', -1, "utf-8") as f:
+    with open(DIR_FE, 'w', -1, "utf-8") as f:
         json.dump(sameTopicDocArrTitle, f, ensure_ascii=False)
     # print("documents topics: ")
     """
