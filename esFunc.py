@@ -48,6 +48,10 @@ def nkdbFile(SIZE):
     # return esQuary(doc)["file_extracted_content"]
     return esQuary(doc)
 
+
+
+
+
 # Query to ES New Version 191227
 # query whith does not have a filed "file_extracted_content"
 
@@ -119,3 +123,15 @@ def esGetDocsSave(sizeDoc):
     data = esGetDocs(sizeDoc)
     with open('./Datas/rawData'+str(sizeDoc)+".json", 'w', -1, "utf-8") as f:
         json.dump(data, f, ensure_ascii=False)
+
+
+def esGetADoc(sizeDoc = 500):
+    corpus = esGetDocs(sizeDoc)
+    num = len(corpus)
+
+    import random
+    rd = random.randrange(0,num)
+    # print(rd)
+    doc = corpus[rd][1]
+    # print(doc)
+    return doc
