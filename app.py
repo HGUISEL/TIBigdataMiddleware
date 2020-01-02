@@ -87,12 +87,33 @@ def three():
 def wordRank():
 
     #Retreive text from elasticsearch
-    results = es.get(index='nkdboard', doc_type='nkdboard', id='5dc9fc5033ec463330e97e94')
-    texts = json.dumps(results['_source'], ensure_ascii=False)
+    # texts = esFunc.esGetADoc(1)
+    texts = """
+    Mukesh Ambani's Reliance Industries said it had been inviting people to sign up to its grocery delivery service.
 
+The company is aiming to use its massive mobile phone customer base as a springboard for the business.
+
+The new e-commerce venture could become a major challenger to India's existing online retail giants.
+
+Two subsidiaries of Mr Ambani's business empire, Reliance Retail and Reliance Jio, said they had soft-launched the venture, called JioMart.
+
+JioMart says it offers "free and express delivery" for a list of grocery goods, which currently numbers some 50,000 items.
+
+Unlike its rivals, JioMart will connect local stores to customers via an app rather than providing and delivering the goods itself.
+
+India's online grocery market is in its infancy - currently estimated to be worth around $870m a year, with just 0.15% of the population using such services.
+
+However, analysts predict the sector could see annual sales of around $14.5bn by 2023.
+"""
+    # print(results) 
+    # results = es.get(index='nkdb', doc_type='nkdb', id='5de110244b79a29a5f987f14')
+    # texts = json.dumps(results['_source'], ensure_ascii=False)
+ 
     # split the text by sentences
     sentences = re.split(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', texts)
 
+
+    print(sentences)
     # normalize the text
     texts = [normalize(text, number=True) for text in sentences]
 
