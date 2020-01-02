@@ -51,7 +51,7 @@ def loadData():
     except:
         traceback.print_exc()
 
-        with open("./Datas/rawData10.json", "rt", encoding="UTF8") as f:
+        with open("./Datas/rawData19.json", "rt", encoding="UTF8") as f:
             corpus = json.load(f)
         
         # DBG(len(corpus))
