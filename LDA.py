@@ -311,9 +311,25 @@ LDA 잠재 디리클레 할당
 
 """
 function : LDA()
-purpose : 자동으로 문서들을 주제들로 분류해준다.
+purpose : 자동으로 문서들을 주제들로 분류해준다. gensim 라이브러리 사용
 input : num of documents, num of iteration, num of topics
 output : 주제 별로 분류된 array
+[
+    [
+        문서1, "문서1 제목", ["문서1 단어1","문서1 단어2"],
+        문서X, "문서X 제목", ["문서X 단어1","문서X 단어2"],
+        문서Y, "문서Y 제목", ["문서Y 단어1","문서Y 단어2"]
+    ],
+    [
+        문서2, "문서2 제목", ["문서2 단어1","문서2 단어2"],
+        문서J, "문서J 제목", ["문서J 단어1","문서J 단어2"],
+        문서K, "문서K 제목", ["문서K 단어1","문서K 단어2"]
+    ],
+    [
+        같은 주제로 분류된 문서들...
+    ],
+    ...
+]
 """
 
 def LDA(ndoc = NUM_DOC, nit = NUM_ITER, ntp = NUM_TOPICS):
