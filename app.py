@@ -57,9 +57,9 @@ def esTest1227():
 # 191227 ES Test update : use esFunc module
 @app.route('/esTest', methods=['GET'])
 def esTest():
-    esFunc.esGetDocsNameBody(2)
+    result = esFunc.esGetDocs(9)
     
-    return json.dumps("download done! Directory : KUBC_flask folder ", ensure_ascii=False)
+    return json.dumps(result, ensure_ascii=False)
 
 
 
