@@ -81,7 +81,19 @@ def three():
     return json.dumps(result, ensure_ascii=False)
 
 
+@app.route('/textrank', methods=['GET'])
+def textRank():
+    # #############################TEXTRANK KOREAN WORK!###########################
+    # from gensim.summarization import keywords
+    # with open("krWl.txt", "r" ,encoding='utf-8') as f:
+    #     texts = f.read() 
+    #     print(f.read())
+    # print(keywords(texts,  scores=True))
+    import eslab as lab
+    result = lab.textrank()
+    # print(result)
 
+    return json.dumps(result, ensure_ascii=False)
 
 @app.route('/wordrank', methods=['GET'])
 def wordRank():

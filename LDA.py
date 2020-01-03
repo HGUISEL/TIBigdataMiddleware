@@ -14,7 +14,7 @@ NUM_DOC = 5
 NUM_TOPICS = 3
 NUM_ITER = 10
 # ES_INDEX = 'nkdboard'
-ES_INDEX = 'kolofoboard'
+# ES_INDEX = 'kolofoboard'
 titles = []
 contents = []
 start = None
@@ -301,16 +301,12 @@ def runLda(tokenized_doc):
     # return json.dump(sameTopicDocArrTitle, f, ensure_ascii=False)
     return sameTopicDocArrTitle
 
-    # return
-
 
 ################################################
 """
 LDA 잠재 디리클레 할당
 2019.12.27.
 """
-
-
 
 def LDA():
     # global NUM_DOC
