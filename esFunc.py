@@ -2,6 +2,7 @@ from elasticsearch import Elasticsearch
 import json
 
 backEndUrl = "http://203.252.103.86:8080"
+sampleDataDir = './raw data sample/'
 es = Elasticsearch(backEndUrl)
 
 INDEX = "nkdb"
@@ -117,5 +118,5 @@ def esGetDocs(sizeDoc):
 
 def esGetDocsSave(sizeDoc):
     data = esGetDocs(sizeDoc)
-    with open('./Datas/rawData'+str(sizeDoc)+".json", 'w', -1, "utf-8") as f:
+    with open(sampleDataDir +'rawData'+str(sizeDoc)+".json", 'w', -1, "utf-8") as f:
         json.dump(data, f, ensure_ascii=False)
