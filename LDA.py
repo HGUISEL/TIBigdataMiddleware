@@ -26,7 +26,8 @@ def DBG(whatToBbg):
     return 
 
 # time taken evaluation
-def showTime(start):
+def showTime():
+    global start
     seconds = time.time() - start
     m, s = divmod(seconds, 60)
     h, m = divmod(m, 60)
@@ -49,6 +50,8 @@ def loadData():
         # raise(Exception)
         corpus = esFunc.esGetDocs(NUM_DOC)
         print("connection to Backend server succeed!")
+        print(len(corpus),"개의 문서를 가져옴")# 문서의 수... 내용 없으면 뺀다...
+
     except:
         traceback.print_exc()
 
@@ -56,8 +59,12 @@ def loadData():
             corpus = json.load(f)
         
         # DBG(len(corpus))
-        NUM_DOC = len(corpus)
         print("connection to Backend server failed!")
+    showTime() 
+    NUM_DOC = len(corpus)
+    print("문서 로드 완료!")
+    print()
+
 
     # 알고리즘 정확성을 확인하기 위해 일부러 문서 순서를 섞는다.
     import random
@@ -68,7 +75,6 @@ def loadData():
         contents.append(doc[1])
 
     # print(titles)#순서가 뒤바뀐 문서 set을 출력
-    print("문서 로드 완료!")
     print("투입된 문서의 수 : %d" %(NUM_DOC))
     # print(len(contents))
 
@@ -84,7 +90,7 @@ def dataPrePrcs():
 
     print("형태소 분석 완료!")
     print("투입된 문서의 수 : %d" %(NUM_DOC))
-    showTime(start)
+    showTime()
 
     # 한글자 단어들 지우기!
     num_doc = len(tokenized_doc)
@@ -196,10 +202,10 @@ def runLda(tokenized_doc):
     
 
  
-    print("\n")
-    print("show topics")
-    for i in ldamodel.show_topics():
-        print("topic # ",i[0]," has words distribution : ", i[1])
+    # print("\n")
+    # print("show topics")
+    # for i in ldamodel.show_topics():
+    #     print("topic # ",i[0]," has words distribution : ", i[1])
     return sameTopicDocArrTitle
 
 
@@ -248,9 +254,6 @@ def LDA(ndoc = NUM_DOC, nit = NUM_ITER, ntp = NUM_TOPICS):
 
     # time taken evaluation
     global start
-    
-
-
 
     start = time.time()
 
