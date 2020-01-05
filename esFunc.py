@@ -8,12 +8,12 @@ es = Elasticsearch(backEndUrl)
 INDEX = "nkdb"
 ######################################################################################
 """
-function : genQuary()
-purpose : es 쿼리 조건 object을 만들어서 반환
-input : file : boolean : 파일이 있는 문서집단인지 아닌지 선택
-        size : int     : 문서의 수를 결정해준다. 조건에 맞는 문서의 수를 구할 때는 size = 0. 
-                          default size = 0.
-output : 쿼리 바디
+* **function : genQuary(boolean, [int])**
+  * prpose : es에 보낼 쿼리를 만든다.
+  * input : 
+    * file 있는 문서인지 없는 문서인지 선택
+    * 요청할 size 선택 : [0,infin]
+  * output : es 쿼리 body(object)
 """
 def genQuary( isFile, size = 0):
 
@@ -42,10 +42,10 @@ def genQuary( isFile, size = 0):
 
 ######################################################################################
 """
-function : esCount(quary conditino object)
-purpose : 주어진 조건에 해당하는 문서의 개수의 카운트를 한다.
-input : 쿼리 body json object
-output : 문서의 개수
+* **function : esCount(object)**
+  * purpose : 주어진 쿼리 바디에 해당하는 문서의 개수의 카운트를 한다.
+  * input : es 쿼리 body
+  * output : 문서의 개수(int)
 """
 def esCount(doc):
     count = es.count(index=INDEX, body=doc)
@@ -54,8 +54,10 @@ def esCount(doc):
 
 ######################################################################################
 """
-function : esQuaryRaw(doc)
-purpose : 가장 raw 한 상태의 결과를 리턴
+* **function : esQuaryRaw(object)**
+  * purpose : 전처리를 하지 않은 데이터 반환
+  * input : es 쿼리 body object
+  * output : json 형태의 데이터(object)
 """
 def esQuaryRaw(doc):
     data = es.search(index=INDEX, body=doc)
@@ -63,12 +65,10 @@ def esQuaryRaw(doc):
 
 ######################################################################################
 """
-function : esQuary(quary conditino object)
-purpose : 알고리즘에 맞게 직접 전처리할 수 있는 결과를 받아온다. 
-          es에 직접 쿼리를 보내고 간단한 전처리. 
-    아직 전처리가 끝난 상태는 아니다.
-input : 쿼리 body json object
-output : 간단한 전처리가 끝난 데이터
+* **function : esQuary(object)**
+  * purpose : 알고리즘에 맞게 수정할 수 있도록 기본적인 전처리만 끝낸 데이터 반환
+  * input : es 쿼리 body object
+  * output : json 형태의 데이터(object)
 """
 def esQuary(doc):
     data = esQuaryRaw(doc)
@@ -93,13 +93,15 @@ def esQuary(doc):
 
 ######################################################################################
 """
-function : nkdbFile(int)
-purpuse :  
-        알고리즘에 맞게 직접 전처리할 수 있는 결과를 받아온다. 
-        es에 파일이 없는 문서를 size 개수 만큼 요청
-        기본적인 전처리만 되어 있는 상태를 반환한다.
-input : int : 가지고 오려는 문서의 개수
-output : es quary output. 복잡하다... [_source][...]...
+* **function : nkdbNoFile(int)**
+  * purpose : es에 파일이 ***없는*** 문서를 요청한 수 만큼 문서 집단을 반환
+  * input : 가지고 오려는 문서의 개수(int)
+  * output : (문서 object array)
+            [
+              {"post_title" : "문서1제목","contents" : "문서1내용"},
+              {"post_title" : "문서2제목","contents" : "문서2내용"},
+              ...
+            ]  
 """
 def nkdbNoFile(SIZE):
     doc = genQuary(isFile = False, size = SIZE)
@@ -124,13 +126,15 @@ def nkdbNoFile(SIZE):
 ######################################################################################
 
 """
-function : nkdbFile(int)
-purpuse : 
-        알고리즘에 맞게 직접 전처리할 수 있는 결과를 받아온다. 
-        es에 파일이 있는 문서를 size 개수 만큼 요청
-        기본적인 전처리만 되어 있는 상태를 반환한다.
-input : int : 가지고 오려는 문서의 개수
-output : es quary output. 복잡하다... [_source][...]...
+* **function : nkdbFile(int)**
+  * purpose :es에 파일이 ***있는*** 문서를 요청한 수 만큼 문서 집단을 반환
+  * input : 가지고 오려는 문서의 개수(int)
+  * output : (문서 object array)
+            [
+              {"post_title" : "문서1제목","contents" : "문서1내용"},
+              {"post_title" : "문서2제목","contents" : "문서2내용"},
+              ...
+            ]  
 """
 def nkdbFile(SIZE):
     doc = genQuary(isFile = True, size = SIZE)
@@ -157,26 +161,20 @@ def nkdbFile(SIZE):
 ######################################################################################
 
 """
-function : esGetDocs(total)
-purpose : 
-            es에서 문서를 가지고 와서 문서 뭉치를 list으로 반환해준다.
-            total의 수 만큼 문서를 가져온다.
-            최대한 total의 수를 맞추려고 노력함.
-            문서 요청 수를 파일이 있는 문서와 
-            파일이 없는 문서로 문서로 요청 수를 
-            절반으로 나누어서 쿼리 요청.
-            DB에 있는 파일이 있는 문서의 수가 
-            요청한 요청 수 보다 적으면, 부족한 부분을
-            파일 없는 문서에 모두 요청.
-            
-input : int : 가지고 오고 싶은 문서의 개수
-
-output : (문서 object array)
-문서 dictionary array: [
-                            {"post_title" : "문서1제목","contents" : "문서1내용"},
-                            {"post_title" : "문서2제목","contents" : "문서2내용"},
-                            ...
-                        ]
+* **function : esGetDocs(int)**
+  * purpose : 첨부 파일이 있든 없든, 종류에 상관 없이 요청한 수 만큼 문서 집단을 반환
+  * input : 가지고 오려는 문서의 개수(int)
+  * output : (문서 object array)
+            [
+              {"post_title" : "문서1제목","contents" : "문서1내용"},
+              {"post_title" : "문서2제목","contents" : "문서2내용"},
+              ...
+            ]  
+  * NOTICE : 
+    * 전체 요청 수를 반으로 나눠서 파일이 있는 문서와 없는 문서에 각각 요청한다. 
+    * 첨부 파일이 있는 문서와 없는 문서의 수가 다르기 때문에, 
+    * 만약 한쪽에서 수가 모자라면 부족한 부분을 다른 쪽에서 채운다. 
+    * 만약 전체 DB에 있는 데이터보다 많은 양을 요청하면 DB에 저장되어 있는 수만 반환.
 """
 def esGetDocs(total):
     """
@@ -559,13 +557,14 @@ def esGetDocsV1(totalSize):
 
 ######################################################################################
 """
-function : esGetDocsSave(int, boolean)
-purpose : es에 connect하여 받은 argument 만큼의 문서를 가지고 온다. 
-            그리고 그 문서를 Data folder에 저장.
-input : 
-        dicSize : 가지고 오려는 문서의 수
-        default = 20. 만약 default arg을 받으면 파일 이름에 아무것도 붙이지 않는다.
-output : SAMP_DATA_DIR에 받은 데이터 크기의 이름을 붙여서 object array 파일로 저장.
+* **function : esGetDocsSave([int])**
+  * purpose : 첨부 파일이 있든 없든, 종류에 상관 없이 요청한 수 만큼 문서 집단을 반환해서 저장
+  * input : [optional : 가지고 오려는 문서의 개수(int)]
+  * NOTICE : 
+    * default = 20개의 문서를 가지고 옴. 
+    * 저장되는 위치는 ./raw data sample/
+    * 파일 이름 : rawData.json
+    * optional을 선택하면 데이터 파일 이름이 rawDataX.json으로 자동으로 저장
 """
 DEFAULT_SAVE = 20
 def esGetDocsSave(docSize = DEFAULT_SAVE):
@@ -583,11 +582,13 @@ def esGetDocsSave(docSize = DEFAULT_SAVE):
 ######################################################################################
 
 """
-function : esGetADoc()
-purpose : es에서 random을 선택된 문서를 1개를 가지고 온다. 
-input : int : 가지고 오려는 "후보" 문서의 수. default size = 500
-output : random하게 선택된 문서 1개의 내용 string type
-
+* **function : esGetADoc([int])**
+  * purpose : es에서 random을 선택된 문서를 1개를 가지고 온다.
+  * input : [optional : 가지고 오려는 "후보" 문서의 수. default size = 500]
+  * output : (문서 object array)
+            [
+              {"post_title" : "문서 제목","contents" : "문서 내용"}
+            ]  
 """
 def esGetADoc(docSize=500):
     print("call function : esGetADoc\n%d개의 문서 중 1개를 random으로 선택."%(docSize))
