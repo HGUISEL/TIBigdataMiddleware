@@ -143,12 +143,11 @@ def nkdbFile(SIZE):
     for oneDoc in result:
         # if oneDoc["file_extracted_content"]:# 내용이 비어있는 문서는 취하지 않는다. if string ="", retrn false.
         corpus.append(
-                        (
-                            {"post_title" : oneDoc["post_title"]},
-                            {"file_extracted_content" : oneDoc["file_extracted_content"]}
-                        )
+                        {
+                            "post_title" : oneDoc["post_title"],
+                            "file_extracted_content" : oneDoc["file_extracted_content"]
+                        }
                      )
-
     return corpus
 
 
