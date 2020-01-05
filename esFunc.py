@@ -171,10 +171,10 @@ purpose :
             
 input : int : 가지고 오고 싶은 문서의 개수
 
-output : (문서 dictionary array, 요청에 성공한 문서 수)
+output : (문서 object array)
 문서 dictionary array: [
-                            ("문서 제목", "문서 내용"),
-                            ("문서 제목2", "문서 내용2"),
+                            {"post_title" : "문서1제목","contents" : "문서1내용"},
+                            {"post_title" : "문서2제목","contents" : "문서2내용"},
                             ...
                         ]
 """
