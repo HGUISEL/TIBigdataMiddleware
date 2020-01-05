@@ -7,14 +7,14 @@ import sys
 import traceback
 
 # download LDA result if True
-DOWNLOAD_OPTION = True 
+DOWNLOAD_OPTION = False 
 # Frontend directory to store LDA result
 DIR_FE = "../Front_KUBIC/src/assets/special_first/data.json"
 
 #OFFLINE_MODE
 # use sample data in ./raw data sample, and not connet to ES.
 # without HGU-WLAN network, use raw data sample no matter this value
-BACKEND_CONCT = True
+BACKEND_CONCT = False
 
 #RANDOM_MODE
 # 알고리즘 정확성 확인을 위해서 문서를 불러와서 순서를 섞는다.
@@ -22,7 +22,7 @@ RANDOM_MODE = False
 
 
 # Sample Raw Data from Backend directory
-DIR_SMP_DATA = "./raw data sample/rawData100.json"
+DIR_SMP_DATA = "./raw data sample/rawData.json"
 
  # global variables
 NUM_DOC = 5
@@ -82,8 +82,8 @@ def loadData():
         random.shuffle(corpus)
 
     for idx, doc in enumerate(corpus):
-        titles.append(doc[0])
-        contents.append(doc[1])
+        titles.append(doc["post_title"])
+        contents.append(doc["content"])
 
     # print(titles)#순서가 뒤바뀐 문서 set을 출력
     print("투입된 문서의 수 : %d" %(NUM_DOC))
