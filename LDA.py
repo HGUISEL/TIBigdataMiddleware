@@ -56,15 +56,19 @@ def loadData():
     import sys
     import traceback
     global NUM_DOC
+    print("데이터 로드 중...")
     try :
         if BACKEND_CONCT == False:
-            raise(Exception)
+            raise Exception("서버 연결 불가")
         corpus = esFunc.esGetDocs(NUM_DOC)
         print("connection to Backend server succeed!")
         print(len(corpus),"개의 문서를 가져옴")# 문서의 수... 내용 없으면 뺀다...
 
-    except:
-        traceback.print_exc()
+    except Exception as e:
+        # traceback.print_exc()
+        print('Error: {}. {}'.format(sys.exc_info()[0],
+                sys.exc_info()[1]))
+        print("대체 파일 로드 from ",DIR_SMP_DATA)
 
         with open(DIR_SMP_DATA, "rt", encoding="UTF8") as f:
             corpus = json.load(f)
@@ -261,6 +265,7 @@ def LDA(ndoc = NUM_DOC, nit = NUM_ITER, ntp = NUM_TOPICS):
     contents = []
 
     # Phase 1 : READY DATA
+    print("LDA Algo 시작!")
     print("\n\n##########Phase 1 : READY DATA##########")
     tokenized_doc = readyData()
    
