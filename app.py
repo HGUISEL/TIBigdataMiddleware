@@ -87,7 +87,7 @@ def textRank():
 def wordRank():
 
     #Retreive text from elasticsearch
-    results = es.get(index='nkdboard', doc_type='nkdboard', id='5dc9fc5033ec463330e97e94')
+    results = es.get(index='nkdb', doc_type='nkdb', id='5dc9fc5033ec463330e97e94')
     texts = json.dumps(results['_source'], ensure_ascii=False)
 
     # split the text by sentences
@@ -160,7 +160,7 @@ def draw():
         allDocs["query"]["bool"]["filter"][0]["range"]["post_date"]["gte"]= str(startYear+(i*offset))+"-01||/M"
         allDocs["query"]["bool"]["filter"][0]["range"]["post_date"]["lte"]= str(startYear+((i+1) *offset))+"-01||/M"
 
-        res = es.search(index="nkdboard", body=allDocs)
+        res = es.search(index="nkdb", body=allDocs)
         numOfDocs = res["hits"]["total"]["value"]
         wholeDataArr.append(numOfDocs)
         print(numOfDocs)
@@ -188,7 +188,7 @@ def draw():
         searchDocs["query"]["bool"]["filter"][0]["range"]["post_date"]["lte"]= str(startYear+((i+1) *offset))+"-01||/M"
         searchDocs["query"]["bool"]["must"][0]["match"]["post_body"] = keyword
 
-        res = es.search(index="nkdboard", body=searchDocs)
+        res = es.search(index="nkdb", body=searchDocs)
         numOfDocs = res["hits"]["total"]["value"]
         searchDataArr.append(numOfDocs)
 
@@ -231,7 +231,7 @@ def test():
         "size": 1000,
     }
 
-    res = es.search(index="nkdboard", body=body)
+    res = es.search(index="nkdb", body=body)
 
     resultArr = res["hits"]["hits"]
 
