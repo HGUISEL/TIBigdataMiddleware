@@ -7,14 +7,14 @@ import sys
 import traceback
 
 # download LDA result if True
-DOWNLOAD_OPTION = False 
+DOWNLOAD_OPTION = True 
 # Frontend directory to store LDA result
 DIR_FE = "../Front_KUBIC/src/assets/special_first/data.json"
 
 #OFFLINE_MODE
 # use sample data in ./raw data sample, and not connet to ES.
 # without HGU-WLAN network, use raw data sample no matter this value
-BACKEND_CONCT = False
+BACKEND_CONCT = True
 
 #RANDOM_MODE
 # 알고리즘 정확성 확인을 위해서 문서를 불러와서 순서를 섞는다.
@@ -100,7 +100,7 @@ def dataPrePrcs():
     
     # 형태소 분석기 instance
     okt = Okt()
-
+    print("데이터 전처리 중... It may takes few hours...")
     tokenized_doc = [okt.nouns(contents[cnt]) for cnt in range(len(contents))]
 
     print("형태소 분석 완료!")
@@ -139,12 +139,7 @@ def runLda(tokenized_doc):
     topics = ldamodel.print_topics(num_words=10)
 
     print("\n\nLDA 분석 완료!")
-     # showTime()
-    seconds = time.time() - start
-    m, s = divmod(seconds, 60)
-    h, m = divmod(m, 60)
-    print("투입된 문서의 수 : %d\n설정된 Iteratin 수 : %d\n설정된 토픽의 수 : %d" %(NUM_DOC, NUM_ITER, NUM_TOPICS))
-    print("%d 시간 : %02d 분 : %02d 초 " % (h, m, s))
+    
 
 
     print("\n\n##########LDA 분석 결과##########")
@@ -263,9 +258,16 @@ def LDA(ndoc = NUM_DOC, nit = NUM_ITER, ntp = NUM_TOPICS):
 
     titles = []
     contents = []
+    print("LDA Algo 시작!")
+
+    print("##########Pahse 0 : CURRENT MODE:##########",
+         "\nDOWNLOAD OPTION : ", str(DOWNLOAD_OPTION),
+         "\nBACKEND CONNECTION OPTION : ", str(BACKEND_CONCT),
+         "\nRANDOM ORDER OPTION : ", str(RANDOM_MODE)
+         )
+
 
     # Phase 1 : READY DATA
-    print("LDA Algo 시작!")
     print("\n\n##########Phase 1 : READY DATA##########")
     tokenized_doc = readyData()
    
@@ -278,7 +280,12 @@ def LDA(ndoc = NUM_DOC, nit = NUM_ITER, ntp = NUM_TOPICS):
         with open(DIR_FE, 'w', -1, "utf-8") as f:
             json.dump(result, f, ensure_ascii=False)
 
-
+     # showTime()
+    seconds = time.time() - start
+    m, s = divmod(seconds, 60)
+    h, m = divmod(m, 60)
+    print("투입된 문서의 수 : %d\n설정된 Iteratin 수 : %d\n설정된 토픽의 수 : %d" %(NUM_DOC, NUM_ITER, NUM_TOPICS))
+    print("%d 시간 : %02d 분 : %02d 초 " % (h, m, s))
     print("LDA Analysis Fin!")
-    
+    print("Analysis Result has been stored at ",DIR_FE)
     return result
