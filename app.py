@@ -77,7 +77,7 @@ def textRank():
     #     texts = f.read() 
     #     print(f.read())
     # print(keywords(texts,  scores=True))
-    import eslab as lab
+    import textranklab as lab
     result = lab.textrank()
     # print(result)
 
