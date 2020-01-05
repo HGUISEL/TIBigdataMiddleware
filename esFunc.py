@@ -215,8 +215,7 @@ def esGetDocs(total):
     print("요청받은 문서의 수 : ", total)
 
     if total == 1:
-        doc = genQuary(False, 1)
-        esQuary()
+        return esGetADoc()
 
 
     if total % 2 == 0:
@@ -591,13 +590,14 @@ output : random하게 선택된 문서 1개의 내용 string type
 
 """
 def esGetADoc(docSize=500):
+    print("call function : esGetADoc\n%d개의 문서 중 1개를 random으로 선택."%(docSize))
     corpus = esGetDocs(docSize)
     num = len(corpus)
 
     import random
     rd = random.randrange(0, num)
-    print("\n\n%d개의 문서 중 %d번째 문서를 선택" %(num, rd))
+    print("%d번째 문서를 선택\n" %(rd))
     # print(rd)
-    doc = corpus[rd][1]
+    doc = corpus[rd]
     # print(doc)
     return doc
