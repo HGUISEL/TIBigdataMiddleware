@@ -69,8 +69,6 @@ def three():
     return json.dumps(result, ensure_ascii=False)
 
 
-
-
 @app.route('/wordrank', methods=['GET'])
 def wordRank():
 
