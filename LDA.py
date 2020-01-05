@@ -22,7 +22,7 @@ RANDOM_MODE = False
 
 
 # Sample Raw Data from Backend directory
-DIR_SMP_DATA = "./raw data sample/rawData100.json"
+DIR_SMP_DATA = "./raw data sample/rawData.json"
 
  # global variables
 NUM_DOC = 5
@@ -56,15 +56,19 @@ def loadData():
     import sys
     import traceback
     global NUM_DOC
+    print("데이터 로드 중...")
     try :
         if BACKEND_CONCT == False:
-            raise(Exception)
+            raise Exception("서버 연결 불가")
         corpus = esFunc.esGetDocs(NUM_DOC)
         print("connection to Backend server succeed!")
         print(len(corpus),"개의 문서를 가져옴")# 문서의 수... 내용 없으면 뺀다...
 
-    except:
-        traceback.print_exc()
+    except Exception as e:
+        # traceback.print_exc()
+        print('Error: {}. {}'.format(sys.exc_info()[0],
+                sys.exc_info()[1]))
+        print("대체 파일 로드 from ",DIR_SMP_DATA)
 
         with open(DIR_SMP_DATA, "rt", encoding="UTF8") as f:
             corpus = json.load(f)
@@ -82,8 +86,8 @@ def loadData():
         random.shuffle(corpus)
 
     for idx, doc in enumerate(corpus):
-        titles.append(doc[0])
-        contents.append(doc[1])
+        titles.append(doc["post_title"])
+        contents.append(doc["content"])
 
     # print(titles)#순서가 뒤바뀐 문서 set을 출력
     print("투입된 문서의 수 : %d" %(NUM_DOC))
@@ -96,7 +100,7 @@ def dataPrePrcs():
     
     # 형태소 분석기 instance
     okt = Okt()
-
+    print("데이터 전처리 중... It may takes few hours...")
     tokenized_doc = [okt.nouns(contents[cnt]) for cnt in range(len(contents))]
 
     print("형태소 분석 완료!")
@@ -135,12 +139,7 @@ def runLda(tokenized_doc):
     topics = ldamodel.print_topics(num_words=10)
 
     print("\n\nLDA 분석 완료!")
-     # showTime()
-    seconds = time.time() - start
-    m, s = divmod(seconds, 60)
-    h, m = divmod(m, 60)
-    print("투입된 문서의 수 : %d\n설정된 Iteratin 수 : %d\n설정된 토픽의 수 : %d" %(NUM_DOC, NUM_ITER, NUM_TOPICS))
-    print("%d 시간 : %02d 분 : %02d 초 " % (h, m, s))
+    
 
 
     print("\n\n##########LDA 분석 결과##########")
@@ -259,6 +258,14 @@ def LDA(ndoc = NUM_DOC, nit = NUM_ITER, ntp = NUM_TOPICS):
 
     titles = []
     contents = []
+    print("LDA Algo 시작!")
+
+    print("##########Pahse 0 : CURRENT MODE:##########",
+         "\nDOWNLOAD OPTION : ", str(DOWNLOAD_OPTION),
+         "\nBACKEND CONNECTION OPTION : ", str(BACKEND_CONCT),
+         "\nRANDOM ORDER OPTION : ", str(RANDOM_MODE)
+         )
+
 
     # Phase 1 : READY DATA
     print("\n\n##########Phase 1 : READY DATA##########")
@@ -273,7 +280,12 @@ def LDA(ndoc = NUM_DOC, nit = NUM_ITER, ntp = NUM_TOPICS):
         with open(DIR_FE, 'w', -1, "utf-8") as f:
             json.dump(result, f, ensure_ascii=False)
 
-
+     # showTime()
+    seconds = time.time() - start
+    m, s = divmod(seconds, 60)
+    h, m = divmod(m, 60)
+    print("투입된 문서의 수 : %d\n설정된 Iteratin 수 : %d\n설정된 토픽의 수 : %d" %(NUM_DOC, NUM_ITER, NUM_TOPICS))
+    print("%d 시간 : %02d 분 : %02d 초 " % (h, m, s))
     print("LDA Analysis Fin!")
-    
+    print("Analysis Result has been stored at ",DIR_FE)
     return result
