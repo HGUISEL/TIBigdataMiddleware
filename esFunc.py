@@ -2,7 +2,7 @@ from elasticsearch import Elasticsearch
 import json
 
 backEndUrl = "http://203.252.103.86:8080"
-sampleDataDir = './raw data sample/'
+SAMP_DATA_DIR = './raw data sample/'
 es = Elasticsearch(backEndUrl)
 
 INDEX = "nkdb"
@@ -54,6 +54,15 @@ def esCount(doc):
 
 ######################################################################################
 """
+function : esQuaryRaw(doc)
+purpose : 가장 raw 한 상태의 결과를 리턴
+"""
+def esQuaryRaw(doc):
+    data = es.search(index=INDEX, body=doc)
+    return data
+
+######################################################################################
+"""
 function : esQuary(quary conditino object)
 purpose : 알고리즘에 맞게 직접 전처리할 수 있는 결과를 받아온다. 
           es에 직접 쿼리를 보내고 간단한 전처리. 
@@ -62,7 +71,7 @@ input : 쿼리 body json object
 output : 간단한 전처리가 끝난 데이터
 """
 def esQuary(doc):
-    data = es.search(index=INDEX, body=doc)
+    data = esQuaryRaw(doc)
     # data = data['hits']['hits'][0]["_source"]
     data = data['hits']['hits']
     # numDoc = len(data)
@@ -78,14 +87,7 @@ def esQuary(doc):
     return corpus
 
 
-######################################################################################
-"""
-function : esQuaryRaw(doc)
-purpose : 가장 raw 한 상태의 결과를 리턴
-"""
-def esQuaryRaw(doc):
-    data = es.search(index=INDEX, body=doc)
-    return data
+
 
 
 
@@ -95,7 +97,7 @@ function : nkdbFile(int)
 purpuse :  
         알고리즘에 맞게 직접 전처리할 수 있는 결과를 받아온다. 
         es에 파일이 없는 문서를 size 개수 만큼 요청
-        아직 전처리가 안되어 있는 raw 상태를 반환한다.
+        기본적인 전처리만 되어 있는 상태를 반환한다.
 input : int : 가지고 오려는 문서의 개수
 output : es quary output. 복잡하다... [_source][...]...
 """
@@ -105,9 +107,18 @@ def nkdbNoFile(SIZE):
 
     numNoF = len(result)
     print("전달 받은 첨부파일이 없는 문서의 수 : ", numNoF)
+    corpus = []
 
-    return result
+    for oneDoc in result:
+    # if oneDoc["post_body"]:# 내용이 비어있는 문서는 취하지 않는다. if string ="", retrn false.
+        corpus.append(
+                        {
+                            "post_title" : oneDoc["post_title"],
+                            "content" : oneDoc["post_body"]
+                        }
+                     )
 
+    return corpus
 
 
 ######################################################################################
@@ -117,7 +128,7 @@ function : nkdbFile(int)
 purpuse : 
         알고리즘에 맞게 직접 전처리할 수 있는 결과를 받아온다. 
         es에 파일이 있는 문서를 size 개수 만큼 요청
-        아직 전처리가 안되어 있는 raw 상태를 반환한다.
+        기본적인 전처리만 되어 있는 상태를 반환한다.
 input : int : 가지고 오려는 문서의 개수
 output : es quary output. 복잡하다... [_source][...]...
 """
@@ -127,7 +138,17 @@ def nkdbFile(SIZE):
     numF = len(result)
     print("전달 받은 첨부파일이 있는 문서의 수 : ", numF)
 
-    return result
+    corpus = []
+
+    for oneDoc in result:
+        # if oneDoc["file_extracted_content"]:# 내용이 비어있는 문서는 취하지 않는다. if string ="", retrn false.
+        corpus.append(
+                        {
+                            "post_title" : oneDoc["post_title"],
+                            "content" : oneDoc["file_extracted_content"]
+                        }
+                     )
+    return corpus
 
 
 
@@ -193,6 +214,10 @@ def esGetDocs(total):
     """
     print("요청받은 문서의 수 : ", total)
 
+    if total == 1:
+        return esGetADoc()
+
+
     if total % 2 == 0:
             numReqNfDoc = numReqFileDoc = total / 2
     else:
@@ -236,11 +261,14 @@ def esGetDocs(total):
     # print(data)
     for oneDoc in data:
         # if oneDoc["file_extracted_content"]:# 내용이 비어있는 문서는 취하지 않는다. if string ="", retrn false.
-        corpus.append((oneDoc["post_title"], oneDoc["file_extracted_content"]))
+        # corpus.append((oneDoc["post_title"], oneDoc["file_extracted_content"]))
+        corpus.append(oneDoc)
     data = nkdbNoFile(numReqNfDoc)
     for oneDoc in data:
         # if oneDoc["post_body"]:# 내용이 비어있는 문서는 취하지 않는다. if string ="", retrn false.
-        corpus.append((oneDoc["post_title"], oneDoc["post_body"]))
+        # corpus.append((oneDoc["post_title"], oneDoc["post_body"]))
+        corpus.append(oneDoc)
+
     
     
     print("응답 받아 전송한 문서의 수 : ", total)
@@ -531,15 +559,20 @@ def esGetDocsV1(totalSize):
 
 ######################################################################################
 """
-function : esGetDocsSave(int)
+function : esGetDocsSave(int, boolean)
 purpose : es에 connect하여 받은 argument 만큼의 문서를 가지고 온다. 
             그리고 그 문서를 Data folder에 저장.
-input : int : 가지고 오려는 문서의 수
-output : None
+input : 
+        dicSize : 가지고 오려는 문서의 수
+        default = 20. 만약 default arg을 받으면 파일 이름에 아무것도 붙이지 않는다.
+output : SAMP_DATA_DIR에 받은 데이터 크기의 이름을 붙여서 object array 파일로 저장.
 """
-def esGetDocsSave(docSize):
+DEFAULT_SAVE = 20
+def esGetDocsSave(docSize = DEFAULT_SAVE):
     data = esGetDocs(docSize)
-    with open(sampleDataDir + 'rawData'+str(docSize)+".json", 'w', -1, "utf-8") as f:
+    if docSize == DEFAULT_SAVE:
+        docSize = ""
+    with open(SAMP_DATA_DIR + 'rawData'+str(docSize)+".json", 'w', -1, "utf-8") as f:
         json.dump(data, f, ensure_ascii=False)
 
 
@@ -557,13 +590,14 @@ output : random하게 선택된 문서 1개의 내용 string type
 
 """
 def esGetADoc(docSize=500):
+    print("call function : esGetADoc\n%d개의 문서 중 1개를 random으로 선택."%(docSize))
     corpus = esGetDocs(docSize)
     num = len(corpus)
 
     import random
     rd = random.randrange(0, num)
-    print("\n\n%d개의 문서 중 %d번째 문서를 선택" %(num, rd))
+    print("%d번째 문서를 선택\n" %(rd))
     # print(rd)
-    doc = corpus[rd][1]
+    doc = corpus[rd]
     # print(doc)
     return doc
