@@ -7,6 +7,7 @@ from collections import Counter
 from operator import itemgetter
 import time
 import json
+import esFunc
 
 # Sentence-tokenizer
 import re
