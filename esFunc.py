@@ -8,14 +8,14 @@ es = Elasticsearch(backEndUrl)
 INDEX = "nkdb"
 ######################################################################################
 """
-* **function : genQuary(boolean, [int])**
+* **function : genQuery(boolean, [int])**
   * prpose : es에 보낼 쿼리를 만든다.
   * input : 
     * file 있는 문서인지 없는 문서인지 선택
     * 요청할 size 선택 : [0,infin]
   * output : es 쿼리 body(object)
 """
-def genQuary( isFile, size = 0):
+def genQuery( isFile, size = 0):
 
     doc = {}
     if size > 0:
@@ -54,24 +54,24 @@ def esCount(doc):
 
 ######################################################################################
 """
-* **function : esQuaryRaw(object)**
+* **function : esQueryRaw(object)**
   * purpose : 전처리를 하지 않은 데이터 반환
   * input : es 쿼리 body object
   * output : json 형태의 데이터(object)
 """
-def esQuaryRaw(doc):
+def esQueryRaw(doc):
     data = es.search(index=INDEX, body=doc)
     return data
 
 ######################################################################################
 """
-* **function : esQuary(object)**
+* **function : esQuery(object)**
   * purpose : 알고리즘에 맞게 수정할 수 있도록 기본적인 전처리만 끝낸 데이터 반환
   * input : es 쿼리 body object
   * output : json 형태의 데이터(object)
 """
-def esQuary(doc):
-    data = esQuaryRaw(doc)
+def esQuery(doc):
+    data = esQueryRaw(doc)
     # data = data['hits']['hits'][0]["_source"]
     data = data['hits']['hits']
     # numDoc = len(data)
@@ -104,8 +104,8 @@ def esQuary(doc):
             ]  
 """
 def nkdbNoFile(SIZE):
-    doc = genQuary(isFile = False, size = SIZE)
-    result = esQuary(doc)
+    doc = genQuery(isFile = False, size = SIZE)
+    result = esQuery(doc)
 
     numNoF = len(result)
     print("전달 받은 첨부파일이 없는 문서의 수 : ", numNoF)
@@ -137,8 +137,8 @@ def nkdbNoFile(SIZE):
             ]  
 """
 def nkdbFile(SIZE):
-    doc = genQuary(isFile = True, size = SIZE)
-    result = esQuary(doc)    
+    doc = genQuery(isFile = True, size = SIZE)
+    result = esQuery(doc)    
     numF = len(result)
     print("전달 받은 첨부파일이 있는 문서의 수 : ", numF)
 
@@ -226,8 +226,8 @@ def esGetDocs(total):
 
     # numReqFileDoc 
     # numReqNfDoc 
-    numFileDoc = esCount(genQuary(isFile = True))
-    numNfDoc = esCount(genQuary(isFile = False))
+    numFileDoc = esCount(genQuery(isFile = True))
+    numNfDoc = esCount(genQuery(isFile = False))
 
     if numReqFileDoc > numFileDoc: #less (N)
             if numReqNfDoc <= numNfDoc: #cover (N - Y)
@@ -432,7 +432,7 @@ def esGetDocsV1(totalSize):
     
 
     # 첨부파일 있는 문서
-    doc = genQuary(isFile = True)
+    doc = genQuery(isFile = True)
     numFileDocSize = esCount(doc)
 
     if hasFileDocSize > numHasFileDoc:
@@ -451,7 +451,7 @@ def esGetDocsV1(totalSize):
 
 
     # 첨부 파일 없는 문서
-    # doc = genQuary(isFile = False)
+    # doc = genQuery(isFile = False)
     # numDoc = esCount(doc)
 
     # if docSize > numDoc:
@@ -492,7 +492,7 @@ def esGetDocsV1(totalSize):
 
 
 
-    # genQuary
+    # genQuery
 
 
     
@@ -519,11 +519,11 @@ def esGetDocsV1(totalSize):
     # 부족한 수 만큼 첨부 파일 없는 문서에서 더 가지고 와야
     # 요청한 문서의 수 맞출 수 있다.
     # """
-    # doc = genQuary(isFile = True) #파일 있는 문서 쿼리 바디 생성
+    # doc = genQuery(isFile = True) #파일 있는 문서 쿼리 바디 생성
     # numHasFileDoc = esCount(doc)# 파일 있는 문서의 수 
 
 
-    # doc = genQuary(isFile = False) # 파일 없는 문서 쿼리 바디 생성
+    # doc = genQuery(isFile = False) # 파일 없는 문서 쿼리 바디 생성
     # numDoc = esCount(doc) # 파일 없는 문서의 수
 
     # # DB에 있는 문서들 중
@@ -547,10 +547,10 @@ def esGetDocsV1(totalSize):
     # LDA작업은 문서의 내용을 가지고 하므로, 제목과 내용을 분리시켜야 한다.
     # 제목을 다루는 array와 내용을 가지는 array을 따로 분리.
     # 아랫 단에서 제목과 문서의 빈도 수를 묶을 때 제목을 다시 사용.
-    # data = esQuary(isFile = True, hasFileDocSize)
+    # data = esQuery(isFile = True, hasFileDocSize)
 
 
-    # data = esQuary(False, docSize)
+    # data = esQuery(False, docSize)
    
 
     return corpus, totalSize
