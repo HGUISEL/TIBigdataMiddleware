@@ -85,10 +85,17 @@ def loadData():
         import random
         random.shuffle(corpus)
 
+    count = 0
     for idx, doc in enumerate(corpus):
-        titles.append(doc["post_title"])
-        contents.append(doc["content"])
+        # print(doc["content"])
+        if doc["content"] != "":
+            titles.append(doc["post_title"])
+            contents.append(doc["content"])
+        else:
+            count += 1
 
+    NUM_DOC = len(contents)
+    print(count,"개의 문서가 내용이 없음")
     # print(titles)#순서가 뒤바뀐 문서 set을 출력
     print("투입된 문서의 수 : %d" %(NUM_DOC))
     # print(len(contents))
