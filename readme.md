@@ -9,7 +9,7 @@ app.py<br>
 ## esFunc.py
 ### elasticsearch quary functions module
 
-* **function : genQuary(boolean, [int])**
+* **function : genQuery(boolean, [int])**
   * prpose : es에 보낼 쿼리를 만든다.
   * input : 
     * file 있는 문서인지 없는 문서인지 선택
@@ -21,12 +21,12 @@ app.py<br>
   * input : es 쿼리 body
   * output : 문서의 개수(int)
 
-* **function : esQuaryRaw(object)**
+* **function : esQueryRaw(object)**
   * purpose : 전처리를 하지 않은 데이터 반환
   * input : es 쿼리 body object
   * output : json 형태의 데이터(object)
 
-* **function : esQuary(object)**
+* **function : esQuery(object)**
   * purpose : 알고리즘에 맞게 수정할 수 있도록 기본적인 전처리만 끝낸 데이터 반환
   * input : es 쿼리 body object
   * output : json 형태의 데이터(object)

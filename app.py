@@ -43,6 +43,7 @@ def hello():
 
 #########################################
 # 191227 ES Test update : use esFunc module
+import esFunc
 @app.route('/esTest', methods=['GET'])
 def esTest():
     result = esFunc.esGetDocs(9)
@@ -74,6 +75,7 @@ serverUrl = "http://203.252.103.86:8080"
 es = Elasticsearch(serverUrl)
 
 
+<<<<<<< HEAD
 def textRank():
     import json
     DIR_FE = "../Front_KUBIC/src/assets/homes_graph/data.json"
@@ -96,6 +98,9 @@ def textRank():
 
     return json.dumps(result, ensure_ascii=False)
 
+=======
+@app.route('/wordrank', methods=['GET'])
+>>>>>>> master
 def wordRank():
     #Retreive text from elasticsearch
     results = es.get(index='nkdb', doc_type='nkdb', id='5dc9fc5033ec463330e97e94')
