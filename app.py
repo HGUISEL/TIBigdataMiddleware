@@ -69,10 +69,35 @@ def three():
     # print
     return json.dumps(result, ensure_ascii=False)
 
+from elasticsearch import Elasticsearch
+serverUrl = "http://203.252.103.86:8080"
 
-@app.route('/wordrank', methods=['GET'])
+es = Elasticsearch(serverUrl)
+
+
+def textRank():
+    import json
+    DIR_FE = "../Front_KUBIC/src/assets/homes_graph/data.json"
+
+    from konlpy.tag import Okt
+    from gensim.summarization import keywords
+
+    okt = Okt()
+
+    with open("krWl.txt", "r" ,encoding='utf-8') as f:
+        texts = f.read() 
+        # print(f.read())
+    tokenized_doc = okt.nouns(texts)
+    tokenized_doc = ' '.join(tokenized_doc) 
+    print("형태소 분석 이후 단어 토큰의 개수",len(tokenized_doc)) 
+
+    result = keywords(tokenized_doc, words = 15 , scores=True)
+    with open(DIR_FE, 'w', -1, "utf-8") as f:
+        json.dump(result, f, ensure_ascii=False)
+
+    return json.dumps(result, ensure_ascii=False)
+
 def wordRank():
-
     #Retreive text from elasticsearch
     results = es.get(index='nkdb', doc_type='nkdb', id='5dc9fc5033ec463330e97e94')
     texts = json.dumps(results['_source'], ensure_ascii=False)
@@ -104,8 +129,16 @@ def wordRank():
         dic = {}
 
     return json.dumps(result, ensure_ascii=False)
+    # return result
 
-
+@app.route('/wordrank', methods=['GET'])
+def chseAlg():
+    try: 
+        result = wordRank()
+    except:
+        result =  textRank()
+    return result
+    
 @app.route('/keywordGraph', methods=['POST', 'GET'])
 @cross_origin(app)
 def draw():
