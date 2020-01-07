@@ -7,7 +7,7 @@ import sys
 import traceback
 
 # download LDA result if True
-DOWNLOAD_OPTION = True 
+DOWNLOAD_OPTION = False 
 # Frontend directory to store LDA result
 DIR_FE = "../Front_KUBIC/src/assets/special_first/data.json"
 
