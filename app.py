@@ -43,6 +43,7 @@ def hello():
 
 #########################################
 # 191227 ES Test update : use esFunc module
+import esFunc
 @app.route('/esTest', methods=['GET'])
 def esTest():
     result = esFunc.esGetDocs(9)
