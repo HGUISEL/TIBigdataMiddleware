@@ -112,10 +112,14 @@ def dataPrePrcs():
 
 
 """
-# functin : readData
-# purpose : 
-# input : 
-# output : 
+# functin : readData(int)
+# purpose : 데이터를 로드해서 형태소 분석 전처리까지 하고 데이터 반환
+# input : int : num_doc : 준비할 데이터의 수
+# output : [
+                ["문서1 단어1", "문서1 단어 2"],
+                ["문서1 단어1", "문서1 단어 2"],
+                ...
+           ]
 """
 def readyData(num_doc = NUM_DOC):
 
