@@ -1,5 +1,6 @@
 """
-TIME EVALUATE.py
+cmm.py
+purpose : common features for all algorithm usage
 
 """
 

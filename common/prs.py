@@ -126,7 +126,12 @@ def readyData(num_doc):
     # print("in readyData after if, ", dc.NUM_DOC)
 
     # Phase 1 : ES에서 문서 쿼리 및 content와 title 분리 전처리
+    
     print("\n\n#####Phase 1-1 : 데이터 로드 실행#####")
+    print("Data Loda CURRENT OPTION : ",
+          "\nBACKEND CONNECTION OPTION : ", str(BACKEND_CONCT),
+          "\nRANDOM ORDER OPTION : ", str(RANDOM_MODE)
+         )
     loadData()# load data and update dc.NUM_DOC
 
     # phase 2 형태소 분석기 + 내용 없는 문서 지우기

@@ -43,7 +43,7 @@ def hello():
 
 #########################################
 # 191227 ES Test update : use esFunc module
-import esFunc
+from common import esFunc
 @app.route('/esTest', methods=['GET'])
 def esTest():
     result = esFunc.esGetDocs(9)
@@ -65,7 +65,7 @@ def three():
     app = Flask(__name__)
     app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
     
-    result = LDA.LDA()
+    result = LDA.LDA(10)
     # print
     return json.dumps(result, ensure_ascii=False)
 
