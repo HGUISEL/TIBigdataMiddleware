@@ -122,6 +122,8 @@ def dataPrePrcs():
 def readyData(num_doc):
     # dc.NUM_DOC initialize
     dc.NUM_DOC = num_doc
+    dc.contents = []
+    dc.titles = []
     
     # print("in readyData after if, ", dc.NUM_DOC)
 
