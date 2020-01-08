@@ -15,6 +15,7 @@ import json
 
 # from common import globalVars
 from common import prs
+from common.cmm import showTime
 
 # from  common import globalVars
 
@@ -220,12 +221,14 @@ def runLda(titles, tokenized_doc):
         if topicIdx != (topic_lkdhd[i][1]):
             # topic_lkdhd에서 i번째 문서의 번호
             # print(docIndex, titles[docIndex],tokenized_doc[docIndex])
-            sameTopicDocArrTitle.append([(docIndex, dc.titles[docIndex],tokenized_doc[docIndex])])
+            sameTopicDocArrTitle.append([(docIndex, titles[docIndex],tokenized_doc[docIndex])])
             topicIdx = topic_lkdhd[i][1]  # 현재 관심있는 문서 번호 업데이트
         else:
             # sameTopicDocArrTitle 맨 마지막에 새로운 문서번호로 추가!
             sameTopicDocArrTitle[-1].append((docIndex, titles[docIndex],tokenized_doc[docIndex]))
     # print(sameTopicDocArrTitle)
+    
+    print("투입된 문서의 수 : %d\n설정된 Iteratin 수 : %d\n설정된 토픽의 수 : %d" %(num_docs, NUM_ITER, NUM_TOPICS))
 
     return sameTopicDocArrTitle
 
@@ -298,18 +301,16 @@ def LDA(ndoc, nit = NUM_ITER, ntp = NUM_TOPICS):
     # LDA 알고리즘
     print("\n\n##########Phase 2 : LDA Algo##########")
     result = runLda(titles, tokenized_doc)
-
+    # num_doc = 
 
     if DOWNLOAD_OPTION == True:
         with open(DIR_FE, 'w', -1, "utf-8") as f:
             json.dump(result, f, ensure_ascii=False)
 
      # showTime()
-    seconds = time.time() - start
-    m, s = divmod(seconds, 60)
-    h, m = divmod(m, 60)
-    print("투입된 문서의 수 : %d\n설정된 Iteratin 수 : %d\n설정된 토픽의 수 : %d" %(NUM_DOC, NUM_ITER, NUM_TOPICS))
-    print("%d 시간 : %02d 분 : %02d 초 " % (h, m, s))
+    showTime()
+    
+    if DOWNLOAD_OPTION == True:
+        print("Analysis Result has been stored at ",DIR_FE)
     print("LDA Analysis Fin!")
-    print("Analysis Result has been stored at ",DIR_FE)
     return result
