@@ -286,7 +286,7 @@ def LDA(ndoc, nit = NUM_ITER, ntp = NUM_TOPICS):
     # contents = []
     print("LDA Algo 시작!")
 
-    print("##########Pahse 0 : CURRENT MODE:##########",
+    print("##########Pahse 0 : LDA option:##########",
          "\nDOWNLOAD OPTION : ", str(DOWNLOAD_OPTION),
         #  "\nBACKEND CONNECTION OPTION : ", str(BACKEND_CONCT),
         #  "\nRANDOM ORDER OPTION : ", str(RANDOM_MODE)
@@ -301,7 +301,6 @@ def LDA(ndoc, nit = NUM_ITER, ntp = NUM_TOPICS):
     # LDA 알고리즘
     print("\n\n##########Phase 2 : LDA Algo##########")
     result = runLda(titles, tokenized_doc)
-    # num_doc = 
 
     if DOWNLOAD_OPTION == True:
         with open(DIR_FE, 'w', -1, "utf-8") as f:
