@@ -7,7 +7,7 @@ import sys
 import traceback
 
 # download LDA result if True
-DOWNLOAD_OPTION = True 
+DOWNLOAD_OPTION = False 
 # Frontend directory to store LDA result
 DIR_FE = "../Front_KUBIC/src/assets/special_first/data.json"
 
@@ -32,8 +32,9 @@ NUM_ITER = 10
 # ES_INDEX = 'kolofoboard'
 titles = []
 contents = []
+entires = []
 start = None
-
+corpus = []
 def DBG(whatToBbg):
     print("\n\n\n\n#####DEBUG-MODE#####")
     print(whatToBbg)
@@ -41,6 +42,7 @@ def DBG(whatToBbg):
     return 
 
 # time taken evaluation
+# 걸리는 시간 표시 함수 
 def showTime():
     global start
     seconds = time.time() - start
@@ -74,7 +76,7 @@ def loadData():
             corpus = json.load(f)
         
         print("connection to Backend server failed!")
-    showTime() 
+    #showTime() 
     NUM_DOC = len(corpus) # 전체 사용 가능한 문서 수를 업데이트한다. 
     print("문서 로드 완료!")
     print()
@@ -84,15 +86,22 @@ def loadData():
     if RANDOM_MODE == True:
         import random
         random.shuffle(corpus)
+    
 
+    count = 0
     for idx, doc in enumerate(corpus):
-        titles.append(doc["post_title"])
-        contents.append(doc["content"])
+        # print(doc["content"])
+        if doc["content"] != "":
+            titles.append(doc["post_title"])
+            contents.append(doc["content"])
+        else:
+            count += 1
 
+    NUM_DOC = len(contents)
+    print(count,"개의 문서가 내용이 없음")
     # print(titles)#순서가 뒤바뀐 문서 set을 출력
     print("투입된 문서의 수 : %d" %(NUM_DOC))
     # print(len(contents))
-
     return NUM_DOC
 
 # phase 2 형태소 분석기 + 내용 없는 문서 지우기
@@ -105,7 +114,7 @@ def dataPrePrcs():
 
     print("형태소 분석 완료!")
     print("투입된 문서의 수 : %d" %(NUM_DOC))
-    showTime()
+    #showTime()
 
     # 한글자 단어들 지우기!
     num_doc = len(tokenized_doc)
@@ -280,7 +289,7 @@ def LDA(ndoc = NUM_DOC, nit = NUM_ITER, ntp = NUM_TOPICS):
         with open(DIR_FE, 'w', -1, "utf-8") as f:
             json.dump(result, f, ensure_ascii=False)
 
-     # showTime()
+    #showTime()
     seconds = time.time() - start
     m, s = divmod(seconds, 60)
     h, m = divmod(m, 60)
