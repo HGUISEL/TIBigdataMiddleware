@@ -7,6 +7,7 @@ from collections import Counter
 from operator import itemgetter
 import time
 import json
+import esFunc, LDA , cloud
 
 # Sentence-tokenizer
 import re
@@ -38,7 +39,24 @@ CORS(app, support_credentials=True)
 @app.route("/hello")
 def hello():
     contents = json.dumps("한글")
+    print("========================================")
     return contents
+
+@app.route("/c1", methods=['GET'])
+def c1():
+    app = Flask(__name__)
+    app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
+    
+    testcloud = cloud.test1()
+    return json.dumps(testcloud, ensure_ascii=False)
+
+@app.route("/c2",methods=['GET'])
+def c2():
+    app = Flask(__name__)
+    app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
+    contents = cloud.test2()
+    #return json.dumps(contents, ensure_ascii=False)
+    return json.dumps(contents, ensure_ascii=False)
 
 
 #########################################
