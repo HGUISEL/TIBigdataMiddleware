@@ -1,12 +1,22 @@
-from datetime import datetime
-import esFunc
-import time
+# # from datetime import datetime
+# import esFunc
+# import time
 # from konlpy.tag import Okt
 import json
-import sys
-import traceback
+# import sys
+# import traceback
 
-from prs import *
+
+
+# aa.py
+# import os
+# import sys
+# sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+
+# from common import globalVars
+from common import prs
+
+# from  common import globalVars
 
 # download LDA result if True
 DOWNLOAD_OPTION = False 
@@ -34,7 +44,7 @@ NUM_ITER = 10
 # ES_INDEX = 'kolofoboard'
 # titles = []
 # contents = []
-start = None
+# start = None
 
 def DBG(whatToBbg):
     print("\n\n\n\n#####DEBUG-MODE#####")
@@ -135,7 +145,7 @@ def DBG(whatToBbg):
 #     tokenized_doc = dataPrePrcs()
 #     return tokenized_doc
 
-def runLda(tokenized_doc):  
+def runLda(titles, tokenized_doc):  
     # LDA 알고리즘
     print("LDA algo 분석 중...")
     from gensim import corpora
@@ -198,7 +208,9 @@ def runLda(tokenized_doc):
     """
 
     topic_lkdhd = sorted(topic_lkdhd, key=itemgetter(1), reverse = True)
-
+    # print(topic_lkdhd)
+    # print(titles)
+    # print(tokenized_doc)
     num_docs = len(topic_lkdhd)
     topicIdx = -1
     sameTopicDocArrTitle = []
@@ -207,7 +219,8 @@ def runLda(tokenized_doc):
         # 지금 보고 있는 문서번호가 관심 있는 주제에 속한다면, 같은 토픽에 추가! topic_lkdhd = [ (문서번호, 주제), (문서 번호, 주제),...]
         if topicIdx != (topic_lkdhd[i][1]):
             # topic_lkdhd에서 i번째 문서의 번호
-            sameTopicDocArrTitle.append([(docIndex, titles[docIndex],tokenized_doc[docIndex])])
+            # print(docIndex, titles[docIndex],tokenized_doc[docIndex])
+            sameTopicDocArrTitle.append([(docIndex, dc.titles[docIndex],tokenized_doc[docIndex])])
             topicIdx = topic_lkdhd[i][1]  # 현재 관심있는 문서 번호 업데이트
         else:
             # sameTopicDocArrTitle 맨 마지막에 새로운 문서번호로 추가!
@@ -246,24 +259,25 @@ output : 주제 별로 분류된 array
 ]
 """
 
-def LDA(ndoc = NUM_DOC, nit = NUM_ITER, ntp = NUM_TOPICS):
+def LDA(ndoc, nit = NUM_ITER, ntp = NUM_TOPICS):
 
     # change global value if get new params.
-    global NUM_DOC
+    # global NUM_DOC
     global NUM_ITER
     global NUM_TOPICS
 
-    if NUM_DOC != ndoc:
-        NUM_DOC = ndoc 
+    # if NUM_DOC != ndoc:
+    #     NUM_DOC = ndoc 
     if NUM_ITER != nit:
         NUM_ITER = nit 
     if NUM_TOPICS != ntp:
         NUM_TOPICS = ntp 
 
     # time taken evaluation
-    global start
+    # global start
 
-    start = time.time()
+    # start = time.time()
+
 
     # titles = []
     # contents = []
@@ -278,11 +292,12 @@ def LDA(ndoc = NUM_DOC, nit = NUM_ITER, ntp = NUM_TOPICS):
 
     # Phase 1 : READY DATA
     print("\n\n##########Phase 1 : READY DATA##########")
-    tokenized_doc = readyData()
+    (titles, tokenized_doc) = prs.readyData(ndoc)
    
+
     # LDA 알고리즘
     print("\n\n##########Phase 2 : LDA Algo##########")
-    result = runLda(tokenized_doc)
+    result = runLda(titles, tokenized_doc)
 
 
     if DOWNLOAD_OPTION == True:
