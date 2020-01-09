@@ -5,6 +5,7 @@ import traceback
 # from datetime import datetime
 import os
 import sys
+from cmm import SAMP_DATA_DIR
 
 file_dir = os.path.dirname(__file__)
 sys.path.append(file_dir)
@@ -25,8 +26,7 @@ BACKEND_CONCT = True
 
 
 
-# Sample Raw Data from Backend directory
-DIR_SMP_DATA = "./raw data sample/rawData.json"
+
 
 
 # print("in prs.py gloabl, dc.NUM_DOC : ", dc.NUM_DOC)

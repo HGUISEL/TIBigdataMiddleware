@@ -44,6 +44,8 @@ app.py
   * output : 문서들의 (id list, title list, 형태소 분석 단어 list) tuple
   * NOTICE : id, title, 형태소 list는 동일한 index을 가지고 있다.
 
+
+
 ## esFunc.py
 ### elasticsearch quary functions module
 
