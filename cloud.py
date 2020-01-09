@@ -16,19 +16,14 @@ import LDA
 """
 
 
-def test2():
+def getTFIDF(Numdoc):
     import gensim
     from gensim import corpora
     from gensim.models import TfidfModel
     from common import prs
     print("전처리 예시")
-    prs.readyData(5) ##현재 5개 문서 호출 
-    print("Data Ready End")
-    #num1 = LDA.loadData()
-    print("전처리 분석 시작")
-    tokenized_doc = prs.dataPrePrcs()
-    print("전처리 분석 완료")
-
+    (docTitle, tokenized_doc)= prs.readyData(Numdoc) ##현재 5개 문서 호출 
+    #(docId, docTitle, tokenized_doc)= prs.readyData(5) 로 바뀔 예정 
     #분리된 데이터를 dictionary화 
     dct = corpora.Dictionary(tokenized_doc)
     
@@ -44,23 +39,17 @@ def test2():
     #[(0, 0.004840388191324659), (1, 0.01275300075896571)... 의 형태 
     #print(vector)
 
-    
-    print(len(tokenized_doc))
-
-    print("#################")
-
     sortTF = []
     from operator import itemgetter
     for i, topic_list in enumerate(tfmodel[corpus]):
-        # if i == 5:
-            # break
         topic_list = sorted(topic_list, key=itemgetter(1), reverse = True) 
+       
         #print(i,'번째 문서의 TF/IDF 정렬',topic_list)
         sortTF.append((i, topic_list))
 
-    import numpy as np
+    #idf 값 깔끔하게 하는 용도 
+    import numpy as np 
 
-    
     resultTF = []
     #[n][1]을 하면 그 문서의 형태소 숫자를 알 수 있다.  
     ##현재 3번째 문서는 빈문서로 되어있음  유의
@@ -72,8 +61,6 @@ def test2():
         for wordid, value in section[1]:
             #print(dct[j],"-",np.around(value, decimals=5))
             mainTF.append((dct[wordid], np.around(value, decimals=5)))
-        #print(mainTF)
-        #print("-------------------------------------------")
         resultTF.append((i, mainTF))
         
 
@@ -81,8 +68,6 @@ def test2():
     with open(DIR_FE, 'w', -1, "utf-8") as f:
             json.dump(resultTF, f, ensure_ascii=False)
 
-    #print(sortTF[0])
-    
     return resultTF
-    #return dct.token2id
+    #return dct.token2id 
 
