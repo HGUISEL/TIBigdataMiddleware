@@ -84,7 +84,7 @@ def esQuery(doc):
     corpus = []
     for oneDoc in data:
         # oneDoc = oneDoc["_source"] # not work...
-        corpus.append( oneDoc["_source"] )
+        corpus.append( {"_id" :  oneDoc["_id"], "_source" : oneDoc["_source"] }  )
 
     return corpus
 
@@ -117,8 +117,9 @@ def nkdbNoFile(SIZE):
     # if oneDoc["post_body"]:# 내용이 비어있는 문서는 취하지 않는다. if string ="", retrn false.
         corpus.append(
                         {
-                            "post_title" : oneDoc["post_title"],
-                            "content" : oneDoc["post_body"]
+                            "_id" : oneDoc["_id"],
+                            "post_title" : oneDoc["_source"]["post_title"],
+                            "content" : oneDoc["_source"]["post_body"]
                         }
                      )
 
@@ -130,7 +131,7 @@ def nkdbNoFile(SIZE):
 """
 * **function : nkdbFile(int)**
   * purpose :es에 파일이 ***있는*** 문서를 요청한 수 만큼 문서 집단을 반환
-  * input : 가지고 오려는 문서의 개수(int)
+  * input : 가지고 오려는 문서의 개수(int) 
   * output : (문서 object array)
             [
               {"post_title" : "문서1제목","contents" : "문서1내용"},
@@ -150,8 +151,9 @@ def nkdbFile(SIZE):
         # if oneDoc["file_extracted_content"]:# 내용이 비어있는 문서는 취하지 않는다. if string ="", retrn false.
         corpus.append(
                         {
-                            "post_title" : oneDoc["post_title"],
-                            "content" : oneDoc["file_extracted_content"]
+                            "_id" : oneDoc["_id"],
+                            "post_title" : oneDoc["_source"]["post_title"],
+                            "content" : oneDoc["_source"]["file_extracted_content"]
                         }
                      )
     return corpus
