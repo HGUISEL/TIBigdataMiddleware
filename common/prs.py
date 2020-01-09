@@ -73,6 +73,7 @@ def loadData():
     for idx, doc in enumerate(corpus):
         # print(doc["content"])
         if doc["content"] != "":
+            dc.idList.append(doc["_id"])
             dc.titles.append(doc["post_title"])
             dc.contents.append(doc["content"])
         else:
@@ -124,6 +125,7 @@ def readyData(num_doc):
     dc.NUM_DOC = num_doc
     dc.contents = []
     dc.titles = []
+    dc.idList = []
     
     # print("in readyData after if, ", dc.NUM_DOC)
 
@@ -139,4 +141,4 @@ def readyData(num_doc):
     # phase 2 형태소 분석기 + 내용 없는 문서 지우기
     print("\n\n#####Phase 1-2 : 데이터 전처리 실행#####")
     tokenized_doc = dataPrePrcs()
-    return dc.titles, tokenized_doc
+    return dc.idList, dc.titles, tokenized_doc
