@@ -58,7 +58,7 @@ def c2():
 
 #########################################
 # 191227 ES Test update : use esFunc module
-import common
+from common import esFunc
 @app.route('/esTest', methods=['GET'])
 def esTest():
     result = esFunc.esGetDocs(9)
