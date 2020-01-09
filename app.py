@@ -43,19 +43,15 @@ def hello():
     print("========================================")
     return contents
 
-@app.route("/c1", methods=['GET'])
-def c1():
-    app = Flask(__name__)
-    app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
-    
-    testcloud = cloud.test1()
-    return json.dumps(testcloud, ensure_ascii=False)
 
 @app.route("/c2",methods=['GET'])
 def c2():
     app = Flask(__name__)
     app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
-    contents = cloud.test2()
+
+    Numdoc = 5
+
+    contents = cloud.getTFIDF(Numdoc)
     #return json.dumps(contents, ensure_ascii=False)
     return json.dumps(contents, ensure_ascii=False)
 
@@ -177,7 +173,7 @@ def draw():
     offset = 10
 
     # From 1950 ~ 2020
-    for i in range(0, 7):
+    for i in range(0, 8):
 
         allDocs = {
             "query": {
@@ -240,7 +236,7 @@ def draw():
     resultWholeArr = []
     resultSearchArr = []
     # Angular Data Format{ y: 150, label: "Dec" }
-    for i in range(0, 7):
+    for i in range(0, 8):
         dic["y"] = wholeDataArr[i]
         dic["label"] = str(startYear+(i*offset))
 
