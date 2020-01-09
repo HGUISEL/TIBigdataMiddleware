@@ -1,5 +1,5 @@
 from datetime import datetime
-import esFunc
+from common import esFunc
 import time
 from konlpy.tag import Okt
 import json
@@ -16,34 +16,17 @@ import LDA
 """
 
 
-def test1():
-    
-    print("전처리 예시")
-    sample1 = LDA.readyData()
-    print("Data Ready End")
-    num1 = LDA.loadData()
-    print("전처리 분석 시작")
-    tokenized_doc = LDA.dataPrePrcs()
-    print("전처리 분석 완료")
-    return tokenized_doc
-
-
-"""
-    test 1 에서 형태소 분석기를 거쳐 데이터를 가져오는것은 성공
-"""
-
-
 def test2():
     import gensim
     from gensim import corpora
     from gensim.models import TfidfModel
-    
+    from common import prs
     print("전처리 예시")
-    LDA.readyData()
+    prs.readyData(5) ##현재 5개 문서 호출 
     print("Data Ready End")
     #num1 = LDA.loadData()
     print("전처리 분석 시작")
-    tokenized_doc = LDA.dataPrePrcs()
+    tokenized_doc = prs.dataPrePrcs()
     print("전처리 분석 완료")
 
     #분리된 데이터를 dictionary화 
@@ -75,29 +58,31 @@ def test2():
         #print(i,'번째 문서의 TF/IDF 정렬',topic_list)
         sortTF.append((i, topic_list))
 
+    import numpy as np
 
-    mainTF = []
+    
     resultTF = []
     #[n][1]을 하면 그 문서의 형태소 숫자를 알 수 있다.  
     ##현재 3번째 문서는 빈문서로 되어있음  유의
     for i, section in sortTF:
         section = sortTF[i]
+        mainTF = []
         print(i, "번째 문서의 단어 수 : ", len(section[1]))
-        for j, sec2 in section[1]:
-            #print(dct[j],"-",sec2)
-            mainTF.append((dct[j], sec2))
+        
+        for wordid, value in section[1]:
+            #print(dct[j],"-",np.around(value, decimals=5))
+            mainTF.append((dct[wordid], np.around(value, decimals=5)))
+        #print(mainTF)
+        #print("-------------------------------------------")
         resultTF.append((i, mainTF))
+        
 
-    
     DIR_FE = "../TIBigdataFE/src/assets/homes_graph/data.json"
     with open(DIR_FE, 'w', -1, "utf-8") as f:
             json.dump(resultTF, f, ensure_ascii=False)
-    print(resultTF)
+
+    #print(sortTF[0])
     
-
-   
-
-
-
-    return dct.token2id
+    return resultTF
+    #return dct.token2id
 
