@@ -11,7 +11,8 @@ from datetime import datetime
 class DocCorpus:
     NUM_DOC = 0
     titles = []
-    contents = []    
+    contents = []
+    idList = []    
     # def __init__ (self):
     #     self.NUM_DOC = 5
     #     self.titles = []
