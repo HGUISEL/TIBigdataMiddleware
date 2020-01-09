@@ -7,6 +7,9 @@ purpose : common features for all algorithm usage
 import time
 from datetime import datetime
 
+# Sample Raw Data from Backend directory
+SAMP_DATA_DIR = '../raw data sample/'
+
 # global variables
 class DocCorpus:
     NUM_DOC = 0
