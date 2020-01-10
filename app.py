@@ -8,8 +8,14 @@ from collections import Counter
 from operator import itemgetter
 import time
 import json
+<<<<<<< HEAD
 import LDA , cloud
 from common import esFunc
+=======
+import sys
+sys.path.insert(0, './common')
+
+>>>>>>> 22b81b15d34d60f7e945a7d1bd57dd0cbc6730d8
 # Sentence-tokenizer
 import re
 from common import prs
