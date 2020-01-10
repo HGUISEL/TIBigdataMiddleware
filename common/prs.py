@@ -26,7 +26,10 @@ from cmm import SAMP_DATA_DIR
 # from cmm import DocCorpus as dc
 import esFunc
 # import time
-from eunjeon import Mecab
+
+import os
+if os.name == "nt":
+    from eunjeon import Mecab
 
 NUM_DOC = 0
 # titles = []
