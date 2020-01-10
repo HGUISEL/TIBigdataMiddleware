@@ -1,10 +1,10 @@
 from elasticsearch import Elasticsearch
 import json
+from cmm import SAMP_DATA_DIR
 
 
 
 backEndUrl = "http://203.252.103.86:8080"
-SAMP_DATA_DIR = './raw data sample/'
 es = Elasticsearch(backEndUrl)
 
 INDEX = "nkdb"
