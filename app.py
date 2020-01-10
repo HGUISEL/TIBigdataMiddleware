@@ -8,6 +8,8 @@ from collections import Counter
 from operator import itemgetter
 import time
 import json
+import sys
+sys.path.insert(0, './common')
 
 # Sentence-tokenizer
 import re
