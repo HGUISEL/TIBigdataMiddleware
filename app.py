@@ -72,10 +72,7 @@ def three():
     # print
     return json.dumps(result, ensure_ascii=False)
 
-from elasticsearch import Elasticsearch
-serverUrl = "http://203.252.103.86:8080"
 
-es = Elasticsearch(serverUrl)
 
 
 def textRank():
