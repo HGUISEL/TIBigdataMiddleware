@@ -12,6 +12,7 @@ import LDA , cloud
 from common import esFunc
 # Sentence-tokenizer
 import re
+from common import prs
 
 # Implement KR-Wordrank
 from krwordrank.hangle import normalize
@@ -37,9 +38,12 @@ api = Api(app)
 CORS(app, support_credentials=True)
 
 
-@app.route("/hello")
+@app.route("/hello",methods=['GET'])
 def hello():
-    contents = json.dumps("한글")
+    app = Flask(__name__)
+    app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
+    contents = []
+    contents = prs.kai()
     print("========================================")
     return contents
 
@@ -55,6 +59,16 @@ def c2():
     #return json.dumps(contents, ensure_ascii=False)
     return json.dumps(contents, ensure_ascii=False)
 
+@app.route("/e1",methods=['GET'])
+def e1():
+    app = Flask(__name__)
+    app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
+
+    Numdoc = 600
+
+    contents = cloud.getTable(Numdoc)
+    #return json.dumps(contents, ensure_ascii=False)
+    return json.dumps(contents, ensure_ascii=False)
 
 #########################################
 # 191227 ES Test update : use esFunc module
