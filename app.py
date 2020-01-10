@@ -3,7 +3,6 @@ from flask import Flask, jsonify, request, Response
 from flask_restful import Resource, Api
 from elasticsearch import Elasticsearch
 from flask_cors import CORS, cross_origin
-from konlpy.tag import Okt
 from collections import Counter
 from operator import itemgetter
 import time
@@ -327,4 +326,4 @@ def after_request(response):
     return response
 
 
-app.run(port=5000, debug=True)
+app.run(host="0.0.0.0",port=5000, debug=True)
