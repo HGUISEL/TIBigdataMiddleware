@@ -22,7 +22,7 @@ from common import prs
 # download LDA result if True
 DOWNLOAD_OPTION = False 
 # Frontend directory to store LDA result
-DIR_FE = "../TIBigdataFE/src/assets/special_first/data.json"
+from common.cmm import LDA_DIR_FE
 
 # #OFFLINE_MODE
 # # use sample data in ./raw data sample, and not connet to ES.
@@ -63,8 +63,21 @@ def runLda(titles, tokenized_doc):
     import gensim
     ldamodel = gensim.models.ldamodel.LdaModel(
         corpus, num_topics=NUM_TOPICS, id2word=dictionary, passes=NUM_ITER)
+    
+    
+    from gensim.test.utils import datapath
+
+    # Save model to disk.
+    temp_file = datapath("model")
+    ldamodel.save(temp_file)
+
+    # Load a potentially pretrained model from disk.
+    ldamodel = gensim.models.ldamodel.LdaModel.load(temp_file)
+
+
+
     # topics = ldamodel.print_topics(num_words=10)
-    topics = ldamodel.show_topics(num_words=10)
+    topics = ldamodel.show_topics(num_words=10, formatted=False)
     print("\n\nLDA 분석 완료!")
     
 
@@ -72,10 +85,12 @@ def runLda(titles, tokenized_doc):
     print("\n\n##########LDA 분석 결과##########")
     for i, topic in topics:
         print(i,"번째 토픽을 구성하는 단어: ", topic)
+    
+    # print(topics)
 
     # LDA 결과 출력
-    for i, topic_list in enumerate(ldamodel[corpus]):
-        print(i,'번째 문서의 topic 비율은',topic_list)
+    # for i, topic_list in enumerate(ldamodel[corpus]):
+        # print(i,'번째 문서의 topic 비율은',topic_list)
 
 
 
@@ -122,23 +137,55 @@ def runLda(titles, tokenized_doc):
     num_docs = len(topic_lkdhd)
     topicIdx = -1
     sameTopicDocArrTitle = []
+    # arr = []
+
     for i in range(num_docs):
+        # topics[i]
         docIndex = topic_lkdhd[i][0]
         # 지금 보고 있는 문서번호가 관심 있는 주제에 속한다면, 같은 토픽에 추가! topic_lkdhd = [ (문서번호, 주제), (문서 번호, 주제),...]
+        # 새로운 토픽으로 이동.
         if topicIdx != (topic_lkdhd[i][1]):
             # topic_lkdhd에서 i번째 문서의 번호
             # print(docIndex, titles[docIndex],tokenized_doc[docIndex])
-            sameTopicDocArrTitle.append([(docIndex, titles[docIndex],tokenized_doc[docIndex])])
+     
+            sameTopicDocArrTitle.append([{"doc": docIndex, "title": titles[docIndex], "words" : tokenized_doc[docIndex]}])
             topicIdx = topic_lkdhd[i][1]  # 현재 관심있는 문서 번호 업데이트
         else:
             # sameTopicDocArrTitle 맨 마지막에 새로운 문서번호로 추가!
-            sameTopicDocArrTitle[-1].append((docIndex, titles[docIndex],tokenized_doc[docIndex]))
+
+            sameTopicDocArrTitle[-1].append({"doc": docIndex, "title": titles[docIndex], "words" : tokenized_doc[docIndex]})
     # print(sameTopicDocArrTitle)
+
+    ldaResult = []
+    for topicIdx, wvtArr in topics:
+        arr = []
+        for w,v in wvtArr:
+            arr.append(w)
+        ldaResult.append({"topic" : {"topic_num":topicIdx, "words" : arr}, "doc" : sameTopicDocArrTitle[topicIdx]})
+
+    # topicIdx = topic_lkdhd[i][1]  # 현재 관심있는 문서 번호 업데이트
+    # wordListTpl = topics[topicIdx][1]
+    # wordList=[]
+    # for wordTpl in wordListTpl:
+    #     print(wordTpl[0])
+    #     wordList.append(wordTpl[0])
+    # {"topic" : {
+    #             "topic_num" : topicIdx,
+    #                 "words" : wordList
+    #             },
+    #     "docs" : arr
+
+    # }
+    print("\n\n\n\n\n")
+    print(ldaResult)
+
     
+   
+    print("\n\n\n\n\n")
     print("투입된 문서의 수 : %d\n설정된 Iteratin 수 : %d\n설정된 토픽의 수 : %d" %(num_docs, NUM_ITER, NUM_TOPICS))
 
-    return sameTopicDocArrTitle
-
+    # return sameTopicDocArrlTitle
+    return ldaResult
 
 ################################################
 """
@@ -199,13 +246,33 @@ def LDA(ndoc, nit = NUM_ITER, ntp = NUM_TOPICS):
     result = runLda(titles, tokenized_doc)
 
     if DOWNLOAD_OPTION == True:
-        with open(DIR_FE, 'w', -1, "utf-8") as f:
+        with open(LDA_DIR_FE, 'w', -1, "utf-8") as f:
             json.dump(result, f, ensure_ascii=False)
+
+
+    # import os
+    # currDirPath = os.getcwd()
+    # currDir = os.path.split(currDirPath)[1]
+    # # parentDirPath = os.path.split(currDirPath)[0]
+    # # parDir = os.path.split(parentDirPath)[1]
+    # if currDir != "common":
+    #     # try:
+    #     if currDir == "TIBigdataMiddleware":
+    #         os.chdir(currDirPath+"\\common")
+    #         print("dir path adjusted!")
+    #     else:
+    #         print("dir path error! check file cmm.py")
+
+         
+    with open("./test.json", 'w', -1, "utf-8") as f:
+        json.dump(result, f, ensure_ascii=False)
+
+
 
      # showTime()
     showTime()
     
     if DOWNLOAD_OPTION == True:
-        print("Analysis Result has been stored at ",DIR_FE)
+        print("Analysis Result has been stored at ",LDA_DIR_FE)
     print("LDA Analysis Fin!")
     return result
