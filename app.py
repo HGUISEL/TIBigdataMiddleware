@@ -8,7 +8,10 @@ from operator import itemgetter
 import time
 import json
 import sys
-from eunjeon import Mecab
+
+import os
+if os.name == "nt":
+    from eunjeon import Mecab
 
 sys.path.insert(0, './common')
 
