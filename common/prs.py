@@ -122,8 +122,13 @@ def loadData():
 def dataPrePrcs(contents):
     # 형태소 분석기 instance
     # okt = Okt()
+    # tokenized_doc = [okt.nouns(contents[cnt]) for cnt in range(len(contents))]
+
+    #mecab test
+    from eunjeon import Mecab
+    tagger = Mecab()
     print("데이터 전처리 중... It may takes few hours...")
-    tokenized_doc = [okt.nouns(contents[cnt]) for cnt in range(len(contents))]
+    tokenized_doc = [tagger.nouns(contents[cnt]) for cnt in range(len(contents))]
 
     print("형태소 분석 완료!")
     print("투입된 문서의 수 : %d" %(NUM_DOC))
@@ -148,7 +153,7 @@ def dataPrePrcs(contents):
                 ...
            ]
 """
-def readyData(num_doc):
+def readyData(num_doc, isCont = False):
     # NUM_DOC initialize
     global NUM_DOC
     NUM_DOC = num_doc
@@ -172,4 +177,8 @@ def readyData(num_doc):
     # phase 2 형태소 분석기 + 내용 없는 문서 지우기
     print("\n\n#####Phase 1-2 : 데이터 전처리 실행#####")
     tokenized_doc = dataPrePrcs(contents)
-    return idList, titles, tokenized_doc
+
+    if isCont == False:
+        return idList, titles, tokenized_doc
+    else:
+        return idList, titles, tokenized_doc, contents
