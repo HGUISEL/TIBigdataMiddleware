@@ -53,7 +53,7 @@ def DBG(whatToBbg):
     print("#####DEBUG-MODE#####\n\n\n\n")
     return 
 
-def runLda(titles, tokenized_doc):  
+def runLda(titles, tokenized_doc, contents):  
     # LDA 알고리즘
     print("LDA algo 분석 중...")
     from gensim import corpora
@@ -68,16 +68,16 @@ def runLda(titles, tokenized_doc):
     from gensim.test.utils import datapath
 
     # Save model to disk.
-    # temp_file = datapath("model")
-    # ldamodel.save(temp_file)
+    temp_file = datapath("model")
+    ldamodel.save(temp_file)
 
     # Load a potentially pretrained model from disk.
-    # ldamodel = gensim.models.ldamodel.LdaModel.load(temp_file)
+    ldamodel = gensim.models.ldamodel.LdaModel.load(temp_file)
 
 
 
     # topics = ldamodel.print_topics(num_words=10)
-    topics = ldamodel.show_topics(num_words=10, formatted=False)
+    topics = ldamodel.show_topics(num_words=3, formatted=False)
     print("\n\nLDA 분석 완료!")
     
 
@@ -150,13 +150,13 @@ def runLda(titles, tokenized_doc):
             # topic_lkdhd에서 i번째 문서의 번호
             # print(docIndex, titles[docIndex],tokenized_doc[docIndex])
      
-            sameTopicDocArrTitle.append([{"doc": docIndex, "title": titles[docIndex], "words" : tokenized_doc[docIndex]}])
+            sameTopicDocArrTitle.append([{"doc": docIndex, "title": titles[docIndex], "words" : tokenized_doc[docIndex], "contents" : contents[docIndex]}])
             topicIdx = topic_lkdhd[i][1]  # 현재 관심있는 문서 번호 업데이트
             # print("topicIdx in sameTopicArrTiele : ", topicIdx)
         else:
             # sameTopicDocArrTitle 맨 마지막에 새로운 문서번호로 추가!
 
-            sameTopicDocArrTitle[-1].append({"doc": docIndex, "title": titles[docIndex], "words" : tokenized_doc[docIndex]})
+            sameTopicDocArrTitle[-1].append({"doc": docIndex, "title": titles[docIndex], "words" : tokenized_doc[docIndex], "contents" : contents[docIndex]})
     # print(sameTopicDocArrTitle)
 
     ldaResult = []
@@ -181,7 +181,7 @@ def runLda(titles, tokenized_doc):
 
     # }
     print("\n\n\n\n\n")
-    print(ldaResult)
+    # print(ldaResult)
 
     
    
@@ -242,12 +242,12 @@ def LDA(ndoc, nit = NUM_ITER, ntp = NUM_TOPICS):
 
     # Phase 1 : READY DATA
     print("\n\n##########Phase 1 : READY DATA##########")
-    (doc_id, titles, tokenized_doc) = prs.readyData(ndoc)
+    (doc_id, titles, tokenized_doc, contents) = prs.readyData(ndoc, True)
    
 
     # LDA 알고리즘
     print("\n\n##########Phase 2 : LDA Algo##########")
-    result = runLda(titles, tokenized_doc)
+    result = runLda(titles, tokenized_doc,contents)
 
     if DOWNLOAD_OPTION == True:
         with open(LDA_DIR_FE, 'w', -1, "utf-8") as f:
@@ -268,7 +268,7 @@ def LDA(ndoc, nit = NUM_ITER, ntp = NUM_TOPICS):
     #         print("dir path error! check file cmm.py")
 
          
-    with open("./test.json", 'w', -1, "utf-8") as f:
+    with open( "../../TIBigdataFE/src/assets/special_first/test.json", 'w', -1, "utf-8") as f:
         json.dump(result, f, ensure_ascii=False)
 
 
