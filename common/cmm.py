@@ -25,7 +25,7 @@ from datetime import datetime
 # if()
 
 # print("\n#########directory path adjustment process##########")
-# import os
+# import oslocal
 # currDirPath = os.getcwd()
 # currDir = os.path.split(currDirPath)[1]
 # # parentDirPath = os.path.split(currDirPath)[0]
