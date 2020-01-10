@@ -12,6 +12,8 @@ import sys
 import os
 if os.name == "nt":
     from eunjeon import Mecab
+else:
+    from konlpy.tag import Mecab
 
 sys.path.insert(0, './common')
 

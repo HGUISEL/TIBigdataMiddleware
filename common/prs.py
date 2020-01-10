@@ -30,6 +30,8 @@ import esFunc
 import os
 if os.name == "nt":
     from eunjeon import Mecab
+else:
+    from konlpy.tag import Mecab
 
 NUM_DOC = 0
 # titles = []
