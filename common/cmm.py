@@ -42,7 +42,10 @@ if currDir != "common":
     # except Exception as e:
 # print("#####dir path procs fin!#####\n")
 
-SAMP_DATA_DIR = "../raw data sample/rawData.json" 
+SAMP_DATA_DIR = "../raw data sample/rawData30.json" 
+
+LDA_DIR_FE = "../../TIBigdataFE/src/assets/special_first/data.json"
+
 # SAMP_DATA_DIR = '../raw data sample/'
 
 # global variables
@@ -60,7 +63,8 @@ SAMP_DATA_DIR = "../raw data sample/rawData.json"
 
 # current date and time
 now = datetime.now()
-print("now is the time : ", now)
+# print("now is the time : ", now)
+print("Warning! : current version has initialize twice the cmm module...need to be fixed later on...")
 start = time.time()
 # print("start time : ", now)# 이 모듈을 import할 때 바로 global scope 실행.
 

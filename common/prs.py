@@ -41,7 +41,7 @@ RANDOM_MODE = False
 #OFFLINE_MODE
 # use sample data in ./raw data sample, and not connet to ES.
 # without HGU-WLAN network, use raw data sample no matter this value
-BACKEND_CONCT = False
+BACKEND_CONCT = True
 
 
 
