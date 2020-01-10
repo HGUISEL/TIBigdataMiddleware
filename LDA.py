@@ -68,11 +68,11 @@ def runLda(titles, tokenized_doc):
     from gensim.test.utils import datapath
 
     # Save model to disk.
-    temp_file = datapath("model")
-    ldamodel.save(temp_file)
+    # temp_file = datapath("model")
+    # ldamodel.save(temp_file)
 
     # Load a potentially pretrained model from disk.
-    ldamodel = gensim.models.ldamodel.LdaModel.load(temp_file)
+    # ldamodel = gensim.models.ldamodel.LdaModel.load(temp_file)
 
 
 
@@ -141,15 +141,18 @@ def runLda(titles, tokenized_doc):
 
     for i in range(num_docs):
         # topics[i]
+
         docIndex = topic_lkdhd[i][0]
         # 지금 보고 있는 문서번호가 관심 있는 주제에 속한다면, 같은 토픽에 추가! topic_lkdhd = [ (문서번호, 주제), (문서 번호, 주제),...]
         # 새로운 토픽으로 이동.
         if topicIdx != (topic_lkdhd[i][1]):
+
             # topic_lkdhd에서 i번째 문서의 번호
             # print(docIndex, titles[docIndex],tokenized_doc[docIndex])
      
             sameTopicDocArrTitle.append([{"doc": docIndex, "title": titles[docIndex], "words" : tokenized_doc[docIndex]}])
             topicIdx = topic_lkdhd[i][1]  # 현재 관심있는 문서 번호 업데이트
+            # print("topicIdx in sameTopicArrTiele : ", topicIdx)
         else:
             # sameTopicDocArrTitle 맨 마지막에 새로운 문서번호로 추가!
 
@@ -158,6 +161,7 @@ def runLda(titles, tokenized_doc):
 
     ldaResult = []
     for topicIdx, wvtArr in topics:
+        # print("topicIdx in topics : ", topicIdx)
         arr = []
         for w,v in wvtArr:
             arr.append(w)
