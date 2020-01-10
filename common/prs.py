@@ -14,6 +14,8 @@ import esFunc
 # import time
 from konlpy.tag import Okt
 
+
+
 #RANDOM_MODE
 # 알고리즘 정확성 확인을 위해서 문서를 불러와서 순서를 섞는다.
 RANDOM_MODE = False
@@ -22,7 +24,6 @@ RANDOM_MODE = False
 # use sample data in ./raw data sample, and not connet to ES.
 # without HGU-WLAN network, use raw data sample no matter this value
 BACKEND_CONCT = True
-
 
 
 # Sample Raw Data from Backend directory
