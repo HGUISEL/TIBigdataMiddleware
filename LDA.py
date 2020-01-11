@@ -9,7 +9,6 @@ import json
 
 
 # aa.py
-# import os
 # import sys
 # sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))f
 from common.cmm import showTime
@@ -20,9 +19,12 @@ from common import prs
 # from  common import globalVars
 
 # download LDA result if True
-DOWNLOAD_OPTION = False 
+DOWNLOAD_DATA_OPTION = False 
 # Frontend directory to store LDA result
 from common.cmm import LDA_DIR_FE
+
+# download LDA model if True
+SAVE_LDA_MODEL = True
 
 # #OFFLINE_MODE
 # # use sample data in ./raw data sample, and not connet to ES.
@@ -64,16 +66,35 @@ def runLda(titles, tokenized_doc, contents):
     ldamodel = gensim.models.ldamodel.LdaModel(
         corpus, num_topics=NUM_TOPICS, id2word=dictionary, passes=NUM_ITER)
     
-    
-    from gensim.test.utils import datapath
-
     # Save model to disk.
-    temp_file = datapath("model")
-    ldamodel.save(temp_file)
+    if SAVE_LDA_MODEL == True:
+        
+        fileName = "c"+str(len(corpus))+"i"+str(NUM_ITER)+"t"+str(NUM_TOPICS)
+        import os
+        curDir = os.getcwd()
+        from pathlib import Path
+        fileDir = str(Path(curDir).parent)
+        ldaFile = fileDir+"\\LDA_model\\"+fileName
+        # import os
+        # fileName = os.getcwd().split("\\")[-2] + "\\LDA_model\\text2.txt"
+        # fileName = "\\LDA_model\\"
+        import dill
+        #save your model as 
 
-    # Load a potentially pretrained model from disk.
-    ldamodel = gensim.models.ldamodel.LdaModel.load(temp_file)
+        with open(ldaFile,'wb') as f:
+            dill.dump(ldamodel, f)
 
+        # later load the model as
+        # model = gensim.models.Doc2vec.load('file-name')
+
+        # from gensim.test.utils import datapath
+        # fileName = currDir + "corpus:"+str(len(corpus))+"_ite:"+str(NUM_ITER)+"_top:"+str(NUM_TOPICS)
+        # ldaModelFile = datapath(fileName)
+        # print(ldaModelFile)
+        # ldamodel.save(ldaModelFile)
+        # Load a potentially pretrained model from disk.
+        ldamodel = gensim.models.ldamodel.LdaModel.load(ldaFile)
+# 
 
 
     # topics = ldamodel.print_topics(num_words=10)
@@ -234,7 +255,7 @@ def LDA(ndoc, nit = NUM_ITER, ntp = NUM_TOPICS):
     print("LDA Algo 시작!")
 
     print("##########Pahse 0 : LDA option:##########",
-         "\nDOWNLOAD OPTION : ", str(DOWNLOAD_OPTION),
+         "\nDOWNLOAD OPTION : ", str(DOWNLOAD_DATA_OPTION),
         #  "\nBACKEND CONNECTION OPTION : ", str(BACKEND_CONCT),
         #  "\nRANDOM ORDER OPTION : ", str(RANDOM_MODE)
          )
@@ -249,7 +270,7 @@ def LDA(ndoc, nit = NUM_ITER, ntp = NUM_TOPICS):
     print("\n\n##########Phase 2 : LDA Algo##########")
     result = runLda(titles, tokenized_doc,contents)
 
-    if DOWNLOAD_OPTION == True:
+    if DOWNLOAD_DATA_OPTION == True:
         with open(LDA_DIR_FE, 'w', -1, "utf-8") as f:
             json.dump(result, f, ensure_ascii=False)
 
@@ -276,7 +297,7 @@ def LDA(ndoc, nit = NUM_ITER, ntp = NUM_TOPICS):
      # showTime()
     showTime()
     
-    if DOWNLOAD_OPTION == True:
+    if DOWNLOAD_DATA_OPTION == True:
         print("Analysis Result has been stored at ",LDA_DIR_FE)
     print("LDA Analysis Fin!")
     return result
