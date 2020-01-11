@@ -78,12 +78,17 @@ def runLda(titles, tokenized_doc, contents):
         # import os
         # fileName = os.getcwd().split("\\")[-2] + "\\LDA_model\\text2.txt"
         # fileName = "\\LDA_model\\"
-        import dill
+        
         #save your model as 
-
+        import dill
         with open(ldaFile,'wb') as f:
             dill.dump(ldamodel, f)
-
+        
+        #save corpus
+        corpusName = "corpus"+str(len(corpus))
+        corpusFile = fileDir+"\\LDA_model\\"+ corpusName
+        with open(corpusFile,'wb') as f:
+            dill.dump(corpus, f)
         # later load the model as
         # model = gensim.models.Doc2vec.load('file-name')
 
