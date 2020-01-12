@@ -26,7 +26,12 @@ from cmm import SAMP_DATA_DIR
 # from cmm import DocCorpus as dc
 import esFunc
 # import time
-from konlpy.tag import Okt
+
+import os
+if os.name == "nt":
+    from eunjeon import Mecab
+else:
+    from konlpy.tag import Mecab
 
 NUM_DOC = 0
 # titles = []
@@ -125,7 +130,6 @@ def dataPrePrcs(contents):
     # tokenized_doc = [okt.nouns(contents[cnt]) for cnt in range(len(contents))]
 
     #mecab test
-    from eunjeon import Mecab
     tagger = Mecab()
     print("데이터 전처리 중... It may takes few hours...")
     tokenized_doc = [tagger.nouns(contents[cnt]) for cnt in range(len(contents))]
