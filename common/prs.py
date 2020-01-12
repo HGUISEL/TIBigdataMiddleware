@@ -6,26 +6,12 @@ import traceback
 import os
 import sys
 
-# currDir = os.getcwd()
-# print(os.path.split(os.getcwd())[1])
-# print("directory!")
-# print(os.path.dirname(currDir))
-# from pathlib import Path
-# print(Path(currDir).parent)
-# os.chdir(r'C:\Folder')
-# currDir = os.chdir
-# print( type(currDir ))
-# if()
-# SAMP_DATA_DIR = "../raw data sample/rawData.json"
-
 file_dir = os.path.dirname(__file__)
 sys.path.append(file_dir)
 print("called prs.py")
 from cmm import showTime
 from cmm import SAMP_DATA_DIR
-# from cmm import DocCorpus as dc
 import esFunc
-# import time
 
 import os
 if os.name == "nt":
@@ -34,10 +20,6 @@ else:
     from konlpy.tag import Mecab
 
 NUM_DOC = 0
-# titles = []
-# contents = []
-# idList = []    
-
 
 #RANDOM_MODE
 # 알고리즘 정확성 확인을 위해서 문서를 불러와서 순서를 섞는다.
@@ -47,13 +29,6 @@ RANDOM_MODE = False
 # use sample data in ./raw data sample, and not connet to ES.
 # without HGU-WLAN network, use raw data sample no matter this value
 BACKEND_CONCT = True
-
-
-
-
-
-
-# print("in prs.py gloabl, NUM_DOC : ", NUM_DOC)
 
 
 # Phase 1 : ES에서 문서 쿼리 및 content와 title 분리 전처리
@@ -113,12 +88,7 @@ def loadData():
 
     NUM_DOC = len(contents)
     print(count,"개의 문서가 내용이 없음")
-    # print(titles)#순서가 뒤바뀐 문서 set을 출력
     print("투입된 문서의 수 : %d" %(NUM_DOC))
-    # print(len(contents))
-
-    # update NUM_DOC
-    # return num_doc
 
     corpusIdTtlCtt = {"id" : idList, "titles" : titles, "contents" : contents}
     return corpusIdTtlCtt

@@ -51,20 +51,11 @@ def runLda(titles, tokenized_doc, contents):
         corpusFile = fileDir+"\\LDA_model\\"+ corpusName
         with open(corpusFile,'wb') as f:
             dill.dump(corpus, f)
-        # later load the model as
-        # model = gensim.models.Doc2vec.load('file-name')
 
-        # from gensim.test.utils import datapath
-        # fileName = currDir + "corpus:"+str(len(corpus))+"_ite:"+str(NUM_ITER)+"_top:"+str(NUM_TOPICS)
-        # ldaModelFile = datapath(fileName)
-        # print(ldaModelFile)
-        # ldamodel.save(ldaModelFile)
-        # Load a potentially pretrained model from disk.
+        # 다시 불러오기
         # ldamodel = gensim.models.ldamodel.LdaModel.load(ldaFile)
-# 
 
 
-    # topics = ldamodel.print_topics(num_words=10)
     topics = ldamodel.show_topics(num_words=3, formatted=False)
     print("\n\nLDA 분석 완료!")
     
@@ -80,8 +71,6 @@ def runLda(titles, tokenized_doc, contents):
     topic_lkdhd = []
     from operator import itemgetter
     for i, topic_list in enumerate(ldamodel[corpus]):
-        # if i == 5:
-            # break
         topic_list = sorted(topic_list, key=itemgetter(1), reverse = True) 
         print(i,'번째 문서의 최대 경향 순서 topic 정렬',topic_list)
         topic_lkdhd.append((i, topic_list[0][0]))
@@ -214,22 +203,6 @@ def LDA(ndoc, nit = NUM_ITER, ntp = NUM_TOPICS):
         with open(LDA_DIR_FE, 'w', -1, "utf-8") as f:
             json.dump(result, f, ensure_ascii=False)
 
-
-    # import os
-    # currDirPath = os.getcwd()
-    # currDir = os.path.split(currDirPath)[1]
-    # # parentDirPath = os.path.split(currDirPath)[0]
-    # # parDir = os.path.split(parentDirPath)[1]
-    # if currDir != "common":
-    #     # try:
-    #     if currDir == "TIBigdataMiddleware":
-    #         os.chdir(currDirPath+"\\common")
-    #         print("dir path adjusted!")
-    #     else:
-    #         print("dir path error! check file cmm.py"
-
-
-     # showTime()
     showTime()
     
     if DOWNLOAD_DATA_OPTION == True:
