@@ -24,23 +24,16 @@ from datetime import datetime
 # print( type(currDir ))
 # if()
 
-# print("\n#########directory path adjustment process##########")
-import os
-currDirPath = os.getcwd()
-currDir = os.path.split(currDirPath)[1]
-# parentDirPath = os.path.split(currDirPath)[0]
-# parDir = os.path.split(parentDirPath)[1]
-if currDir != "common":
-    # try:
-    if currDir == "TIBigdataMiddleware":
-        os.chdir(currDirPath+"\\common")
-        print("dir path adjusted!")
-    else:
-        print("dir path error! check file cmm.py")
-# else:
-    # print("nothing woring with dir parh!")
-    # except Exception as e:
-# print("#####dir path procs fin!#####\n")
+# import os
+# currDirPath = os.getcwd()
+# currDir = os.path.split(currDirPath)[1]
+# if currDir != "common":
+#     # try:
+#     if currDir == "TIBigdataMiddleware":
+#         os.chdir(currDirPath+"\\common")
+#         print("dir path adjusted!")
+#     else:
+#         print("dir path error! check file cmm.py")
 
 SAMP_DATA_DIR = "../raw data sample/rawData30.json" 
 
