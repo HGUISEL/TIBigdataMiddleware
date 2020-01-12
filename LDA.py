@@ -36,9 +36,9 @@ def runLda(titles, tokenized_doc, contents):
         
         fileName = "c"+str(len(corpus))+"i"+str(NUM_ITER)+"t"+str(NUM_TOPICS)
         import os
-        curDir = os.getcwd()
+        fileDir = os.getcwd()
         from pathlib import Path
-        fileDir = str(Path(curDir).parent)
+        # fileDir = str(Path(curDir).parent)
         ldaFile = fileDir+"\\LDA_model\\"+fileName
         print("cur dir : ", fileDir)
         #save your model as 
@@ -106,22 +106,42 @@ def runLda(titles, tokenized_doc, contents):
     topicIdx = -1
     sameTopicDocArrTitle = []
 
-    for i in range(num_docs):
+    # LDA 토픽 이슈에 사용되는 임시 broker
+    poorTopIdx = 0
 
+    for i in range(num_docs):
         docIndex = topic_lkdhd[i][0]
         # 지금 보고 있는 문서번호가 관심 있는 주제에 속한다면, 같은 토픽에 추가! topic_lkdhd = [ (문서번호, 주제), (문서 번호, 주제),...]
         # 새로운 토픽으로 이동.
         if topicIdx != (topic_lkdhd[i][1]):
-
+            print("new topic added! topic idx = ",topic_lkdhd[i][1])
             # topic_lkdhd에서 i번째 문서의 번호
             sameTopicDocArrTitle.append([{"doc": docIndex, "title": titles[docIndex], "words" : tokenized_doc[docIndex], "contents" : contents[docIndex]}])
             topicIdx = topic_lkdhd[i][1]  # 현재 관심있는 문서 번호 업데이트
         else:
             # sameTopicDocArrTitle 맨 마지막에 새로운 문서번호로 추가!
-            sameTopicDocArrTitle[-1].append({"doc": docIndex, "title": titles[docIndex], "words" : tokenized_doc[docIndex], "contents" : contents[docIndex]})
-
+            try:
+                sameTopicDocArrTitle[-1].append({"doc": docIndex, "title": titles[docIndex], "words" : tokenized_doc[docIndex], "contents" : contents[docIndex]})
+            except:
+                poorTopIdx = topicIdx
+                print("LDA 에러 발생! 설정한 토픽의 수와 LDA 토픽의 수가 일치 하지 않음.\n 주석 참고: LDA.py : runLDA() : 검색 키워드 'LDA 토픽 이슈'")
+    """
+        LDA 토픽 이슈 :
+            현재 문서가 어느 토픽에 해당하는지 판단하는 방법 : 
+                문서에서 토픽에 대한 확률 분포를 나타내면, 가장 높은 확률에 있는 토픽으로 분류.
+                그런데 간혹 어느 특정 토픽이 아무 문서에도 포함되지 않는 경우가 발생한다.
+                확률적으로 발생.
+                이후 토픽 index로 접근하는데, 상정되지 않은 토픽 index을 만나면 에러 발생.
+                try - catch으로 index가 없을 때 num_topic을 수정하거나,
+                아니면 그 전에 index checker을 만들어서 미리 수정해야 한다.
+                global 변수를 수정해야 할 필요가 있다.
+    """
+    
+    
     ldaResult = []
     for topicIdx, wvtArr in topics:
+        if topicIdx == poorTopIdx:# 임시 방편
+            continue# 임시 방편
         arr = []
         for w,v in wvtArr:
             arr.append(w)
@@ -205,12 +225,7 @@ def LDA(ndoc, nit = NUM_ITER, ntp = NUM_TOPICS):
     #         os.chdir(currDirPath+"\\common")
     #         print("dir path adjusted!")
     #     else:
-    #         print("dir path error! check file cmm.py")
-
-         
-    with open( "../../TIBigdataFE/src/assets/special_first/test.json", 'w', -1, "utf-8") as f:
-        json.dump(result, f, ensure_ascii=False)
-
+    #         print("dir path error! check file cmm.py"
 
 
      # showTime()
