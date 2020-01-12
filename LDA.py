@@ -45,12 +45,14 @@ def runLda(titles, tokenized_doc, contents):
         import dill
         with open(ldaFile,'wb') as f:
             dill.dump(ldamodel, f)
+        print("lda model save")
         
         #save corpus
         corpusName = "corpus"+str(len(corpus))
         corpusFile = fileDir+"\\LDA_model\\"+ corpusName
         with open(corpusFile,'wb') as f:
             dill.dump(corpus, f)
+        print("corpus saved")
 
         # 다시 불러오기
         # ldamodel = gensim.models.ldamodel.LdaModel.load(ldaFile)
