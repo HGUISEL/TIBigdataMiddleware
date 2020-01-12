@@ -42,16 +42,24 @@ def runLda(titles, tokenized_doc, contents):
         ldaFile = fileDir+"\\LDA_model\\"+fileName
         print("cur dir : ", fileDir)
         #save your model as 
-        import dill
-        with open(ldaFile,'wb') as f:
-            dill.dump(ldamodel, f)
+        # import dill
+
+        from gensim.test.utils import datapath
+        
+        # Save model to disk.
+        temp_file = datapath(ldaFile)
+        ldamodel.save(temp_file)
+        # with open(ldaFile,'wb') as f:
+        #     f.write(ldamodel)
+        #     f.close()
         print("lda model save")
         
         #save corpus
+        cpsJson = {"data" : corpus}
         corpusName = "corpus"+str(len(corpus))
         corpusFile = fileDir+"\\LDA_model\\"+ corpusName
-        with open(corpusFile,'wb') as f:
-            dill.dump(corpus, f)
+        with open(corpusFile, 'w', -1, "utf-8") as f:
+            json.dump(cpsJson, f, ensure_ascii=False)
         print("corpus saved")
 
         # 다시 불러오기
