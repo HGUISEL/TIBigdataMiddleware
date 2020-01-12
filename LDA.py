@@ -1,22 +1,7 @@
-# # from datetime import datetime
-# import esFunc
-# import time
-# from konlpy.tag import Okt
 import json
-# import sys
-# import traceback
-
-
-
-# aa.py
-# import sys
-# sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))f
 from common.cmm import showTime
 from common.cmm import SAMP_DATA_DIR
-# from common import globalVars
 from common import prs
-
-# from  common import globalVars
 
 # download LDA result if True
 DOWNLOAD_DATA_OPTION = False 
@@ -26,28 +11,8 @@ from common.cmm import LDA_DIR_FE
 # download LDA model if True
 SAVE_LDA_MODEL = True
 
-# #OFFLINE_MODE
-# # use sample data in ./raw data sample, and not connet to ES.
-# # without HGU-WLAN network, use raw data sample no matter this value
-# BACKEND_CONCT = True
-
-# #RANDOM_MODE
-# # 알고리즘 정확성 확인을 위해서 문서를 불러와서 순서를 섞는다.
-# RANDOM_MODE = False
-
-
-# Sample Raw Data from Backend directory
-# DIR_SMP_DATA = "./raw data sample/rawData.json"
-
- # global variables
-# NUM_DOC = 5
 NUM_TOPICS = 3
 NUM_ITER = 10
-# ES_INDEX = 'nkdboard'
-# ES_INDEX = 'kolofoboard'
-# titles = []
-# contents = []
-# start = None
 
 def DBG(whatToBbg):
     print("\n\n\n\n#####DEBUG-MODE#####")
@@ -75,9 +40,6 @@ def runLda(titles, tokenized_doc, contents):
         from pathlib import Path
         fileDir = str(Path(curDir).parent)
         ldaFile = fileDir+"\\LDA_model\\"+fileName
-        # import os
-        # fileName = os.getcwd().split("\\")[-2] + "\\LDA_model\\text2.txt"
-        # fileName = "\\LDA_model\\"
         
         #save your model as 
         import dill
@@ -112,17 +74,6 @@ def runLda(titles, tokenized_doc, contents):
     for i, topic in topics:
         print(i,"번째 토픽을 구성하는 단어: ", topic)
     
-    # print(topics)
-
-    # LDA 결과 출력
-    # for i, topic_list in enumerate(ldamodel[corpus]):
-        # print(i,'번째 문서의 topic 비율은',topic_list)
-
-
-
-
-
-
     # topic_lkdhd : topic_likelyhood, 문서 당 최대 경향 토픽만을 산출하기
     # 같은 토픽 별로 정렬
     print()
@@ -134,14 +85,8 @@ def runLda(titles, tokenized_doc, contents):
         topic_list = sorted(topic_list, key=itemgetter(1), reverse = True) 
         print(i,'번째 문서의 최대 경향 순서 topic 정렬',topic_list)
         topic_lkdhd.append((i, topic_list[0][0]))
-
     
-
-
-    # tokenized_doc에는 개별 문서들의 단어들이 tokenized되어 저장되어 있다.
-
-
-
+   # tokenized_doc에는 개별 문서들의 단어들이 tokenized되어 저장되어 있다.
     # 같은 토픽에 있는 문서들을 정리 + 문서의 제목과 함께 엮어서 pair으로 묶는다.
     """
     [
@@ -157,16 +102,11 @@ def runLda(titles, tokenized_doc, contents):
     """
 
     topic_lkdhd = sorted(topic_lkdhd, key=itemgetter(1), reverse = True)
-    # print(topic_lkdhd)
-    # print(titles)
-    # print(tokenized_doc)
     num_docs = len(topic_lkdhd)
     topicIdx = -1
     sameTopicDocArrTitle = []
-    # arr = []
 
     for i in range(num_docs):
-        # topics[i]
 
         docIndex = topic_lkdhd[i][0]
         # 지금 보고 있는 문서번호가 관심 있는 주제에 속한다면, 같은 토픽에 추가! topic_lkdhd = [ (문서번호, 주제), (문서 번호, 주제),...]
@@ -174,47 +114,21 @@ def runLda(titles, tokenized_doc, contents):
         if topicIdx != (topic_lkdhd[i][1]):
 
             # topic_lkdhd에서 i번째 문서의 번호
-            # print(docIndex, titles[docIndex],tokenized_doc[docIndex])
-     
             sameTopicDocArrTitle.append([{"doc": docIndex, "title": titles[docIndex], "words" : tokenized_doc[docIndex], "contents" : contents[docIndex]}])
             topicIdx = topic_lkdhd[i][1]  # 현재 관심있는 문서 번호 업데이트
-            # print("topicIdx in sameTopicArrTiele : ", topicIdx)
         else:
             # sameTopicDocArrTitle 맨 마지막에 새로운 문서번호로 추가!
-
             sameTopicDocArrTitle[-1].append({"doc": docIndex, "title": titles[docIndex], "words" : tokenized_doc[docIndex], "contents" : contents[docIndex]})
-    # print(sameTopicDocArrTitle)
 
     ldaResult = []
     for topicIdx, wvtArr in topics:
-        # print("topicIdx in topics : ", topicIdx)
         arr = []
         for w,v in wvtArr:
             arr.append(w)
         ldaResult.append({"topic" : {"topic_num":topicIdx, "words" : arr}, "doc" : sameTopicDocArrTitle[topicIdx]})
 
-    # topicIdx = topic_lkdhd[i][1]  # 현재 관심있는 문서 번호 업데이트
-    # wordListTpl = topics[topicIdx][1]
-    # wordList=[]
-    # for wordTpl in wordListTpl:
-    #     print(wordTpl[0])
-    #     wordList.append(wordTpl[0])
-    # {"topic" : {
-    #             "topic_num" : topicIdx,
-    #                 "words" : wordList
-    #             },
-    #     "docs" : arr
-
-    # }
-    print("\n\n\n\n\n")
-    # print(ldaResult)
-
-    
-   
-    print("\n\n\n\n\n")
     print("투입된 문서의 수 : %d\n설정된 Iteratin 수 : %d\n설정된 토픽의 수 : %d" %(num_docs, NUM_ITER, NUM_TOPICS))
 
-    # return sameTopicDocArrlTitle
     return ldaResult
 
 ################################################
