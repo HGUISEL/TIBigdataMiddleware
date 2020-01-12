@@ -142,16 +142,60 @@ def runLda(titles, tokenized_doc, contents):
     return ldaResult
 
 ################################################
-"""
-LDA 잠재 디리클레 할당
-2019.12.27.
-"""
+
 
 """
 function : LDA()
 purpose : 자동으로 문서들을 주제들로 분류해준다. gensim 라이브러리 사용
 input : num of documents, num of iteration, num of topics
-output : 주제 별로 분류된 array
+output : 주제 별로 분류된 object
+[
+    {
+        "topic" : {
+                    "topic_num": 0,
+                    "words" : ["단어1", "단어2", ...]
+                  }, 
+        "doc" : [
+                    {
+                        "doc": 17, 
+                        "title": "문서1 제목"
+                        "words" : ["문서1 단어1", "문서1 단어2"]
+                        "contents" : "문서1의 텍스트 내용 주저리 주저리"
+                    },
+                    {
+                        "doc": 9, 
+                        "title": "문서9 제목"
+                        "words" : ["문서9 단어1", "문서9 단어2"]
+                        "contents" : "문서9의 텍스트 내용 주저리 주저리"
+                    },
+                    ...
+                ]
+    },
+    {
+        "topic" : {
+                    "topic_num": 1,
+                    "words" : ["단어1", "단어2", ...]
+                  }, 
+        "doc" : [
+                    {
+                        "doc": 32, 
+                        "title": "문서32 제목"
+                        "words" : ["문서32 단어1", "문서32 단어2"]
+                        "contents" : "문서32의 텍스트 내용 주저리 주저리"
+                    },
+                    {
+                        "doc": 82, 
+                        "title": "문서82 제목"
+                        "words" : ["문서82 단어1", "문서82 단어2"]
+                        "contents" : "문서82의 텍스트 내용 주저리 주저리"
+                    },
+                    ...
+                ]
+    },
+    ...
+]
+
+
 [
     [
         문서1, "문서1 제목", ["문서1 단어1","문서1 단어2"],
