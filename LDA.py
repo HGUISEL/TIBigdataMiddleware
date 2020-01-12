@@ -40,7 +40,7 @@ def runLda(titles, tokenized_doc, contents):
         from pathlib import Path
         fileDir = str(Path(curDir).parent)
         ldaFile = fileDir+"\\LDA_model\\"+fileName
-        
+        print("cur dir : ", fileDir)
         #save your model as 
         import dill
         with open(ldaFile,'wb') as f:
@@ -60,7 +60,7 @@ def runLda(titles, tokenized_doc, contents):
         # print(ldaModelFile)
         # ldamodel.save(ldaModelFile)
         # Load a potentially pretrained model from disk.
-        ldamodel = gensim.models.ldamodel.LdaModel.load(ldaFile)
+        # ldamodel = gensim.models.ldamodel.LdaModel.load(ldaFile)
 # 
 
 
