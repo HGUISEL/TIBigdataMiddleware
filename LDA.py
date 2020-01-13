@@ -53,7 +53,7 @@ def runLda(titles, tokenized_doc, contents):
 
         # folderDir = "\\LDA_model\\"
 
-        ldaFile = fileDir+"\\LDA_model\\"+fileName
+        ldaFile = fileDir+folderDir+fileName
         print("cur dir : ", fileDir)
         #save your model as 
         # import dill
