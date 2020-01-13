@@ -41,11 +41,11 @@ def runLda(titles, tokenized_doc, contents):
         # fileDir = str(Path(curDir).parent)
 
         import os
-        if os.name == "nt":
+        if os.name == "nt":# if os is windows
             folderDir = "\\LDA_model\\"
 
             # from eunjeon import Mecab
-        else:
+        else: # for linux. should check if MAC work
             folderDir = "/LDA_model/"
             # from konlpy.tag import Mecab
 
