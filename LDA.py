@@ -39,6 +39,20 @@ def runLda(titles, tokenized_doc, contents):
         fileDir = os.getcwd()
         from pathlib import Path
         # fileDir = str(Path(curDir).parent)
+
+        import os
+        if os.name == "nt":
+            folderDir = "\\LDA_model\\"
+
+            # from eunjeon import Mecab
+        else:
+            folderDir = "/LDA_model/"
+            # from konlpy.tag import Mecab
+
+
+
+        # folderDir = "\\LDA_model\\"
+
         ldaFile = fileDir+"\\LDA_model\\"+fileName
         print("cur dir : ", fileDir)
         #save your model as 
@@ -57,7 +71,7 @@ def runLda(titles, tokenized_doc, contents):
         #save corpus
         cpsJson = {"data" : corpus}
         corpusName = "corpus"+str(len(corpus))
-        corpusFile = fileDir+"\\LDA_model\\"+ corpusName
+        corpusFile = fileDir+folderDir+ corpusName
         with open(corpusFile, 'w', -1, "utf-8") as f:
             json.dump(cpsJson, f, ensure_ascii=False)
         print("corpus saved")
