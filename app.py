@@ -8,18 +8,13 @@ from collections import Counter
 from operator import itemgetter
 import time
 import json
-<<<<<<< HEAD
-import LDA , cloud
-from common import esFunc
-=======
 import sys
 sys.path.insert(0, './common')
 
->>>>>>> 22b81b15d34d60f7e945a7d1bd57dd0cbc6730d8
 # Sentence-tokenizer
 import re
 from common import prs
-
+import cloud
 # Implement KR-Wordrank
 from krwordrank.hangle import normalize
 from krwordrank.word import KRWordRank
@@ -48,10 +43,14 @@ CORS(app, support_credentials=True)
 def hello():
     app = Flask(__name__)
     app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
-    contents = []
-    contents = prs.kai()
+    contents = "ndllocvcv"
+
+    from konlpy.tag import Mecab
+    tagger = Mecab()
+    t = tagger.pos("고양이는 양옹뉴턴야옹")
     print("========================================")
-    return contents
+    return json.dumps(t, ensure_ascii=False)
+
 
 
 @app.route("/c2",methods=['GET'])
