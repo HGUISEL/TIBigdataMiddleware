@@ -168,7 +168,7 @@ output : 주제 별로 분류된 array
     ...
 ]
 """
-"""
+
 def LDA(ndoc, nit = NUM_ITER, ntp = NUM_TOPICS):
 
     # change global value if get new params.
@@ -210,4 +210,3 @@ def LDA(ndoc, nit = NUM_ITER, ntp = NUM_TOPICS):
     print("LDA Analysis Fin!")
     return result
 
-""" 

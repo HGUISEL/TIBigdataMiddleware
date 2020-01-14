@@ -67,7 +67,7 @@ def getTable(Numdoc):
             #    break
         #print(mainTF)
         #print("ㄷ===============================ㄹ\n")
-        resultTF.append({"docID": docId[i], "docTitle": docTitle[i], "IFIDF": mainTF})
+        resultTF.append({"docID": docId[i], "docTitle": docTitle[i], "TFIDF": mainTF})
     
 
     cmm.showTime()
