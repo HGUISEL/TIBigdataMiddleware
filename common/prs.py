@@ -56,7 +56,7 @@ def loadData():
 
         print("current dir : " ,os.getcwd())
         print("대체 파일 로드 from ",SAMP_DATA_DIR)
-
+        # print("\n\nDEBUG : 현재 실행 directory 위치",os.getcwd(),"\n\n")
         with open(SAMP_DATA_DIR, "rt", encoding="UTF8") as f:
             corpus = json.load(f)
         
