@@ -58,7 +58,7 @@ def c2():
     app = Flask(__name__)
     app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 
-    Numdoc = 5
+    Numdoc = 600
 
     contents = cloud.getTFIDF(Numdoc)
     #return json.dumps(contents, ensure_ascii=False)
