@@ -44,9 +44,6 @@ RANDOM_MODE = False
 BACKEND_CONCT = True
 
 
-
-
-
 # print("in prs.py gloabl, NUM_DOC : ", NUM_DOC)
 
 
@@ -124,7 +121,7 @@ def dataPrePrcs(contents):
     # tokenized_doc = [okt.nouns(contents[cnt]) for cnt in range(len(contents))]
 
     #mecab test
-    from eunjeon import Mecab
+    from konlpy.tag import Mecab
     tagger = Mecab()
     print("데이터 전처리 중... It may takes few hours...")
     tokenized_doc = [tagger.nouns(contents[cnt]) for cnt in range(len(contents))]
@@ -140,7 +137,6 @@ def dataPrePrcs(contents):
 
     print("데이터 전처리 완료!")
     return tokenized_doc
-
 
 """
 # functin : readData(int)
