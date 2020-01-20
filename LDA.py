@@ -24,12 +24,12 @@ def runLda(titles, tokenized_doc, contents):
     # LDA 알고리즘
     print("LDA algo 분석 중...")
     from gensim import corpora
-    dictionary = corpora.Dictionary(tokenized_doc)#문서 별 각 단어에 고유 id 부여
-    corpus = [dictionary.doc2bow(text) for text in tokenized_doc]# 문서를 벡터화?
+    id2word = corpora.Dictionary(tokenized_doc)#문서 별 각 단어에 고유 id 부여 : 문서를 벡터화
+    corpus = [id2word.doc2bow(text) for text in tokenized_doc]
 
     import gensim
     ldamodel = gensim.models.ldamodel.LdaModel(
-        corpus, num_topics=NUM_TOPICS, id2word=dictionary, passes=NUM_ITER)
+        corpus, num_topics=NUM_TOPICS, id2word=id2word, passes=NUM_ITER)
     
     # Save model to disk.
     if SAVE_LDA_MODEL == True:
@@ -69,12 +69,22 @@ def runLda(titles, tokenized_doc, contents):
         print("lda model save")
         
         #save corpus
-        cpsJson = {"data" : corpus}
-        corpusName = "corpus"+str(len(corpus))
-        corpusFile = fileDir+folderDir+ corpusName
-        with open(corpusFile, 'w', -1, "utf-8") as f:
-            json.dump(cpsJson, f, ensure_ascii=False)
-        print("corpus saved")
+        # corpusName = "corpus"+str(len(corpus))
+        # corpusFile = fileDir+folderDir+ corpusName
+        # from gensim.corpora import Dictionary
+        # corpus.save_as_text(corpusFile)
+        # with open(corpusFile, 'w', -1, "utf-8") as f:
+            # f.write()
+            # json.dump(cpsJson, f, ensure_ascii=False)
+        # print("corpus saved")
+
+        #save corpus
+        tknDocJsn = {"data" : tokenized_doc}
+        tknDocName = "tokenDoc"+str(len(tokenized_doc))
+        tonDocFile = fileDir+folderDir+ tknDocName+".json"
+        with open(tonDocFile, 'w', -1, "utf-8") as f:
+            json.dump(tknDocJsn, f, ensure_ascii=False)
+        print("toekn doc saved")
 
         # 다시 불러오기
         # ldamodel = gensim.models.ldamodel.LdaModel.load(ldaFile)
@@ -162,6 +172,14 @@ def runLda(titles, tokenized_doc, contents):
             print("LDA 에러 발생! 설정한 토픽의 수와 LDA 토픽의 수가 일치 하지 않음.\n 주석 참고: LDA.py : runLDA() : 검색 키워드 'LDA 토픽 이슈'")
 
     print("투입된 문서의 수 : %d\n설정된 Iteratin 수 : %d\n설정된 토픽의 수 : %d" %(num_docs, NUM_ITER, NUM_TOPICS))
+
+
+    print("\n\n\n performance of this LDA: ")
+    from gensim.models import CoherenceModel
+    # Compute Coherence Score
+    coherence_model_lda = CoherenceModel(model=ldamodel, texts=tokenized_doc, dictionary=id2word, coherence='c_v')
+    coherence_lda = coherence_model_lda.get_coherence()
+    print('\nCoherence Score: ', coherence_lda)
 
     return ldaResult
 
