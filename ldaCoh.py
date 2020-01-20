@@ -1,7 +1,7 @@
 
 import json
 
-with open("./LDA_model/tokenDoc19.json", "rt", encoding="UTF8") as f:
+with open("./LDA_model/tokenDoc548.json", "rt", encoding="UTF8") as f:
     file = json.load(f)
 #     tknDoc = json.load(f)
 # with open("./LDA_model/tokenDoc19.json") as json_file:
