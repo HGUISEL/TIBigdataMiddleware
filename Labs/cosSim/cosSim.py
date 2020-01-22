@@ -17,6 +17,19 @@ from common import prs
 # data = prs.readyData(30)
 # print(data)
 
-
-
+data = prs.loadData(30)
+# print(type(data))
+# data = data["contents"]
+# print(data)
 ## 3: 분석
+
+from sklearn.feature_extraction.text import TfidfVectorizer
+tfidf = TfidfVectorizer()
+tfidf_mtx = tfidf.fit_transform(data["contents"])
+
+# print(tfidf_mtx.shape)
+
+from sklearn.metrics.pairwise import linear_kernel
+cosine_sim = linear_kernel(tfidf_mtx, tfidf_mtx)
+
+# print(type(cosine_sim[0]))
