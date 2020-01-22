@@ -14,7 +14,7 @@ sys.path.insert(0, './common')
 # Sentence-tokenizer
 import re
 from common import prs
-import cloud
+import tfidf
 # Implement KR-Wordrank
 from krwordrank.hangle import normalize
 from krwordrank.word import KRWordRank
@@ -53,25 +53,25 @@ def hello():
 
 
 
-@app.route("/c2",methods=['GET'])
-def c2():
+@app.route("/tfidfRaw",methods=['GET'])
+def tfidfRaw():
     app = Flask(__name__)
     app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 
     Numdoc = 600
 
-    contents = cloud.getTFIDF(Numdoc)
+    contents = tfidf.getTfidfRaw(Numdoc)
     #return json.dumps(contents, ensure_ascii=False)
     return json.dumps(contents, ensure_ascii=False)
 
-@app.route("/e1",methods=['GET'])
-def e1():
+@app.route("/tfidfTable",methods=['GET'])
+def tfidfTable():
     app = Flask(__name__)
     app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 
     Numdoc = 600
 
-    contents = cloud.getTable(Numdoc)
+    contents = tfidf.getTfidfTable(Numdoc)
     #return json.dumps(contents, ensure_ascii=False)
     return json.dumps(contents, ensure_ascii=False)
 

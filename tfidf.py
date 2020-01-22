@@ -15,7 +15,37 @@ import LDA
     3. gensim에서 tf/idf관련 api를 불러온다
 """
 
-def getTable(Numdoc):
+"""
+    1. 메인 페이지 워드클라우드에 사용되는 tfidf의 저장 디렉토리
+    2. 전체적으로 쓸 tfidf의 저장 디렉토리
+"""
+DIR_HomeGraph = "../TIBigdataFE/src/assets/homes_graph/data.json"
+DIR_EntireTfidf = "../TIBigdataFE/src/assets/entire_tfidf/data.json"     
+
+
+"""
+* **function : getTfidfTable(Numdoc)**
+  * purpose : 전체 문서의 Tfidf 값을 계산하여 테이블(id, title, tfidf)의 형태로 출력 및 저장한다. 
+  * input : 가지고 오려는 문서의 개수(Numdoc)
+  * output : Array 
+               [
+                 {"docID": "5de110274b79a29a5f987f1d", 
+                  "docTitle": "2012년 3차 대북정책 추진에 관한 정책건의 보고서", 
+                  "TFIDF": [["교육", 0.28936509572202457], 
+                            ["통일", 0.23527540105405345], ...
+                 {"docID": "5de1102a4b79a29a5f987f39", 
+                  "docTitle": "2017년 3차 통일정책 추진에 관한 정책건의 보고서", 
+                  "TFIDF": [["평화", 0.2243432052772236], 
+                            ["협약", 0.16538509932002182], ...
+                ]
+
+  * NOTICE : 
+    * 인풋으로 넣어준 문서 수만큼 가져오지만 가져오는 문서는 랜덤으로 가져오는것이 아니라 
+      esfunc에서 불러오는 순서대로 나옴
+    * 현재 문서 600개 기준 okt 는 약 4분 , mecab는 약 10초 의 시간이 걸림
+"""
+
+def getTfidfTable(Numdoc):
     import gensim
     from gensim import corpora
     from gensim.models import TfidfModel
@@ -72,8 +102,7 @@ def getTable(Numdoc):
 
     cmm.showTime()
     #파일로 저장 
-    DIR_FE = "../TIBigdataFE/src/assets/entire_tfidf/data.json"
-    with open(DIR_FE, 'w', -1, "utf-8") as f:
+    with open(DIR_EntireTfidf, 'w', -1, "utf-8") as f:
             json.dump(resultTF, f, ensure_ascii=False)
     
     print("테이블 생성 완료")
@@ -82,9 +111,25 @@ def getTable(Numdoc):
    
     
   
+"""
+* **function : getTfidfRaw(Numdoc)**
+  * purpose : 전체 문서의 Tfidf 값을 계산하여  불러온 순서의 문서 번호(id 아님)와 해당문서의 tfidf 형태로 출력 및 저장한다. 
+  * input : 가지고 오려는 문서의 개수(Numdoc)
+  * output : Array 
+                [
+                 [0, [["교육", 0.28937], ["통일", 0.23528]....
+                 [1, [["평화", 0.22434], ["협약", 0.16539]....
+                ]
+                
+  * NOTICE : 
+    * 인풋으로 넣어준 문서 수만큼 가져오지만 가져오는 문서는 랜덤으로 가져오는것이 아니라 
+      esfunc에서 불러오는 순서대로 나옴
+    * 현재 문서 600개 기준 okt 는 약 4분 , mecab는 약 10초 의 시간이 걸림
+    * 말 그대로 Raw한 형태이기 때문에 활용도가 높지않음 
+"""
 
 
-def getTFIDF(Numdoc):
+def getTfidfRaw(Numdoc):
     import gensim
     from gensim import corpora
     from gensim.models import TfidfModel
@@ -135,8 +180,7 @@ def getTFIDF(Numdoc):
         resultTF.append((i, mainTF))
         
 
-    DIR_FE = "../TIBigdataFE/src/assets/homes_graph/data.json"
-    with open(DIR_FE, 'w', -1, "utf-8") as f:
+    with open(DIR_HomeGraph, 'w', -1, "utf-8") as f:
             json.dump(resultTF, f, ensure_ascii=False)
 
     return resultTF
