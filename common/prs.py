@@ -32,7 +32,7 @@ BACKEND_CONCT = True
 
 
 # Phase 1 : ES에서 문서 쿼리 및 content와 title 분리 전처리
-def loadData():
+def loadData(num_doc = NUM_DOC):
     #if internet connection failed to backend    
     import json
     import sys
@@ -40,6 +40,8 @@ def loadData():
     # print(N
     # UM_DOC)
     global NUM_DOC
+    if NUM_DOC != num_doc:
+        NUM_DOC = num_doc
     print("데이터 로드 중...")
     try :
         if BACKEND_CONCT == False:
