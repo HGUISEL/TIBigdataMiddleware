@@ -78,10 +78,6 @@ def runLda(titles, tokenized_doc):
         print(i,'번째 문서의 topic 비율은',topic_list)
 
 
-
-
-
-
     # topic_lkdhd : topic_likelyhood, 문서 당 최대 경향 토픽만을 산출하기
     # 같은 토픽 별로 정렬
     print()
