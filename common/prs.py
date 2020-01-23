@@ -116,7 +116,6 @@ def dataPrePrcs(contents):
     print("데이터 전처리 완료!")
     return tokenized_doc
 
-
 """
 # functin : readData(int)
 # purpose : 데이터를 로드해서 형태소 분석 전처리까지 하고 데이터 반환
