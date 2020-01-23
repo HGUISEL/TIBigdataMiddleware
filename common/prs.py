@@ -13,10 +13,11 @@ from cmm import showTime
 from cmm import SAMP_DATA_DIR
 import esFunc
 
+# 운영체제에 따라 미캡 모듈이 다르다.
 import os
-if os.name == "nt":
+if os.name == "nt":# 윈도우 운영체제
     from eunjeon import Mecab
-else:
+else:# 현재 리눅스 서버 및 맥은 konlpy으로 미캡 모듈 import
     from konlpy.tag import Mecab
 
 NUM_DOC = 0
@@ -32,6 +33,14 @@ BACKEND_CONCT = True
 
 
 # Phase 1 : ES에서 문서 쿼리 및 content와 title 분리 전처리
+"""
+function : loadData
+purpose : 문서 로드 해준다.
+input : 몇개의 문서의 로드?
+output : dictionary : 
+        {"id" : idList, "titles" : titles, "contents" : contents}
+
+"""
 def loadData(num_doc = NUM_DOC):
     #if internet connection failed to backend    
     import json
