@@ -14,32 +14,17 @@ sys.path.append(str(homeDir))
 
 ## phase 1: 문서 로드 및 전처리
 from common import prs
-# data = prs.readyData(30)
-# print(data)
 
 data = prs.loadData(30)
-# import pandas as pd
-# data = pd.DataFrame.from_dict(data)
-# print(type(data))
-# data = data["contents"]
-# print(data)
-## 3: 분석
 
+## 3: 분석
 from sklearn.feature_extraction.text import TfidfVectorizer
 tfidf = TfidfVectorizer()
 tfidf_mtx = tfidf.fit_transform(data["contents"])
 
-# print(tfidf_mtx.shape)
-
 from sklearn.metrics.pairwise import linear_kernel
 cosine_sim = linear_kernel(tfidf_mtx, tfidf_mtx)
 
-# rcmTable = list(enumerate(cosine_sim[3]))
-# print(rcmTable)
-
-# oneDoc = rcmTable[0]
-# sorted(oneDoc[1],)
-# print(sorted(rcmTable, key=operator.itemgetter(1), reverse=True))
 
 # function : 
 def getRcmd(cosine_sim, index):
@@ -62,4 +47,3 @@ for oneDoc in topF:
     docIdx = oneDoc[0]
     
     print(data["titles"][docIdx])
-# print()
