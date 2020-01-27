@@ -82,16 +82,26 @@ def three():
 #recomandation function
 @app.route('/rcmd', methods=['GET', 'POST'])
 def rcmd():
-    if request.method == 'POST':
-        idList = request.json
-        # keyword = idList["keyword"]
+    print("recomandation function init.")
 
+    if request.method == 'POST':
+        req = request.json
+        idList = req["idList"]
+
+    print("\n\n",idList)
+
+    ## phase 1: 문서 로드 및 전처리
+    from common import prs
+
+    data = prs.loadData(700)
     from cosSim import getRcmd
     rcmdList = []
     for id in idList:
-        rcmdList.append(getRcmd(id))
+        rcmdList.append(getRcmd(data, id))
+    print(rcmdList)
+    print("rcmd function done!")
     
-    return rcmdList
+    return json.dumps(rcmdList, ensure_ascii=False)
 
 
 
