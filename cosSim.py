@@ -48,8 +48,9 @@ def getRcmd(data, id):
         tempSort = sorted(rcmdTbl, key=operator.itemgetter(1), reverse=True)
         topFiveRcmd = []
         for i, obj in enumerate(tempSort):
-            if i > 5:
+            if i > 4:
                 break
+            print(str(i) + "th index fin!")
             topFiveRcmd.append(obj)
 
         ids = data["id"]
