@@ -20,7 +20,8 @@ sys.path.insert(0, './common')
 
 # Sentence-tokenizer
 import re
-
+from common import prs
+import tfidf
 # Implement KR-Wordrank
 from krwordrank.hangle import normalize
 from krwordrank.word import KRWordRank
@@ -45,11 +46,41 @@ api = Api(app)
 CORS(app, support_credentials=True)
 
 
-@app.route("/hello")
+@app.route("/hello",methods=['GET'])
 def hello():
-    contents = json.dumps("한글")
-    return contents
+    app = Flask(__name__)
+    app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
+    contents = "ndllocvcv"
 
+    from konlpy.tag import Mecab
+    tagger = Mecab()
+    t = tagger.pos("고양이는 양옹뉴턴야옹")
+    print("========================================")
+    return json.dumps(t, ensure_ascii=False)
+
+
+
+@app.route("/tfidfRaw",methods=['GET'])
+def tfidfRaw():
+    app = Flask(__name__)
+    app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
+
+    Numdoc = 600
+
+    contents = tfidf.getTfidfRaw(Numdoc)
+    #return json.dumps(contents, ensure_ascii=False)
+    return json.dumps(contents, ensure_ascii=False)
+
+@app.route("/tfidfTable",methods=['GET'])
+def tfidfTable():
+    app = Flask(__name__)
+    app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
+
+    Numdoc = 600
+
+    contents = tfidf.getTfidfTable(Numdoc)
+    #return json.dumps(contents, ensure_ascii=False)
+    return json.dumps(contents, ensure_ascii=False)
 
 #########################################
 # 191227 ES Test update : use esFunc module
@@ -75,7 +106,7 @@ def three():
     app = Flask(__name__)
     app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
     
-    result = LDA.LDA(10)
+    result = LDA.LDA(10) ##문서 10개 돌림 
     # print
     return json.dumps(result, ensure_ascii=False)
 
@@ -189,7 +220,7 @@ def draw():
     offset = 10
 
     # From 1950 ~ 2020
-    for i in range(0, 7):
+    for i in range(0, 8):
 
         allDocs = {
             "query": {
@@ -252,7 +283,7 @@ def draw():
     resultWholeArr = []
     resultSearchArr = []
     # Angular Data Format{ y: 150, label: "Dec" }
-    for i in range(0, 7):
+    for i in range(0, 8):
         dic["y"] = wholeDataArr[i]
         dic["label"] = str(startYear+(i*offset))
 
