@@ -129,7 +129,7 @@ def rcmd():
     rcmdList = []
     for id in idList:
         rcmdList.append(getRcmd(data, id))
-    print(rcmdList)
+    print(len(rcmdList))
     print("rcmd function done!")
     
     return json.dumps(rcmdList, ensure_ascii=False)
