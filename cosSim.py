@@ -19,7 +19,8 @@ from sklearn.metrics.pairwise import linear_kernel
 import operator
 
 # function : 
-def getRcmd(data, id):
+def getSimTbl(data):
+
     # ## phase 1: 문서 로드 및 전처리
     # from common import prs
 
@@ -27,45 +28,79 @@ def getRcmd(data, id):
 
     ## 3: 분석
     tfidf = TfidfVectorizer()
-    tfidf_mtx = tfidf.fit_transform(data["contents"])
+    tfidf_mtx = tfidf.fit_transform(data)
 
     cosine_sim = linear_kernel(tfidf_mtx, tfidf_mtx)
+    # save tfidf result
+    import json
+    with open('./cosSim/skl_tfidf.json', 'w') as fp:
+        json.dump(cosine_sim.tolist(), fp)
 
-    # doc id가 cossinSim 리스트에 몇번째 것인지 파악해야 한다.
-    ids = data["id"]
-    # for i in ids:
-        # print(i)
 
-    rcndList = []
+    return cosine_sim
 
-    try:
-        index = ids.index(id)
     
 
-        #recommendation table
-        rcmdTbl = list(enumerate(cosine_sim[index]))
+def getRcmd(idList, calc = False):
+    from common import prs
 
-        tempSort = sorted(rcmdTbl, key=operator.itemgetter(1), reverse=True)
-        topFiveRcmd = []
-        for i, obj in enumerate(tempSort):
-            if i > 4:
-                break
-            print(str(i) + "th index fin!")
-            topFiveRcmd.append(obj)
+    if calc == True:
+        data = prs.loadData(700)
+        import json
+        with open('./cosSim/data.json', 'w') as fp:
+            json.dump(data, fp)
 
-        ids = data["id"]
-        # rcndList = []
-        for oneDoc in topFiveRcmd:
-            docIdx = oneDoc[0]#몇번째 문서인지 알려준다.
-            # 그 몇번째 문서가... id가 뭔지 찾아야 한다.
-            # rcndList.append(ids[docIdx])#id을 담기
-            rcndList.append(data["titles"][docIdx])#제목을 담기
-            # print(data["titles"][docIdx])
+        cosine_sim = getSimTbl(data["contents"])
+    else:
+        import json
+        with open('./cosSim/skl_tfidf.json', 'r') as fp:
+            cosine_sim = json.load(fp)
+        with open('./cosSim/data.json', 'r') as fp:
+            data = json.load(fp)
+    # doc id가 cossinSim 리스트에 몇번째 것인지 파악해야 한다.
+    ids = data["id"]
+    # rcndList = []
+        # print(i)
+    rcmdListAll = []
 
-    except:
-        print("error at id ", id)
+    for id in idList:
+        try:
+            index = ids.index(id)
+        
 
-    return { "id" : id, "rcmd" : rcndList }
+            #recommendation table
+            rcmdTbl = list(enumerate(cosine_sim[index]))
+
+            tempSort = sorted(rcmdTbl, key=operator.itemgetter(1), reverse=True)
+            topFiveRcmd = []
+            for i, oneRcmd in enumerate(tempSort):
+                # if i == 0:
+                    # continue
+                if i > 5:
+                    break
+                print(str(i) + "th index fin!")
+                
+                topFiveRcmd.append(oneRcmd)
+                # docIdx = oneRcmd[0]
+                # rcmdList.append()
+
+            # ids = data["id"]
+            rcmdList = []
+            for oneDoc in topFiveRcmd:
+                docIdx = oneDoc[0]#몇번째 문서인지 알려준다.
+                # 그 몇번째 문서가... id가 뭔지 찾아야 한다.
+                # rcmdList.append(ids[docIdx])#id을 담기
+                rcmdList.append(data["titles"][docIdx])#제목을 담기
+                # print(data["titles"][docIdx])
+
+            rcmdListAll.append({"id" : id, "rcmd" : rcmdList})
+
+        except:
+            print("error at id ", id)
+    
+
+    return rcmdListAll
+    # return { "id" : id, "rcmd" : rcndList }
     """
         angular
             검색 결과 페이지에서 전체 id을 array으로 가지고 있다.
@@ -83,6 +118,13 @@ def getRcmd(data, id):
                 
                 디버깅을 위해서 띄워야 할 정보 : 그 문서의 내용?
     """
+
+
+if __name__ == "__main__":
+    from common import prs
+
+    data = prs.loadData(700)
+    cosine_sim = getSimTbl(data["contents"])
 
 
 # print(getRcmd("5de1109d582a23c9693cbec9"))
