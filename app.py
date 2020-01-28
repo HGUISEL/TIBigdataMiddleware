@@ -122,14 +122,15 @@ def rcmd():
     print("\n\n",idList)
 
     ## phase 1: 문서 로드 및 전처리
-    from common import prs
+    # from common import prs
 
-    data = prs.loadData(700)
+    # data = prs.loadData(700)
     from cosSim import getRcmd
-    rcmdList = []
-    for id in idList:
-        rcmdList.append(getRcmd(data, id))
-    print(len(rcmdList))
+    rcmdList = getRcmd(idList)
+    # rcmdList = []
+    # for id in idList:
+        # rcmdList.append(getRcmd(data, id))
+    # print(len(rcmdList))
     print("rcmd function done!")
     
     return json.dumps(rcmdList, ensure_ascii=False)
