@@ -119,21 +119,11 @@ def rcmd():
         req = request.json
         idList = req["idList"]
 
-    print("\n\n",idList)
+    print("Get id list from Front-End: ",idList)
 
-    ## phase 1: 문서 로드 및 전처리
-    # from common import prs
-
-    # data = prs.loadData(700)
     from cosSim import getRcmd
     rcmdList = getRcmd(idList)
-    # rcmdList = []
-    # for id in idList:
-        # rcmdList.append(getRcmd(data, id))
-    # print(len(rcmdList))
     print("rcmd function done!")
-
-    
     
     return json.dumps(rcmdList, ensure_ascii=False)
 
