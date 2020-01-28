@@ -131,6 +131,8 @@ def rcmd():
         rcmdList.append(getRcmd(data, id))
     print(len(rcmdList))
     print("rcmd function done!")
+
+    
     
     return json.dumps(rcmdList, ensure_ascii=False)
 
