@@ -20,7 +20,6 @@ sys.path.insert(0, './common')
 
 # Sentence-tokenizer
 import re
-from common import prs
 import tfidf
 # Implement KR-Wordrank
 from krwordrank.hangle import normalize
@@ -121,8 +120,8 @@ def rcmd():
 
     print("Get id list from Front-End: ",idList)
 
-    from cosSim import getRcmd
-    rcmdList = getRcmd(idList)
+    from rcmdHelper import rcmd
+    rcmdList = rcmd.getRcmd(idList)
     print("rcmd function done!")
     
     return json.dumps(rcmdList, ensure_ascii=False)
