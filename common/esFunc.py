@@ -1,8 +1,12 @@
 from elasticsearch import Elasticsearch
 import json
+import os
+import sys
+
+file_dir = os.path.dirname(__file__)
+sys.path.append(file_dir)
+
 from cmm import SAMP_DATA_DIR
-
-
 
 backEndUrl = "http://203.252.103.86:8080"
 es = Elasticsearch(backEndUrl)
