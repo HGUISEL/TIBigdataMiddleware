@@ -577,6 +577,7 @@ def esGetDocsV1(totalSize):
 DEFAULT_SAVE = 20
 def esGetDocsSave(docSize = DEFAULT_SAVE):
     data = esGetDocs(docSize)
+    docSize = len(data)
     if docSize == DEFAULT_SAVE:
         docSize = ""
     with open(SAMP_DATA_DIR + 'rawData'+str(docSize)+".json", 'w', -1, "utf-8") as f:
