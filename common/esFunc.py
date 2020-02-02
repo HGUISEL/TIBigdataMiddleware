@@ -259,7 +259,7 @@ def esGetDocs(total):
                 # return false
                 # less이니까 최대한으로 가져간다.
                 numReqFileDoc = numFileDoc
-                total = numNfDoc + numFileDoc # total 가능한 수대로 조정해줘야 함
+    total = numNfDoc + numFileDoc # total 가능한 수대로 조정해줘야 함
     
     corpus = []
 
