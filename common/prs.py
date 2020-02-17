@@ -51,6 +51,7 @@ def loadData(num_doc = NUM_DOC):
     global NUM_DOC
     if NUM_DOC != num_doc:
         NUM_DOC = num_doc
+        print("NUM_DOC updated to ", NUM_DOC)
     print("데이터 로드 중...")
     try :
         if BACKEND_CONCT == False:
@@ -73,7 +74,9 @@ def loadData(num_doc = NUM_DOC):
         
         print("connection to Backend server failed!")
     showTime() 
-    NUM_DOC = len(corpus) # 전체 사용 가능한 문서 수를 업데이트한다. 
+    NUM_DOC = len(corpus) # 전체 사용 가능한 문서 수를 업데이트한다.
+    print("NUM_DOC updated to ", NUM_DOC)
+ 
     print("문서 로드 완료!")
     print()
 
@@ -98,6 +101,8 @@ def loadData(num_doc = NUM_DOC):
             count += 1
 
     NUM_DOC = len(contents)
+    print("NUM_DOC updated to ", NUM_DOC)
+
     print(count,"개의 문서가 내용이 없음")
     print("투입된 문서의 수 : %d" %(NUM_DOC))
 
@@ -127,6 +132,7 @@ def dataPrePrcs(contents):
     print("데이터 전처리 완료!")
     return tokenized_doc
 
+
 """
 # functin : readData(int)
 # purpose : 데이터를 로드해서 형태소 분석 전처리까지 하고 데이터 반환
@@ -154,7 +160,7 @@ def readyData(num_doc, isCont = False):
           "\nBACKEND CONNECTION OPTION : ", str(BACKEND_CONCT),
           "\nRANDOM ORDER OPTION : ", str(RANDOM_MODE)
          )
-    corpusIdTtlCtt = loadData()# load data and update NUM_DOC
+    corpusIdTtlCtt = loadData(NUM_DOC)# load data and update NUM_DOC
     idList = corpusIdTtlCtt["id"]
     titles = corpusIdTtlCtt["titles"]
     contents = corpusIdTtlCtt["contents"]
