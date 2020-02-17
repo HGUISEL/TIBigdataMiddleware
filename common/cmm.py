@@ -7,7 +7,7 @@ purpose : common features for all algorithm usage
 import time
 from datetime import datetime
 
-SAMP_DATA_DIR = "./raw data sample/rawData30.json" 
+SAMP_DATA_DIR = "./raw data sample/" 
 
 LDA_DIR_FE = "../TIBigdataFE/src/assets/special_first/data.json"
 
