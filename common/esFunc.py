@@ -184,7 +184,7 @@ def nkdbFile(SIZE):
     * 만약 한쪽에서 수가 모자라면 부족한 부분을 다른 쪽에서 채운다. 
     * 만약 전체 DB에 있는 데이터보다 많은 양을 요청하면 DB에 저장되어 있는 수만 반환.
 """
-def esGetDocs(total):
+def esGetDocs2(total):
     """
         먼저 file 있는 문서의 개수와 없는 문서의 개수를 카운트
 
@@ -259,7 +259,7 @@ def esGetDocs(total):
                 # return false
                 # less이니까 최대한으로 가져간다.
                 numReqFileDoc = numFileDoc
-                total = numNfDoc + numFileDoc # total 가능한 수대로 조정해줘야 함
+    total = numNfDoc + numFileDoc # total 가능한 수대로 조정해줘야 함
     
     corpus = []
 
@@ -270,6 +270,164 @@ def esGetDocs(total):
         # corpus.append((oneDoc["post_title"], oneDoc["file_extracted_content"]))
         corpus.append(oneDoc)
     data = nkdbNoFile(numReqNfDoc)
+    for oneDoc in data:
+        # if oneDoc["post_body"]:# 내용이 비어있는 문서는 취하지 않는다. if string ="", retrn false.
+        # corpus.append((oneDoc["post_title"], oneDoc["post_body"]))
+        corpus.append(oneDoc)
+
+    
+    
+    print("응답 받아 전송한 문서의 수 : ", total)
+
+
+    return corpus
+
+
+def esGetDocsHelper(numReqBodyDoc, fNum, numReqFileDoc):
+    dNum = numBodyDoc - numReqBodyDoc
+
+    """
+        dNum = numBodyDoc - numReqBodyDoc
+        if dNum >0 : 여기 양이 남는다.
+
+        if dNum <= 0: 여기 양이 부족하거나 꼭 맞는다. 못도와준다.
+
+        if fNum > 0:
+            저쪽에서 양이 남는다.
+        if fNum < 0:
+            저쪽에서 양이 부족하다. 여기서 도와달라고 하는 것이다.
+
+
+        + + => return false, numReqBodyDoc 안도와줘도 돼
+        if dNum > 0 and fNum > 0:
+            numReqD
+        + - => return true,  numReqBodyDoc, dNum : 도와줘 => 유일하게 업데이트를 요구한다. dnum만큼 더 도와줘.
+        - + => return false, numReqBodyDoc 너희꺼 같이 넣었어
+        - - => return false, numReqBodyDoc 나도 못도와줘...
+    """
+    if dNum <= 0:
+        return -1
+    else:
+        # 감당할 수 있다면 모두.
+        if dNum >= fNum:
+            numReqBodyDoc += fNum
+        # 없다면 남은 수량만큼...
+        else:
+            numReqBodyDoc += dNum
+    return numReqBodyDoc
+
+def esGetDocs(total):
+    """
+        먼저 file 있는 문서의 개수와 없는 문서의 개수를 카운트
+
+        Y - Y 
+        Y - N - Y or N
+        N - Y 
+        N - N 
+
+        if numReqFileDoc > numFileDoc
+            if numReqNFileDoc 
+            모자란 수 넘긴다._
+        else(안모자라면) pass. 
+
+        if numReqNfileDoc > numNfileDoc
+            모자라면 수 넘긴다. 
+    
+    
+        if less:
+            if ask other corpus() == true
+                return true
+            if ask other courpus () == false
+                return false
+
+        if enougn 
+            if ask other courpus() == true
+                return true
+            if ask other courpus() == false
+                if ask this courpus() == true
+                    return true
+                if ask this corpus() == false
+                    return false
+
+    """
+    print("요청받은 문서의 수 : ", total)
+
+    # post body doc : bodyDoc
+    # attatch file doc : fileDoc
+
+    if total == 1:
+        return esGetADoc()
+
+
+    if total % 2 == 0:
+            numReqBodyDoc = numReqFileDoc = total / 2
+    else:
+        numReqBodyDoc = total / 2 + 1
+        numReqFileDoc = total / 2
+    numReqBodyDoc = int(numReqBodyDoc)
+    numReqFileDoc = int(numReqFileDoc)
+
+    # numReqFileDoc 
+    # numReqBodyDoc 
+    numFileDoc = esCount(genQuery(isFile = True))
+    numBodyDoc = esCount(genQuery(isFile = False))
+
+    fNum = numFileDoc - numReqFileDoc
+    dNum = numBodyDoc - numReqBodyDoc
+
+    if fNum > 0 and dNum > 0:
+        pass
+    elif fNum > 0 and dNum < 0:
+        numReqFileDoc += fNum
+        numReqBodyDoc = numBodyDoc
+    elif fNum < 0 and dNum > 0:
+        numReqFileDoc = numFileDoc
+        numReqBodyDoc += dNum
+    elif fNum <= 0 and dNum <= 0:
+        numReqFileDoc = numFileDoc
+        numReqBodyDoc = numBodyDoc
+
+    # fFlag = True
+    # bFlag = True
+
+    # fLeftOVer = 0
+    # bLeftOVer = 0
+
+    """
+    if 여기서 부족하면
+        이쪽 문을 닫는다.
+        저쪽을 체크.
+        저쪽이 가능하면 저쪽으로 넘긴다.
+            저쪽에서 해결 가능하면 저쪽에서 담당.
+            불가하면 가능한 곳까지 하고 끝.
+        저쪽이 안되면 끝.
+    여기가 가능하면
+        남는 여분 생각해둔다.
+        문을 열어둠.
+        저쪽을 생각해보면... 
+            저쪽이 가능하면 끝.
+            저쪽이 불가능하면 이쪽으로 넘겨서 부족분을 담당.
+                불가능하면 가능한만큼.
+    """
+
+
+    # map(lamba x : ,)
+
+    # if fFlag == False and bFlag == False
+        # return 
+
+    
+    total = numBodyDoc + numFileDoc # total 가능한 수대로 조정해줘야 함
+    
+    corpus = []
+
+    data = nkdbFile(numReqFileDoc)
+    # print(data)
+    for oneDoc in data:
+        # if oneDoc["file_extracted_content"]:# 내용이 비어있는 문서는 취하지 않는다. if string ="", retrn false.
+        # corpus.append((oneDoc["post_title"], oneDoc["file_extracted_content"]))
+        corpus.append(oneDoc)
+    data = nkdbNoFile(numReqBodyDoc)
     for oneDoc in data:
         # if oneDoc["post_body"]:# 내용이 비어있는 문서는 취하지 않는다. if string ="", retrn false.
         # corpus.append((oneDoc["post_title"], oneDoc["post_body"]))
@@ -577,6 +735,7 @@ def esGetDocsV1(totalSize):
 DEFAULT_SAVE = 20
 def esGetDocsSave(docSize = DEFAULT_SAVE):
     data = esGetDocs(docSize)
+    docSize = len(data)
     if docSize == DEFAULT_SAVE:
         docSize = ""
     with open(SAMP_DATA_DIR + 'rawData'+str(docSize)+".json", 'w', -1, "utf-8") as f:
