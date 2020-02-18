@@ -114,13 +114,16 @@ def getRcmd(idList, calc = False):
                 # rcmdList.append()
 
             rcmdList = []
+            rcmdListId = []
             for oneDoc in topFiveRcmd:
                 docIdx = oneDoc[0]#몇번째 문서인지 알려준다.
                 # 그 몇번째 문서가... id가 뭔지 찾아야 한다.
                 # rcmdList.append(ids[docIdx])#id을 담기
                 rcmdList.append(data["titles"][docIdx])#제목을 담기
+                rcmdListId.append(data["id"][docIdx])
 
-            rcmdListAll.append({"id" : id, "rcmd" : rcmdList})
+            rcmdListAll.append({"id" : rcmdListId, "rcmd" : rcmdList})
+            # rcmdListAll.append({"id" : id, "rcmd" : rcmdList})
 
         except:
             print("error at id ", id)
