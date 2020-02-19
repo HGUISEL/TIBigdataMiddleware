@@ -20,7 +20,16 @@ sys.path.append(file_dir)
 
 # static directory
 TFIDF_DIR = "./rcmdHelper/skl_tfidf.json"
-ID_TABLE_DIR = "./rcmdHelper/data_id_table.json"
+DATA_DIR = "./rcmdHelper/data.json"
+
+# else:
+# phase 1-2: 저장되어 있는 tf-idf 값과 data 정보 불러옴
+import json
+with open(TFIDF_DIR, 'r') as fp:
+    cosine_sim = json.load(fp)
+with open(DATA_DIR, 'r',encoding="utf-8") as fp:
+    data = json.load(fp)
+print("rcmd file loaded!")
 
 
 """
@@ -34,8 +43,8 @@ ID_TABLE_DIR = "./rcmdHelper/data_id_table.json"
                 ...
             ]
 """
-def getSimTbl(data):
-
+def getSimTbl(data = data):
+    global cosine_sim
     from sklearn.feature_extraction.text import TfidfVectorizer
     from sklearn.metrics.pairwise import linear_kernel
     tfidf = TfidfVectorizer()
@@ -69,14 +78,21 @@ def getSimTbl(data):
     * calc = false으로 호출하면 기존에 저장해둔 정보를 사용한다. 아주 빠르게 프론트엔드에 응답해준다. defualt값.
 """
 def getRcmd(idList, calc = False):
+    from cmm import showTime
+    from cmm import startTime
+    start = startTime()
+    global data
+    global cosine_sim
+
+
     # phase 1: TF-IDF을 새로 업데이트하여 출력할 것인지 결정
     if calc == True:
     # phase 1-1: 문서 로드 및 새로 tfidf 테이블을 만든다.
         from common import prs
         data = prs.loadData(700)
         import json
-        with open(ID_TABLE_DIR, 'w',encoding="utf-8") as fp:
-            json.dump(data["id"], fp,ensure_ascii=False)
+        with open(DATA_DIR, 'w',encoding="utf-8") as fp:
+            json.dump(data, fp,ensure_ascii=False)
 
         cosine_sim = getSimTbl(data["contents"])
         """
@@ -101,16 +117,19 @@ def getRcmd(idList, calc = False):
         with open(TFIDF_DIR, 'w') as fp:
             json.dump(sort_cos_sim, fp)
 
-    else:
-    # phase 1-2: 저장되어 있는 tf-idf 값과 data 정보 불러옴
-        import json
-        with open(TFIDF_DIR, 'r') as fp:
-            cosine_sim = json.load(fp)
-        with open(ID_TABLE_DIR, 'r',encoding="utf-8") as fp:
-            data = json.load(fp)
-
+    # else:
+    # # phase 1-2: 저장되어 있는 tf-idf 값과 data 정보 불러옴
+    #     import json
+    #     with open(TFIDF_DIR, 'r') as fp:
+    #         cosine_sim = json.load(fp)
+    #     with open(DATA_DIR, 'r',encoding="utf-8") as fp:
+    #         data = json.load(fp)
+    # showTime(start)
     # FE에서 요청한 각 문서가 cossinSim 리스트의 몇번째 문서인지 파악해야 한다.
     ids = data["id"]
+    # print(ids)
+
+    import traceback
 
     rcmdListAll = []
     for id in idList:
@@ -130,9 +149,13 @@ def getRcmd(idList, calc = False):
                 rcmdListId.append(data["id"][docIdx])
 
             rcmdListAll.append({"id" : rcmdListId, "rcmd" : rcmdList})
-        except:
+        except Exception as e:
+        # traceback.print_exc()
+            print('Error: {}. {}'.format(sys.exc_info()[0],
+                    sys.exc_info()[1]))
             print("error at id ", id)
     
+    showTime(start)
 
     return rcmdListAll
 
