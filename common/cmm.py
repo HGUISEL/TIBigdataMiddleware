@@ -16,6 +16,9 @@ now = datetime.now()
 print("Warning! : current version has initialize twice the cmm module...need to be fixed later on...")
 start = time.time()
 
+def startTime():
+    return time.time()
+
 # time taken evaluation
 def showTime(start = start):
     seconds = time.time() - start
