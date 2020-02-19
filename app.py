@@ -118,7 +118,7 @@ def rcmd():
         req = request.json
         idList = req["idList"]
 
-    print("Get id list from Front-End: ",idList)
+    # print("Get id list from Front-End: ",idList)
 
     from rcmdHelper import rcmd
     rcmdList = rcmd.getRcmd(idList)

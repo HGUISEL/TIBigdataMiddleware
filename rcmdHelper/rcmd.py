@@ -107,7 +107,7 @@ def getRcmd(idList, calc = False):
                     # continue
                 if i > 5:
                     break
-                print(str(i) + "th index fin!")
+                # print(str(i) + "th index fin!")
                 
                 topFiveRcmd.append(oneRcmd)
                 # docIdx = oneRcmd[0]
