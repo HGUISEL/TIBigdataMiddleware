@@ -20,7 +20,7 @@ sys.path.append(file_dir)
 
 # static directory
 TFIDF_DIR = "./rcmdHelper/skl_tfidf.json"
-DATA_DIR = "./rcmdHelper/data.json"
+ID_TABLE_DIR = "./rcmdHelper/data_id_table.json"
 
 
 """
@@ -75,8 +75,8 @@ def getRcmd(idList, calc = False):
         from common import prs
         data = prs.loadData(700)
         import json
-        with open(DATA_DIR, 'w',encoding="utf-8") as fp:
-            json.dump(data, fp,ensure_ascii=False)
+        with open(ID_TABLE_DIR, 'w',encoding="utf-8") as fp:
+            json.dump(data["id"], fp,ensure_ascii=False)
 
         cosine_sim = getSimTbl(data["contents"])
         """
@@ -106,7 +106,7 @@ def getRcmd(idList, calc = False):
         import json
         with open(TFIDF_DIR, 'r') as fp:
             cosine_sim = json.load(fp)
-        with open(DATA_DIR, 'r',encoding="utf-8") as fp:
+        with open(ID_TABLE_DIR, 'r',encoding="utf-8") as fp:
             data = json.load(fp)
 
     # FE에서 요청한 각 문서가 cossinSim 리스트의 몇번째 문서인지 파악해야 한다.
@@ -116,48 +116,20 @@ def getRcmd(idList, calc = False):
     for id in idList:
         try:
             index = ids.index(id)# FE에서 요청한 각 문서의 index을 파악
-        
 
             #recommendation table
             rcmdTbl = cosine_sim[index]
             
-            # print(rcmdTbl)
-
-            # import operator
-            # tempSort = sorted(rcmdTbl, key=operator.itemgetter(1), reverse=True)
-            # topFiveRcmd = []
             rcmdList = []
             rcmdListId = []
             for i, oneRcmd in enumerate(rcmdTbl):
-                # if i == 0:
-                    # continue
-                # print(i)
                 if i > 5:
                     break
-                # print(str(i) + "th index fin!")
-                # topFiveRcmd.append(oneRcmd)
-                # for oneDoc in oneRcmd:
                 docIdx = oneRcmd[0]#몇번째 문서인지 알려준다.
-                # print(oneRcmd)
-                # 그 몇번째 문서가... id가 뭔지 찾아야 한다.
-                # rcmdList.append(ids[docIdx])#id을 담기
                 rcmdList.append(data["titles"][docIdx])#제목을 담기
                 rcmdListId.append(data["id"][docIdx])
-                # docIdx = oneRcmd[0]
-                # rcmdList.append()
-
-            # rcmdList = []
-            # rcmdListId = []
-            # for oneDoc in topFiveRcmd:
-            #     docIdx = oneDoc[0]#몇번째 문서인지 알려준다.
-            #     # 그 몇번째 문서가... id가 뭔지 찾아야 한다.
-            #     # rcmdList.append(ids[docIdx])#id을 담기
-            #     rcmdList.append(data["titles"][docIdx])#제목을 담기
-            #     rcmdListId.append(data["id"][docIdx])
 
             rcmdListAll.append({"id" : rcmdListId, "rcmd" : rcmdList})
-            # rcmdListAll.append({"id" : id, "rcmd" : rcmdList})
-            # print(rcmdListAll)
         except:
             print("error at id ", id)
     
