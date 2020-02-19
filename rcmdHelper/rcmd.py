@@ -119,7 +119,7 @@ def getRcmd(idList, calc = False):
         
 
             #recommendation table
-            rcmdTbl = list(enumerate(cosine_sim[index]))
+            rcmdTbl = cosine_sim[index]
             
             # print(rcmdTbl)
 
@@ -131,12 +131,14 @@ def getRcmd(idList, calc = False):
             for i, oneRcmd in enumerate(rcmdTbl):
                 # if i == 0:
                     # continue
+                # print(i)
                 if i > 5:
                     break
                 # print(str(i) + "th index fin!")
                 # topFiveRcmd.append(oneRcmd)
                 # for oneDoc in oneRcmd:
-                docIdx = oneDoc[0]#몇번째 문서인지 알려준다.
+                docIdx = oneRcmd[0]#몇번째 문서인지 알려준다.
+                # print(oneRcmd)
                 # 그 몇번째 문서가... id가 뭔지 찾아야 한다.
                 # rcmdList.append(ids[docIdx])#id을 담기
                 rcmdList.append(data["titles"][docIdx])#제목을 담기
@@ -155,7 +157,7 @@ def getRcmd(idList, calc = False):
 
             rcmdListAll.append({"id" : rcmdListId, "rcmd" : rcmdList})
             # rcmdListAll.append({"id" : id, "rcmd" : rcmdList})
-
+            # print(rcmdListAll)
         except:
             print("error at id ", id)
     
