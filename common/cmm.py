@@ -17,7 +17,7 @@ print("Warning! : current version has initialize twice the cmm module...need to 
 start = time.time()
 
 # time taken evaluation
-def showTime():
+def showTime(start = start):
     seconds = time.time() - start
     m, s = divmod(seconds, 60)
     h, m = divmod(m, 60)
