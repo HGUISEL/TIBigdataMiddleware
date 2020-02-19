@@ -8,6 +8,7 @@ from operator import itemgetter
 import time
 import json
 import sys
+from rcmdHelper import rcmd as rc
 
 import os
 if os.name == "nt":
@@ -120,8 +121,7 @@ def rcmd():
 
     # print("Get id list from Front-End: ",idList)
 
-    from rcmdHelper import rcmd
-    rcmdList = rcmd.getRcmd(idList)
+    rcmdList = rc.getRcmd(idList)
     print("rcmd function done!")
     
     return json.dumps(rcmdList, ensure_ascii=False)
