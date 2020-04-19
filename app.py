@@ -33,7 +33,7 @@ app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 
 
 # Url address of Elasticsearch
-serverUrl = "http://203.252.103.86:8080"
+serverUrl = "http://203.252.103.86:8088"
 # localUrl="http://localhost:9200"
 
 

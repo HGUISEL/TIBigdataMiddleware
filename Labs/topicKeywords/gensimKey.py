@@ -5,11 +5,12 @@ from gensim.summarization import keywords
 
 
 def gensimKey():
-    DIR_FE = "../../TIBigdataFE/src/assets/special_first/ctgRNNResult.json"
+    DIR_FE = "../../../TIBigdataFE/src/assets/special_first/ctgRNNResult.json"
 
     with open(DIR_FE, 'r', encoding='utf-8') as fp:
         data = json.load(fp)
 
+    totalStr = ""
     for i in range(len(data)):
 
         corpus = data[i]["doc"]
@@ -40,10 +41,11 @@ def gensimKey():
                 #     print("error in : ", j)
                 #     print(doc["words"],"\n")
                 # " ".join()
-            result = keywords(oneStr, words=15, scores=True)
-            print(result)
-            with open("./wr"+data[i]["topic"]+".json", 'w', -1, "utf-8") as f:
-                json.dump(result, f, ensure_ascii=False)
+            # result = keywords(oneStr, words=15, scores=True)
+            # print(result)
+            # with open("./wr"+data[i]["topic"]+".json", 'w', -1, "utf-8") as f:
+            #     json.dump(result, f, ensure_ascii=False)
+            totalStr += oneStr
         else:
             contents = []
             for doc in corpus:
@@ -53,7 +55,10 @@ def gensimKey():
             print("데이터 전처리 중... It may takes few hours...")
             tokenized_doc = [tagger.nouns(contents[cnt])
                             for cnt in range(len(contents))]
-
+    result = keywords(totalStr, words=15, scores=True)
+    print(result)
+    with open("./wr"+"total"+".json", 'w', -1, "utf-8") as f:
+        json.dump(result, f, ensure_ascii=False)
     # with open("krWl.txt", "r" ,encoding='utf-8') as f:
     #     texts = f.read()
         # print(f.read())
@@ -70,4 +75,4 @@ def gensimKey():
 
 
 if __name__ == "__main__":
-    textRank()
+    gensimKey()
