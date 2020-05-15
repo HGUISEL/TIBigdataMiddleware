@@ -5,11 +5,6 @@ FILE_DIR = "../../raw data sample/rawrawData.json"
 with open(FILE_DIR,'r', encoding="utf-8") as fp:
     esData = json.load(fp)
 
-# print(type(esData))
-# print(len(esData))
-# print(len(esData[0]))
-# print(type(esData[0]))
-# print(len(esData['hits']['hits']))
 meaningful_data = esData['hits']['hits']
 
 body = ""
@@ -40,31 +35,21 @@ for i,d in enumerate(meaningful_data):
     body += '\r\n'
     if(i == 1):
         print(body)
-# print(body)
 
 from elasticsearch import Elasticsearch
+import socket
+def get_ip_address():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(("8.8.8.8", 80))
+    return s.getsockname()[0]
+
+
+
 DB_URL = "http://localhost:9200/nkdb"
+# DB_URL = get_ip_address()  # '192.168.0.110'
+# if(DB_URL != 203.252.103.123):
+#   DB_URL = "http://localhost:9200/nkdb"
+print(DB_URL)
 es = Elasticsearch(DB_URL)
 es.bulk(body)
 
-
-# print("meaningful_data[0].keys() : \n", meaningful_data[0]["_source"].keys())
-# data = meaningful_data[0]
-# print(data)
-
-
-# for att in esData[0]:
-    # print(att)
-
-# url = "localhost:9200/nkdb/_bulk"
-"""
-{"index": {"_index": "your_index", "_type": "your_type", "_id": "975463711"}}
-{"Amount": "480", "Quantity": "2", "Id": "975463711", "Client_Store_sk": "1109"}
-{"index": {"_index": "your_index", "_type": "your_type", "_id": "975463943"}}
-{"Amount": "2105", "Quantity": "2", "Id": "975463943", "Client_Store_sk": "1109"}
-
-{"index": {"_id": "1234#5678"}}
-{"field": "value", "number": 34}
-{"index": {"_id": "5555#7896"}}
-{"field": "another", "number": 45}
-"""
