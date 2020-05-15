@@ -10,7 +10,6 @@ meaningful_data = esData['hits']['hits']
 body = ""
 
 for i,d in enumerate(meaningful_data):
-    # print(d['_id'])
     body +=         json.dumps({'index' : 
     {
     '_index' : d['_index'],
@@ -52,4 +51,3 @@ DB_URL = "http://localhost:9200/nkdb"
 print(DB_URL)
 es = Elasticsearch(DB_URL)
 es.bulk(body)
-
