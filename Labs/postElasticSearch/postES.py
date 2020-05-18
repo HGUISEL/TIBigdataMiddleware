@@ -45,9 +45,5 @@ def get_ip_address():
 
 
 DB_URL = "http://localhost:9200/nkdb"
-# DB_URL = get_ip_address()  # '192.168.0.110'
-# if(DB_URL != 203.252.103.123):
-#   DB_URL = "http://localhost:9200/nkdb"
-print(DB_URL)
 es = Elasticsearch(DB_URL)
 es.bulk(body)
