@@ -6,7 +6,7 @@
 * run elasticsearch in local with port 9200(default port)
 * make sure there is rawrawData.json file in middleware/raw sample data/
 * run python3 postES.py
-* check if the data is saved in bash
+* check if the data is saved in ES using bash
 ```
     curl -XGET "localhost:9200/nkdb/_search"
 ```
