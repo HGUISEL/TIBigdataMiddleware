@@ -40,8 +40,10 @@ def get_ip_address():
     return s.getsockname()[0]
 
 serverUrl = get_ip_address()  # '192.168.0.110'
-if(serverUrl != "http://203.252.103.123:9200"):
+if(serverUrl != "http://203.252.112.15:9200"):
     serverUrl="http://localhost:9200"
+else:
+    serverUrl = "http//203.252.112.14:9200"
 
 # ElasticSearch connection
 es = Elasticsearch(serverUrl)
