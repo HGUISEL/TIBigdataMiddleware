@@ -33,9 +33,17 @@ app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 
 
 # Url address of Elasticsearch
-serverUrl = "http://203.252.103.86:9200"
-# localUrl="http://localhost:9200"
+import socket
+def get_ip_address():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(("8.8.8.8", 80))
+    return s.getsockname()[0]
 
+serverUrl = get_ip_address()  # '192.168.0.110'
+if(serverUrl != "http://203.252.112.15:9200"):
+    serverUrl="http://localhost:9200"
+else:
+    serverUrl = "http//203.252.112.14:9200"
 
 # ElasticSearch connection
 es = Elasticsearch(serverUrl)
