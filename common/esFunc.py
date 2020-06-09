@@ -10,8 +10,8 @@ from cmm import SAMP_DATA_DIR
 
 backEndUrl = "http://203.252.112.14:9200"
 es = Elasticsearch(backEndUrl)
-
-INDEX = "nkdb"
+from cmm import INDEX
+# INDEX = "nkdb"
 ######################################################################################
 """
 * **function : genQuery(boolean, [int])**
