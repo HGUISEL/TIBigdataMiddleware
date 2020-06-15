@@ -1,6 +1,6 @@
 import json
 
-FILE_DIR = "../../raw data sample/rawrawData.json"
+FILE_DIR = "../../raw data sample/rawRawData.json"
 
 with open(FILE_DIR,'r', encoding="utf-8") as fp:
     esData = json.load(fp)
@@ -36,11 +36,13 @@ for i,d in enumerate(meaningful_data):
         print(body)
 
 from elasticsearch import Elasticsearch
-import socket
-def get_ip_address():
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(("8.8.8.8", 80))
-    return s.getsockname()[0]
+
+#function that find current ip address
+# import socket
+# def get_ip_address():
+#     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+#     s.connect(("8.8.8.8", 80))
+#     return s.getsockname()[0]
 
 
 
