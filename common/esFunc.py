@@ -110,6 +110,7 @@ def esQuery(doc):
             ]  
 """
 def nkdbNoFile(SIZE):
+    print("요청하는 첨부파일 없는 문서의 수 : ", SIZE)
     doc = genQuery(isFile = False, size = SIZE)
     result = esQuery(doc)
 
@@ -144,6 +145,8 @@ def nkdbNoFile(SIZE):
             ]  
 """
 def nkdbFile(SIZE):
+    print("요청하는 첨부파일 있는 문서의 수 : ", SIZE)
+
     doc = genQuery(isFile = True, size = SIZE)
     result = esQuery(doc)    
     numF = len(result)
@@ -366,23 +369,27 @@ def esGetDocs(total):
         numReqFileDoc = total / 2
     numReqBodyDoc = int(numReqBodyDoc)
     numReqFileDoc = int(numReqFileDoc)
+    print("body : ", numReqBodyDoc)
+    print("file : ", numReqFileDoc)
 
     # numReqFileDoc 
     # numReqBodyDoc 
     numFileDoc = esCount(genQuery(isFile = True))
+    print("첨부파일이 있는 문서의 전체 수 : ", numFileDoc)
     numBodyDoc = esCount(genQuery(isFile = False))
+    print("첨부파일이 없는 문서의 전체 수 : ", numBodyDoc)
 
-    fNum = numFileDoc - numReqFileDoc
+    fNum = numFileDoc - numReqFileDoc#모자란 양
     dNum = numBodyDoc - numReqBodyDoc
 
     if fNum > 0 and dNum > 0:
         pass
     elif fNum > 0 and dNum < 0:
-        numReqFileDoc += fNum
+        numReqFileDoc += -dNum#모자란 양을 채워준다
         numReqBodyDoc = numBodyDoc
     elif fNum < 0 and dNum > 0:
         numReqFileDoc = numFileDoc
-        numReqBodyDoc += dNum
+        numReqBodyDoc += -fNum
     elif fNum <= 0 and dNum <= 0:
         numReqFileDoc = numFileDoc
         numReqBodyDoc = numBodyDoc
@@ -417,7 +424,7 @@ def esGetDocs(total):
         # return 
 
     
-    total = numBodyDoc + numFileDoc # total 가능한 수대로 조정해줘야 함
+    total = numReqFileDoc + numReqBodyDoc # total 가능한 수대로 조정해줘야 함
     
     corpus = []
 
