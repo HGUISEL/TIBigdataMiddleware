@@ -186,7 +186,9 @@ def textRank():
         # tokenized_doc = ' '.join(tokenized_doc) 
         # print("형태소 분석 이후 단어 토큰의 개수",len(tokenized_doc)) 
 
-    result = keywords(tokenized_doc, words = 15 , scores=True)
+    # result = keywords(tokenized_doc, words = 15 , scores=True)
+    result = keywords(tokenized_doc)
+
     # with open(DIR_FE, 'w', -1, "utf-8") as f:
     with open("./wrCul.json", 'w', -1, "utf-8") as f:
         json.dump(result, f, ensure_ascii=False)
