@@ -56,6 +56,9 @@ def getTfidfTable(Numdoc):
     
     print(Numdoc,"개의 대량 문서 TF/IDF 분석")
     (docId, docTitle, tokenized_doc) = prs.readyData(Numdoc)
+
+    print(len(docId), " ", len(docTitle), " ", len(tokenized_doc))
+
     print("형태소분석기 완료")
     cmm.showTime()
 
@@ -83,12 +86,13 @@ def getTfidfTable(Numdoc):
     #i 는 int i = 0과 같은 역할    
     #index 는 문서번호가 나온다. 
     #section은 단어번호와 값의 쌍으로 나온다.
+    print("What is section?", sortEntire[0])
     for i, section in sortEntire:
         section = sortEntire[i]
         mainTF = []
         
         #print("\nㄱ===============================ㄴ")
-        print(i, "번째 문서의 단어 수 : ", len(section[1]))
+        # print(i, "번째 문서의 단어 수 : ", len(section[1]))
 
         for idx, (wordId, tfValue) in enumerate(section[1]):
             #print ("wordID : ", wordId, " tfValue : ",tfValue)
@@ -189,4 +193,4 @@ def getTfidfRaw(Numdoc):
 
 
 if __name__ == "__main__":
-    getTfidfTable(5000)
+    getTfidfTable(500)

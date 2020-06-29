@@ -133,6 +133,7 @@ def dataPrePrcs(corpus_with_id_title_content):
         #     print("regex test : ",c)
     print("\n\nmecab 형태소 분석 중...")
     tokenized_doc = []
+    failIdxList = []
     for i, c in enumerate(contents):
         try:
             t = tagger.nouns(c)
@@ -140,7 +141,14 @@ def dataPrePrcs(corpus_with_id_title_content):
             tokenized_doc.append(t)
         except:
             print("에러 : title : ", titles[i], ", content : ", c)
-
+            failIdxList.append(i)
+            # 모아뒀다가 나중에 한꺼번에 지워야...
+            # contents.pop(i)
+            # idList.pop(i)
+            # titles.pop(i)
+    for idx in reversed(failIdxList):
+        idList.pop(idx)
+        titles.pop(idx)
     print("형태소 분석 완료!")
     print("투입된 문서의 수 : %d" %(NUM_DOC))
     showTime()
@@ -151,7 +159,7 @@ def dataPrePrcs(corpus_with_id_title_content):
         tokenized_doc[i] = [word for word in tokenized_doc[i] if len(word) > 1]
 
     print("데이터 전처리 완료!")
-    return tokenized_doc
+    return idList, titles, tokenized_doc
 
 
 """
@@ -190,7 +198,7 @@ def readyData(num_doc, isCont = False):
     print("len(content) : ", len(contents))
 
     print("\n\n#####Phase 1-2 : 데이터 전처리 실행#####")
-    tokenized_doc = dataPrePrcs(corpus_with_id_title_content)
+    (idList,titles, tokenized_doc) = dataPrePrcs(corpus_with_id_title_content)
 
     if isCont == False:
         return idList, titles, tokenized_doc
@@ -198,4 +206,4 @@ def readyData(num_doc, isCont = False):
         return idList, titles, tokenized_doc, contents
 
 if __name__ == "__main__":
-   print(readyData(5000) )
+   print(readyData(500) )
