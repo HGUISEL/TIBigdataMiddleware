@@ -133,7 +133,10 @@ def dataPrePrcs(corpus_with_id_title_content):
         #     print("regex test : ",c)
     print("\n\nmecab 형태소 분석 중...")
     tokenized_doc = []
+<<<<<<< HEAD
     failIdxList = []
+=======
+>>>>>>> 96187c097fa05efe6b26b6120d6635f948782dd1
     for i, c in enumerate(contents):
         try:
             t = tagger.nouns(c)
