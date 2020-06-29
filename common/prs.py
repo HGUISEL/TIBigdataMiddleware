@@ -110,15 +110,36 @@ def loadData(num_doc = NUM_DOC):
     return corpusIdTtlCtt
 
 # phase 2 형태소 분석기 + 내용 없는 문서 지우기
-def dataPrePrcs(contents):
+def dataPrePrcs(corpus_with_id_title_content):
     # 형태소 분석기 instance
     # okt = Okt()
     # tokenized_doc = [okt.nouns(contents[cnt]) for cnt in range(len(contents))]
-
+    idList = corpus_with_id_title_content["id"]
+    titles = corpus_with_id_title_content["titles"]
+    contents = corpus_with_id_title_content["contents"]
     #mecab test
+    import re
+    rex1 = re.compile('[^가-힣0-9*.?,!]')#한글 숫자 자주 쓰는 문자만 취급
+    
     tagger = Mecab()
     print("데이터 전처리 중... It may takes few hours...")
-    tokenized_doc = [tagger.nouns(contents[cnt]) for cnt in range(len(contents))]
+    print("regular expression 처리 중...")
+    for i,c in enumerate(contents):
+        try:
+            c = rex1.sub(" ",c)
+        except Exception:
+            print("에러 : title : ", titles[i], ", content : ", c)# 문서 내용이 None
+        # if(i < 10):
+        #     print("regex test : ",c)
+    print("\n\nmecab 형태소 분석 중...")
+    tokenized_doc = []
+    for i, c in enumerate(contents):
+        try:
+            t = tagger.nouns(c)
+            # print(t)
+            tokenized_doc.append(t)
+        except:
+            print("에러 : title : ", titles[i], ", content : ", c)
 
     print("형태소 분석 완료!")
     print("투입된 문서의 수 : %d" %(NUM_DOC))
@@ -160,15 +181,21 @@ def readyData(num_doc, isCont = False):
           "\nBACKEND CONNECTION OPTION : ", str(BACKEND_CONCT),
           "\nRANDOM ORDER OPTION : ", str(RANDOM_MODE)
          )
-    corpusIdTtlCtt = loadData(NUM_DOC)# load data and update NUM_DOC
-    idList = corpusIdTtlCtt["id"]
-    titles = corpusIdTtlCtt["titles"]
-    contents = corpusIdTtlCtt["contents"]
+    corpus_with_id_title_content = loadData(NUM_DOC)# load data and update NUM_DOC
+    # print(corpus_with_id_title_content)
+    # idList = corpus_with_id_title_content["id"]
+    # titles = corpus_with_id_title_content["titles"]
+    # contents = corpus_with_id_title_content["contents"]
     # phase 2 형태소 분석기 + 내용 없는 문서 지우기
+    print("len(content) : ", len(contents))
+
     print("\n\n#####Phase 1-2 : 데이터 전처리 실행#####")
-    tokenized_doc = dataPrePrcs(contents)
+    tokenized_doc = dataPrePrcs(corpus_with_id_title_content)
 
     if isCont == False:
         return idList, titles, tokenized_doc
     else:
         return idList, titles, tokenized_doc, contents
+
+if __name__ == "__main__":
+   print(readyData(5000) )
