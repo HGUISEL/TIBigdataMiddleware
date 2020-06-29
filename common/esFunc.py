@@ -776,3 +776,21 @@ def esGetADoc(docSize=500):
     doc = corpus[rd]
     # print(doc)
     return doc
+
+if __name__ == "__main__":
+    doc = {}
+    doc['query'] = {
+        "bool":{
+            "must":{
+                "match" : {
+                    "post_title" : "통일정책연구 2004, vol.13, iss.1"
+                }
+            }
+        }
+            # "exists": {
+            #     "field": "file_extracted_content"
+            # }
+    }
+
+    data = es.search(index=INDEX, body=doc)
+    print(data)
