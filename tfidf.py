@@ -19,8 +19,8 @@ import LDA
     1. 메인 페이지 워드클라우드에 사용되는 tfidf의 저장 디렉토리
     2. 전체적으로 쓸 tfidf의 저장 디렉토리
 """
-DIR_HomeGraph = "../TIBigdataFE/src/assets/homes_graph/data.json"
-DIR_EntireTfidf = "../TIBigdataFE/src/assets/entire_tfidf/data.json"     
+DIR_HomeGraph = "./tfidfHomeGraphdata.json"
+DIR_EntireTfidf = "./tfidfTotaldata.json"     
 
 
 """
