@@ -7,11 +7,13 @@ from pathlib import Path
 import os
 curDir = os.getcwd()
 curDir = Path(curDir)
-homeDir = curDir.parent.parent
+homeDir = curDir.parent
 # # comDir = homeDir / "common"
 
 import sys
 sys.path.append(str(homeDir))
+os.chdir(str(homeDir))
+# print(str(homeDir))
 
 ## 다른 모듈에 사용 받기 위해 현재 이 디렉토리 추가
 file_dir = os.path.dirname(__file__)
@@ -48,6 +50,12 @@ def getSimTbl(data = data):
     from sklearn.feature_extraction.text import TfidfVectorizer
     from sklearn.metrics.pairwise import linear_kernel
     tfidf = TfidfVectorizer()
+    for i, d in reversed(list(enumerate(data))):
+        # if(i < 10):
+        #     print(d)
+        if d ==None:
+            print(d)
+            data.pop(i)
     tfidf_mtx = tfidf.fit_transform(data)
 
     cosine_sim = linear_kernel(tfidf_mtx, tfidf_mtx)
@@ -161,10 +169,10 @@ def getRcmd(idList, calc = False):
 
 
 
-# if __name__ == "__main__":
-#     from common import prs
+if __name__ == "__main__":
+    from common import prs
 
-#     data = prs.loadData(700)
-#     cosine_sim = getSimTbl(data["contents"])
+    data = prs.loadData(1000)
+    cosine_sim = getSimTbl(data["contents"])
 
 
