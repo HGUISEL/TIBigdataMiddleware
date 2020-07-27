@@ -9,7 +9,7 @@ from datetime import datetime
 INDEX = "nkdb"
 SAMP_DATA_DIR = "./raw data sample/" 
 
-LDA_DIR_FE = "../TIBigdataFE/src/assets/special_first/data.json"
+LDA_DIR_FE = "./LDAdata.json"
 
 # current date and time
 now = datetime.now()
