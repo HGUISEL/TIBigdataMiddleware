@@ -14,7 +14,7 @@ from operator import itemgetter
 import time
 import json
 import sys
-from rcmdHelper import rcmd as rc
+#from rcmdHelper import rcmd as rc
 
 from common.cmm import INDEX
 
@@ -132,20 +132,20 @@ def lda():
     return json.dumps(result, ensure_ascii=False)
 
 #recomandation function
-@app.route('/rcmd', methods=['GET', 'POST'])
-def rcmd():
-    print("recomandation function init.")
+#@app.route('/rcmd', methods=['GET', 'POST'])
+#def rcmd():
+#    print("recomandation function init.")
 
-    if request.method == 'POST':
-        req = request.json
-        idList = req["idList"]
+#    if request.method == 'POST':
+#        req = request.json
+#        idList = req["idList"]
 
     # print("Get id list from Front-End: ",idList)
 
-    rcmdList = rc.getRcmd(idList)
-    print("rcmd function done!")
-    
-    return json.dumps(rcmdList, ensure_ascii=False)
+#    rcmdList = rc.getRcmd(idList)
+#    print("rcmd function done!")
+#    
+#    return json.dumps(rcmdList, ensure_ascii=False)
 
 
 
@@ -283,7 +283,7 @@ def draw():
 
         numOfDocs = res["hits"]["total"]["value"]
         wholeDataArr.append(numOfDocs)
-        # print(numOfDocs)
+        print("num of docs : " +str(numOfDocs))
 
         searchDocs = {
             "query" : {
