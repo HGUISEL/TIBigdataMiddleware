@@ -193,4 +193,4 @@ def getTfidfRaw(Numdoc):
 
 
 if __name__ == "__main__":
-    getTfidfTable(500)
+    getTfidfTable(13000)
