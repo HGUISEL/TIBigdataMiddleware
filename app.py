@@ -140,7 +140,7 @@ def lda():
 #        req = request.json
 #        idList = req["idList"]
 
-    # print("Get id list from Front-End: ",idList)
+#     # print("Get id list from Front-End: ",idList)
 
 #    rcmdList = rc.getRcmd(idList)
 #    print("rcmd function done!")
@@ -283,7 +283,7 @@ def draw():
 
         numOfDocs = res["hits"]["total"]["value"]
         wholeDataArr.append(numOfDocs)
-        print("num of docs : " +str(numOfDocs))
+        print(numOfDocs)
 
         searchDocs = {
             "query" : {
