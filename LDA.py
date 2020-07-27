@@ -295,3 +295,5 @@ def LDA(ndoc, nit = NUM_ITER, ntp = NUM_TOPICS):
         print("Analysis Result has been stored at ",LDA_DIR_FE)
     print("LDA Analysis Fin!")
     return result
+if __name__ == "__main__":
+    LDA(100)

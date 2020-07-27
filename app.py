@@ -132,20 +132,20 @@ def lda():
     return json.dumps(result, ensure_ascii=False)
 
 #recomandation function
-@app.route('/rcmd', methods=['GET', 'POST'])
-def rcmd():
-    print("recomandation function init.")
+# @app.route('/rcmd', methods=['GET', 'POST'])
+# def rcmd():
+#     print("recomandation function init.")
 
-    if request.method == 'POST':
-        req = request.json
-        idList = req["idList"]
+#     if request.method == 'POST':
+#         req = request.json
+#         idList = req["idList"]
 
-    # print("Get id list from Front-End: ",idList)
+#     # print("Get id list from Front-End: ",idList)
 
-    rcmdList = rc.getRcmd(idList)
-    print("rcmd function done!")
+#     rcmdList = rc.getRcmd(idList, True)
+#     print("rcmd function done!")
     
-    return json.dumps(rcmdList, ensure_ascii=False)
+#     return json.dumps(rcmdList, ensure_ascii=False)
 
 
 
@@ -283,7 +283,7 @@ def draw():
 
         numOfDocs = res["hits"]["total"]["value"]
         wholeDataArr.append(numOfDocs)
-        # print(numOfDocs)
+        print(numOfDocs)
 
         searchDocs = {
             "query" : {
