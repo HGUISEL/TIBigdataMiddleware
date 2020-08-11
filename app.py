@@ -31,8 +31,8 @@ sys.path.insert(0, './common')
 import re
 import tfidf
 # Implement KR-Wordrank
-from krwordrank.hangle import normalize
-from krwordrank.word import KRWordRank
+# from krwordrank.hangle import normalize
+# from krwordrank.word import KRWordRank
 
 app = Flask(__name__)
 # app.config['TESTING'] = True
@@ -309,7 +309,7 @@ def draw():
         searchDocs["query"]["bool"]["must"][0]["match"]["post_body"] = keyword
         # print("ready to search")
         res = es.search(index=INDEX, body=searchDocs)
-        # print(res)
+        print(res)
         numOfDocs = res["hits"]["total"]["value"]
         searchDataArr.append(numOfDocs)
 
@@ -407,7 +407,7 @@ def test():
 #     #Make a dictionary [word, weight]
 #     for word, r in sorted(keywords.items(), key=lambda x:x[1], reverse=True)[:30]:
 #         dic["y"]=r
-#         dic["label"]=word
+#         dic["label"]=wordkeyword
 #         result.append(dic)
 #         dic={}
 

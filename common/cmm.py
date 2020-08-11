@@ -6,7 +6,7 @@ purpose : common features for all algorithm usage
 
 import time
 from datetime import datetime
-INDEX = "capstone"
+INDEX = "frontend_test"
 SAMP_DATA_DIR = "./raw data sample/" 
 
 LDA_DIR_FE = "./LDAdata.json"
