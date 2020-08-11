@@ -159,7 +159,7 @@ def dataPrePrcs(corpus_with_id_title_content):
         tokenized_doc[i] = [word for word in tokenized_doc[i] if len(word) > 1]
 
     print("데이터 전처리 완료!")
-    return idList, titles, tokenized_doc
+    return idList, titles, tokenized_doc, contents
 
 
 """
@@ -198,7 +198,7 @@ def readyData(num_doc, isCont = False):
     print("len(content) : ", len(contents))
 
     print("\n\n#####Phase 1-2 : 데이터 전처리 실행#####")
-    (idList,titles, tokenized_doc) = dataPrePrcs(corpus_with_id_title_content)
+    (idList,titles, tokenized_doc, contents) = dataPrePrcs(corpus_with_id_title_content)
 
     if isCont == False:
         return idList, titles, tokenized_doc
