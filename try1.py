@@ -12,6 +12,8 @@ for i in range(data.shape[0]):
 
 topicDummy = pd.read_csv('./topicDummy.csv')
 data["topic"] = None
+topicDummy = topicDummy.drop(topicDummy.columns[0], axis = 1)
+print(topicDummy.columns)
 
 import numpy as np
 topicList = topicDummy.columns
@@ -42,3 +44,31 @@ for i, cont in enumerate(data["token"]):
 
 for top in topicList:
   print(data[data["topic"]==top][["token","topic"]].head(3),"\n")
+
+for topic in topicList:
+   sumVal =  (data["topic"]==topic).sum()
+   print(topic , " count : ", sumVal)
+
+data = data.rename(columns = {"token" : "words"})
+
+
+#-*- coding:utf-8 -*-
+ctgResult = []
+count = 0
+for topic in topicList:
+  
+  ctg = data[data["topic" ]== topic]#pandas comprehension
+  # doc = ctg.to_json(orient = "records",force_ascii=False)
+  doc = ctg.to_dict('records')
+  #print(type(doc))
+  catObj = {
+      "topic" : topic,
+      "doc" : doc
+  }
+  # print(catObj)
+  ctgResult.append(catObj)
+
+
+import json
+with open("lstm_result_with_"+str(ndoc)+".json", 'w', -1,encoding='utf8') as f:
+    json.dump(ctgResult,f,ensure_ascii=False)
