@@ -144,12 +144,6 @@ def create_recommand(idList, calc_again = False):
     # phase 1: TF-IDF을 새로 업데이트하여 출력할 것인지 결정
     if calc_again == True:
     # phase 1-1: 문서 로드 및 새로 tfidf 테이블을 만든다.
-        # from common import prs
-        # data = prs.loadData(700)
-        # import json
-        # with open(DATA_DIR, 'w',encoding="utf-8") as fp:
-        #     json.dump(data, fp,ensure_ascii=False)
-
         cosine_sim = create_similiarity_table(data["contents"])
         sort_similiarity_table(cosine_sim)
       
