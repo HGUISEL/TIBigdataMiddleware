@@ -37,9 +37,10 @@ NDOC = 1000
 
 
 """
-# fnction : create_similiarity_table(data)
-# purpose : 전달받은 BoW에 대한 코사인 유사도 테이블을 만든다. sk-learn TF-IDF 사용.
-# input : BoW list
+# fnction : create_similiarity_matrix(data)
+# purpose : 전달받은 BoW에 대한 코사인 유사도 테이블을 만든다. sk-learn TF-IDF 사용. matrix형태로 나온다.
+# input : dictionary : 
+        {"id" : idList, "titles" : titles, "contents" : contents}
 # output : array
             [
                 [문서 1의 단어 TF-IDF 값들],
@@ -47,11 +48,15 @@ NDOC = 1000
                 ...
             ]
 """
-def create_similiarity_table(data = None):
+def create_similiarity_matrix(data = None):
 
     if(data == None):
         from common import prs
         data = prs.loadData(NDOC)
+        import json
+        with open(DATA_DIR, 'w',encoding="utf-8") as fp:
+            json.dump(data, fp,ensure_ascii=False)
+
     # global cosine_sim
     from sklearn.feature_extraction.text import TfidfVectorizer
     from sklearn.metrics.pairwise import linear_kernel
@@ -82,21 +87,6 @@ def create_similiarity_table(data = None):
             연관문서를 표현하려면 연관순위가 높은 문서들을 표시해야 하므로,
             문서 유사도가 높은 문서들을 앞으로 정렬한다.
 
-
-
-
-  * input : 문서 id list<string>. 연관 문서를 얻으려는 문서들 list
-  * output : dictionary 
-            {
-                "id" : "abcde", 
-                "rcmd" : [ "A", "B", "C", "D", "E" ], 
-                 "address" : [ "A", "B", "C", "D", "E" ]
-            }
-               
-  * NOTICE : 
-    * calc_again = True으로 호출하면 새로 서버에서 문서를 로드해서 tf-idf 데이터를 저장하고, 
-                새로운 결과로 프론트엔드에 전달한다.
-    * calc_again = false으로 호출하면 기존에 저장해둔 정보를 사용한다. 빠르게 프론트엔드에 응답해준다. defualt값.
 """
 
 def sort_similiarity_table(cosine_sim):
@@ -117,6 +107,11 @@ def sort_similiarity_table(cosine_sim):
             json.dump(sort_cos_sim, fp)
         return sort_cos_sim
 
+
+def create_similiarity(data=None):
+    cosine_sim = create_similiarity_matrix(data)
+    sort_similiarity_table(cosine_sim)
+
 """
 * **function : create_recommand(idList, calc_again = False)**
   * purpose : 전달받은 문서들의 관련문서들을 찍어준다.
@@ -124,8 +119,8 @@ def sort_similiarity_table(cosine_sim):
   * output : dictionary 
             {
                 "id" : "abcde", 
-                "rcmd" : [ "A", "B", "C", "D", "E" ], 
-                 "address" : [ "A", "B", "C", "D", "E" ]
+                "rcmd" : [ [doc_number,  "B", "C", "D", "E" ], 
+                 #"address" : [ "A", "B", "C", "D", "E" ]#
             }
                
   * NOTICE : 
@@ -144,8 +139,7 @@ def create_recommand(idList, calc_again = False):
     # phase 1: TF-IDF을 새로 업데이트하여 출력할 것인지 결정
     if calc_again == True:
     # phase 1-1: 문서 로드 및 새로 tfidf 테이블을 만든다.
-        cosine_sim = create_similiarity_table(data["contents"])
-        sort_similiarity_table(cosine_sim)
+       create_similiarity()
       
 
     # # phase 1-2: 저장되어 있는 tf-idf 값과 data 정보 불러옴
@@ -156,9 +150,9 @@ def create_recommand(idList, calc_again = False):
                 cosine_sim = json.load(fp)
             with open(DATA_DIR, 'r',encoding="utf-8") as fp:
                 data = json.load(fp)
-        except:
+        except:# 이미 저장되어 있는 파일이 없거나 에러가 발생해서 다시 테이블을 만들어야 할 때!
             print("Load pre-existing analysis data failed. Execute new analysis data again...")
-            create_similiarity_table()
+            create_similiarity()
 
 
 
@@ -203,7 +197,8 @@ def create_recommand(idList, calc_again = False):
 if __name__ == "__main__":
     from common import prs
 
-    data = prs.loadData(1000)
-    cosine_sim = create_similiarity_table(data["contents"])
+    # data = prs.loadData(1000)
+    # cosine_sim = create_similiarity_matrix(data["contents"])
+    create_recommand()
 
 
