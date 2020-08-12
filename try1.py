@@ -1,5 +1,5 @@
 from common import prs
-ndoc = 1000
+ndoc = 10000
 prsResult = prs.readyData(ndoc,True)
 import pandas as pd
 data = pd.DataFrame(list(prsResult), index = ["id","content","token","contents"]).T
