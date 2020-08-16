@@ -200,10 +200,18 @@ def readyData(num_doc, isCont = False):
     print("\n\n#####Phase 1-2 : 데이터 전처리 실행#####")
     (idList,titles, tokenized_doc, contents) = dataPrePrcs(corpus_with_id_title_content)
 
+    import json
+    prs_result = {"idList" : idList, "titles" : titles, "tokenized_doc" : tokenized_doc, "content" : contents}
+    with open("./latest_prs_result.json", 'w', -1, "utf-8") as f:
+        json.dump(prs_result, f, ensure_ascii=False)
+    
     if isCont == False:
         return idList, titles, tokenized_doc
     else:
         return idList, titles, tokenized_doc, contents
+
+
+
 
 if __name__ == "__main__":
    print(readyData(500) )
