@@ -197,8 +197,8 @@ def create_recommand(idList, calc_again = False):
 if __name__ == "__main__":
     from common import prs
 
-
     # data = prs.loadData(1000)
     # cosine_sim = create_similiarity_matrix(data["contents"])
     create_recommand()
+
 
