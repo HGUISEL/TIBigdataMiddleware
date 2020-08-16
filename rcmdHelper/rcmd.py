@@ -173,6 +173,6 @@ if __name__ == "__main__":
     from common import prs
 
     data = prs.loadData(1000)
-    cosine_sim = getSimTbl(data["contents"])
+    cosine_sim = getSimTbl(data["contents"],True)
 
 
