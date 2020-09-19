@@ -46,6 +46,6 @@ from elasticsearch import Elasticsearch
 
 
 
-DB_URL = "http://203.252.112.14:9200/"+indexName
+DB_URL = "localhost:9200/"+indexName
 es = Elasticsearch(DB_URL)
 es.bulk(body)
