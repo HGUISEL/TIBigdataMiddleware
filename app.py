@@ -118,6 +118,24 @@ def lda():
     # print
     return json.dumps(result, ensure_ascii=False)
 
+################################################
+"""
+SVM
+2020.9.24.
+"""
+################################################
+# With LDA gensim library
+import SVM
+@app.route('/lda', methods=['GET'])
+def SVM():
+    app = Flask(__name__)
+    app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
+    
+    result = SVM.SVM(10) ##문서 10개 돌림 
+    # print
+    return json.dumps(result, ensure_ascii=False)
+
+
 #recomandation function
 @app.route('/rcmd', methods=['GET', 'POST'])
 def rcmd():
