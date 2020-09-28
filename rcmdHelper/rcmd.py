@@ -25,7 +25,7 @@ TFIDF_DIR = "./rcmdHelper/skl_tfidf.json"
 DATA_DIR = "./rcmdHelper/data.json"
 
 
-NDOC = 620
+NDOC = 10000
 # # else:
 # # phase 1-2: 저장되어 있는 tf-idf 값과 data 정보 불러옴
 # import json
@@ -324,7 +324,7 @@ if __name__ == "__main__":
     from pymongo import MongoClient
     import json
     client = MongoClient('localhost',27017)
-    db = client.analysisTest620
+    db = client.analysis0919
     collection = db.rcmds
     collection.insert_many(sim_table)
     
