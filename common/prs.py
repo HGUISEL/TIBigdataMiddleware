@@ -205,6 +205,8 @@ def readyData(num_doc, isCont = False):
     with open("./latest_prs_result.json", 'w', -1, "utf-8") as f:
         json.dump(prs_result, f, ensure_ascii=False)
     
+    print("형태소 분석 시간이 오래걸렸나요? 마지막 형태소 분석 결과를 로컬 static 파일로 저장해두었습니다. ./latest_prs_result.json")
+
     if isCont == False:
         return idList, titles, tokenized_doc
     else:
