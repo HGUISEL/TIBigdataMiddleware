@@ -6,7 +6,7 @@ purpose : common features for all algorithm usage
 
 import time
 from datetime import datetime
-INDEX = "nkdb0919"
+INDEX = "frontend_test"
 SAMP_DATA_DIR = "./raw data sample/" 
 
 LDA_DIR_FE = "./LDAdata.json"
