@@ -2,10 +2,19 @@
 ndoc = 10000
 
 if False:
+    from pathlib import Path
+    import os
+    curDir = os.getcwd()
+    curDir = Path(curDir)
+    homeDir = curDir.parent
+    # # comDir = homeDir / "common"
+
+    import sys
+    sys.path.append(str(homeDir))
     from common import prs
-    prsResult = prs.readyData(ndoc,True)
+    prsResult = prs.readyData(ndoc)
     import pandas as pd
-    data = pd.DataFrame(list(prsResult), index = ["id","content","token","contents"]).T
+    data = pd.DataFrame(list(prsResult), index = ["docID","docTitle","token"]).T
     for i in range(data.shape[0]):
         data.loc[i,"token"] = " ".join(data["token"][i])
 
@@ -13,10 +22,10 @@ if False:
 
 else:
     import json
-    with open('./latest_prs_result.json', 'r') as f:
+    with open('../latestPrsResult/latest_prs_result3000.json', 'r') as f:
         data = json.load(f)
 
-    data_ = {"id" : data["idList"], "titles" : data["titles"], "token" : data["tokenized_doc"]}
+    data_ = {"docID" : data["idList"], "docTitle" : data["titles"], "token" : data["tokenized_doc"]}
 
     import pandas as pd
     df = pd.DataFrame.from_dict(data_)
@@ -29,6 +38,7 @@ else:
         df_token.loc[i,"token"] = " ".join(df_token["token"][i])
     data = df_token
     ndoc = len(data)
+    print("number of docs : " + str(ndoc))
 
 topicDummy = pd.read_csv('./topicDummy.csv')
 data["topic"] = None
@@ -59,7 +69,7 @@ for i, cont in enumerate(data["token"]):
   seq = tokenizer.texts_to_sequences(test)
   padded = pad_sequences(seq, maxlen = MAX_SEQUENCE_LENGTH)
   pred = model.predict(padded)
-  #pol innt soc cul eco spo
+#   cul,eco,innt,it,pol,soc,spo
   labels = topicList
   # labels = ['pol', 'eco', 'cul', 'innt', 'spo', 'soc']
   data.loc[i,"topic"] = labels[np.argmax(pred)]
@@ -74,24 +84,41 @@ for topic in topicList:
 
 data = data.rename(columns = {"token" : "words"})
 
+data = data.drop(columns = ['words'])
 
-#-*- coding:utf-8 -*-
-ctgResult = []
-count = 0
-for topic in topicList:
+
+# #-*- coding:utf-8 -*-
+# ctgResult = []
+# count = 0
+# for topic in topicList:
   
-  ctg = data[data["topic" ]== topic]#pandas comprehension
-  # doc = ctg.to_json(orient = "records",force_ascii=False)
-  doc = ctg.to_dict('records')
-  #print(type(doc))
-  catObj = {
-      "topic" : topic,
-      "doc" : doc
-  }
-  # print(catObj)
-  ctgResult.append(catObj)
+#   ctg = data[data["topic" ]== topic]#pandas comprehension
+#   # doc = ctg.to_json(orient = "records",force_ascii=False)
+#   doc = ctg.to_dict('records')
+#   #print(type(doc))
+#   catObj = {
+#       "topic" : topic,
+#       "doc" : doc
+#   }
+#   # print(catObj)
+#   ctgResult.append(catObj)
+data = data.to_json(orient="records",force_ascii=False)
 
-
+# print(data)
+import pymongo
+from pymongo import MongoClient
 import json
-with open("lstm_result_with_"+str(ndoc)+".json", 'w', -1,encoding='utf8') as f:
-    json.dump(ctgResult,f,ensure_ascii=False)
+client = MongoClient('localhost',27017)
+db = client.analysis0919
+collection = db.topics
+collection.insert_many(json.loads(data))
+
+# import json
+# with open("lstm_result_with_"+str(ndoc)+".json", 'w', -1,encoding='utf8') as f:
+#     json.dump(data.to_json(orient="records"),f,ensure_ascii=False)
+# import pymongo
+# from pymongo import MongoClient
+# client = MongoClient('localhost',27017)
+# db = client.analysisTest620
+# collection = db.topics
+# collection.insert_many(ctgResult)
