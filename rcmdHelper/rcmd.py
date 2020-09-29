@@ -154,8 +154,8 @@ def merge_data_sim(ID_list, sim_table):
     * calc_again = false으로 호출하면 기존에 저장해둔 정보를 사용한다. 빠르게 프론트엔드에 응답해준다. defualt값.
 """
 def create_recommand():
-    from cmm import showTime
-    from cmm import startTime
+    from config import showTime
+    from config import startTime
     start = startTime()
     # global data
     # global cosine_sim

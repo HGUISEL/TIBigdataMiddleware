@@ -1,12 +1,12 @@
 import json
-from common.cmm import showTime
-from common.cmm import SAMP_DATA_DIR
+from common.config import showTime
+from common.config import SAMP_DATA_DIR
 from common import prs
 
 # download LDA result if True
 DOWNLOAD_DATA_OPTION = False 
 # Frontend directory to store LDA result
-from common.cmm import LDA_DIR_FE
+from common.config import LDA_DIR_FE
 
 # download LDA model if True
 SAVE_LDA_MODEL = True

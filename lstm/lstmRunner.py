@@ -1,3 +1,13 @@
+from pathlib import Path
+import os
+curDir = os.getcwd()
+curDir = Path(curDir)
+homeDir = curDir.parent
+# # comDir = homeDir / "common"
+
+import sys
+sys.path.append(str(homeDir))
+# os.chdir(str(homeDir))
 from common import prs
 ndoc = 10000
 prsResult = prs.readyData(ndoc,True)
@@ -69,6 +79,14 @@ for topic in topicList:
   ctgResult.append(catObj)
 
 
-import json
-with open("lstm_result_with_"+str(ndoc)+".json", 'w', -1,encoding='utf8') as f:
-    json.dump(ctgResult,f,ensure_ascii=False)
+# import json
+# with open("lstm_result_with_"+str(ndoc)+".json", 'w', -1,encoding='utf8') as f:
+#     json.dump(ctgResult,f,ensure_ascii=False)
+
+
+import pymongo
+from pymongo import MongoClient
+client = MongoClient('localhost',27017)
+db = client.analysisTest620
+collection = db.topics
+collection.insert_many(ctgResult)

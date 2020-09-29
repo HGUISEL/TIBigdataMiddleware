@@ -16,7 +16,7 @@ import json
 import sys
 #from rcmdHelper import rcmd as rc
 
-from common.cmm import INDEX
+from common.config import INDEX
 
 import os
 if os.name == "nt":

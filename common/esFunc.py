@@ -6,11 +6,11 @@ import sys
 file_dir = os.path.dirname(__file__)
 sys.path.append(file_dir)
 
-from cmm import SAMP_DATA_DIR
+from config import SAMP_DATA_DIR
 
 backEndUrl = "http://localhost:9200"
 es = Elasticsearch(backEndUrl,timeout=30)
-from cmm import INDEX
+from config import INDEX
 # INDEX = "nkdb"
 ######################################################################################
 """

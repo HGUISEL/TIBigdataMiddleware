@@ -8,9 +8,8 @@ import sys
 
 file_dir = os.path.dirname(__file__)
 sys.path.append(file_dir)
-print("called prs.py")
-from cmm import showTime
-from cmm import SAMP_DATA_DIR
+from config import showTime
+from config import SAMP_DATA_DIR
 import esFunc
 
 # 운영체제에 따라 미캡 모듈이 다르다.

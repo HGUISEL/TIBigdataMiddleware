@@ -50,7 +50,7 @@ def getTfidfTable(Numdoc):
     from gensim import corpora
     from gensim.models import TfidfModel
     from common import prs
-    from common import cmm
+    from common import config
     import numpy as np 
     from operator import itemgetter
     
@@ -72,20 +72,20 @@ def getTfidfTable(Numdoc):
     print(len(docId), " ", len(docTitle), " ", len(tokenized_doc))
 
     print("형태소분석기 완료")
-    cmm.showTime()
+    config.showTime()
 
     #문서 가져옴 
     dct = corpora.Dictionary(tokenized_doc)
     #딕셔너리화
     print("딕셔너리 완료")
-    cmm.showTime()
+    config.showTime()
 
     corpus = corpus = [dct.doc2bow(line) for line in tokenized_doc]
     tfmodel = TfidfModel(corpus)
     #코퍼스에 담고 tfidf모델링
     sortEntire = []
     print("모델링 완료")
-    cmm.showTime()
+    config.showTime()
     
      
     #tf 값에 따라 정렬
@@ -116,10 +116,10 @@ def getTfidfTable(Numdoc):
         resultTF.append({"docID": docId[i], "docTitle": docTitle[i], "tfidf": mainTF})
         print(docTitle[i])
 
-    cmm.showTime()
+    config.showTime()
     #파일로 저장 
-    with open(DIR_EntireTfidf, 'w', -1, "utf-8") as f:
-            json.dump(resultTF, f, ensure_ascii=False)
+    # with open(DIR_EntireTfidf, 'w', -1, "utf-8") as f:
+    #         json.dump(resultTF, f, ensure_ascii=False)
     
     print("테이블 생성 완료")
     
@@ -151,8 +151,7 @@ def getTfidfRaw(Numdoc):
     from gensim.models import TfidfModel
     from common import prs
     
-    print("전처리 예시")
-    #(docTitle, tokenized_doc)= prs.readyData(Numdoc) ##현재 5개 문서 호출 
+    # print("전처리 예시")
     (docId, docTitle, tokenized_doc) = prs.readyData(Numdoc) #로 바뀔 예정 
     #분리된 데이터를 dictionary화 
     dct = corpora.Dictionary(tokenized_doc)
@@ -200,7 +199,6 @@ def getTfidfRaw(Numdoc):
             json.dump(resultTF, f, ensure_ascii=False)
 
     return resultTF
-    #return dct.token2id 
 
 
 

@@ -3,7 +3,7 @@
 app.py
     ----common
       ----esFunc.py
-      ----cmm.py
+      ----config.py
       ----prs.py
     ----LDA.py
 ```
@@ -19,7 +19,7 @@ app.py
 * 데이터 전처리
 * 데이터 분석 알고리즘 시간 측정
 * 포함하는 모듈
-### cmm.py : 데이터 호출과 전처리에 사용되는 global 변수 및 시간 담당 함수
+### config.py : 데이터 호출과 전처리에 사용되는 global 변수 및 시간 담당 함수
 
 ### esFunc.py : elasticsearch quary functions module
 
