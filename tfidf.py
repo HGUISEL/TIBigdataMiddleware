@@ -55,7 +55,19 @@ def getTfidfTable(Numdoc):
     from operator import itemgetter
     
     print(Numdoc,"개의 대량 문서 TF/IDF 분석")
-    (docId, docTitle, tokenized_doc) = prs.readyData(Numdoc)
+    
+
+    #Query docs from es then prs, OR, use latest prs
+    if False:
+        (docId, docTitle, tokenized_doc) = prs.readyData(Numdoc)
+    else:
+        import json
+        with open('./latestPrsResult/latest_prs_result3000.json', 'r') as f:
+            data = json.load(f)
+        docId = data["idList"]
+        docTitle = data["titles"]
+        tokenized_doc = data["tokenized_doc"]
+
 
     print(len(docId), " ", len(docTitle), " ", len(tokenized_doc))
 
@@ -101,8 +113,8 @@ def getTfidfTable(Numdoc):
             #    break
         #print(mainTF)
         #print("ㄷ===============================ㄹ\n")
-        resultTF.append({"docID": docId[i], "docTitle": docTitle[i], "TFIDF": mainTF})
-    
+        resultTF.append({"docID": docId[i], "docTitle": docTitle[i], "tfidf": mainTF})
+        print(docTitle[i])
 
     cmm.showTime()
     #파일로 저장 
@@ -193,4 +205,11 @@ def getTfidfRaw(Numdoc):
 
 
 if __name__ == "__main__":
-    getTfidfTable(13000)
+    tfidf_table = getTfidfTable(10000)
+
+    import pymongo
+    from pymongo import MongoClient
+    client = MongoClient('localhost',27017)
+    db = client.analysis0919
+    collection = db.tfidfs
+    collection.insert_many(tfidf_table)
