@@ -108,6 +108,11 @@ def loadData(num_doc = NUM_DOC):
     print("투입된 문서의 수 : %d" %(NUM_DOC))
 
     corpusIdTtlCtt = {"id" : idList, "titles" : titles, "contents" : contents}
+
+
+    with open("../latestPrsResult/latest_corpus_with_id_witle_contents.json", 'w', -1, "utf-8") as f:
+        json.dump(corpusIdTtlCtt, f, ensure_ascii=False)
+
     return corpusIdTtlCtt
 
 def changeTypeToString(data):
@@ -211,7 +216,7 @@ def readyData(num_doc, isCont = False):
 
     import json
     prs_result = {"idList" : idList, "titles" : titles, "tokenized_doc" : tokenized_doc, "content" : contents}
-    with open("../latestPrsResult/latest_prs_result.json", 'w', -1, "utf-8") as f:
+    with open("../latestPrsResult/latest_pre_prs_result.json", 'w', -1, "utf-8") as f:
         json.dump(prs_result, f, ensure_ascii=False)
     
     print("형태소 분석 시간이 오래걸렸나요? 마지막 형태소 분석 결과를 로컬 static 파일로 저장해두었습니다. ./latest_prs_result.json")
@@ -225,4 +230,5 @@ def readyData(num_doc, isCont = False):
 
 
 if __name__ == "__main__":
-   readyData(10000)
+#    readyData(10000)
+    loadData(10000)
