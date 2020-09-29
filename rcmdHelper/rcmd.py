@@ -12,7 +12,7 @@ homeDir = curDir.parent
 
 import sys
 sys.path.append(str(homeDir))
-os.chdir(str(homeDir))
+# os.chdir(str(homeDir))
 # print(str(homeDir))
 
 ## 다른 모듈에 사용 받기 위해 현재 이 디렉토리 추가
@@ -180,8 +180,16 @@ def create_recommand():
     #         create_similiarity()
 
     # 쿼리 기본 데이터 필요
-    from common import prs
-    data = prs.loadData(NDOC)
+    #Query docs from es then prs, OR, use latest prs
+    if False:
+        from common import prs
+        data = prs.loadData(NDOC)
+    else:
+        import json
+        with open('../latestPrsResult/latest_corpus_with_id_witle_contents.json', 'r') as f:
+            data = json.load(f)
+    print("문서 로드 완료!")
+
 
     ID_list = data["id"]
     contents = data["contents"]
