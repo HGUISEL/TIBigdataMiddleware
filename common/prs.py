@@ -94,9 +94,10 @@ def loadData(num_doc = NUM_DOC):
     for idx, doc in enumerate(corpus):
         # print(doc["content"])
         if doc["content"] != "":
-            idList.append(doc["_id"])
-            titles.append(doc["post_title"])
-            contents.append(doc["content"])
+            # 형식을 모두 string으로 바꿔준다. 백엔드 index 결과들 중에서 string이 아닌 것들이 발견 됨.
+            idList.append(changeTypeToString(doc["_id"]))
+            titles.append(changeTypeToString(doc["post_title"]))
+            contents.append(changeTypeToString(doc["content"]))
         else:
             count += 1
 
@@ -108,6 +109,14 @@ def loadData(num_doc = NUM_DOC):
 
     corpusIdTtlCtt = {"id" : idList, "titles" : titles, "contents" : contents}
     return corpusIdTtlCtt
+
+def changeTypeToString(data):
+    
+    if isinstance(data, list):
+        return data[0]
+    else:
+        return data
+    
 
 # phase 2 형태소 분석기 + 내용 없는 문서 지우기
 def dataPrePrcs(corpus_with_id_title_content):
@@ -202,7 +211,7 @@ def readyData(num_doc, isCont = False):
 
     import json
     prs_result = {"idList" : idList, "titles" : titles, "tokenized_doc" : tokenized_doc, "content" : contents}
-    with open("./latest_prs_result.json", 'w', -1, "utf-8") as f:
+    with open("../latestPrsResult/latest_prs_result.json", 'w', -1, "utf-8") as f:
         json.dump(prs_result, f, ensure_ascii=False)
     
     print("형태소 분석 시간이 오래걸렸나요? 마지막 형태소 분석 결과를 로컬 static 파일로 저장해두었습니다. ./latest_prs_result.json")
@@ -216,4 +225,4 @@ def readyData(num_doc, isCont = False):
 
 
 if __name__ == "__main__":
-   print(readyData(500) )
+   readyData(10000)
