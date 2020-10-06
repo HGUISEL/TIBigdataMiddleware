@@ -1,17 +1,14 @@
-# flask Architecture
+# TIB middleware
 ```
-app.py
-    ----common
-      ----esFunc.py
-      ----config.py
-      ----prs.py
-    ----LDA.py
+common
+lstm
+lda
+raw data sample
+relatedDocs
+tfidf
 ```
-## app.py
-* flask main app
 
-## LDA.py
-* 주제 분석 LDA 알고리즘
+## 
 
 ## common module
 * 데이터 분석에 공통적으로 들어가는 기능을 담당하는 모듈
@@ -19,13 +16,36 @@ app.py
 * 데이터 전처리
 * 데이터 분석 알고리즘 시간 측정
 * 포함하는 모듈
+
+ 
+## lda
+* 주제 분석 LDA 알고리즘
+* 당장 사용하지 않음
+* lstm 으로 환승
+
+## lstm
+* 주제 분석 알고리즘
+* lstmRunn.py 실행하면 ES에서 문서 불러와서 학습한 뒤 몽고에 저장
+* ES index을 환경에 맞게 바꿔야 함
+
+## raw data sample
+* 실험용 사이즈 ES raw 데이터
+* Labs에서 ES으로 보낼 수 있음
+* offline에서 실험할 떄 사용
+  
+## relatedDoc
+* rcmd.py
+* 키워드 분석한 뒤 연관문서로 변환해서 몽고에 저장
+
+## tfidf
+* tfidf.py
+* ES에서 문서 불러와서 키워드 모델 학습한 뒤 몽고에 저장
+
+# common 모듈 함수 설명
+
 ### config.py : 데이터 호출과 전처리에 사용되는 global 변수 및 시간 담당 함수
 
-### esFunc.py : elasticsearch quary functions module
-
-### prs.py : 데이터 전처리(pre process) 기능
-
-## prs.py
+## prs.py : 데이터 전처리(pre process) 기능
 ### data pre process function module
 * function : esLoadDocs()
   * purpose : 
@@ -46,7 +66,7 @@ app.py
 
 
 
-## esFunc.py
+## esFunc.py : elasticsearch quary functions module
 ### elasticsearch quary functions module
 * 참고 : esFunc 모듈을 만들 당시 문서의 수가 극소했음. 문서가 첨부파일을 가지고 있으면 질 좋은 문서였고, 첨부파일이 없으면 시덥잖은 문서였음. 데이터 분석 알고리즘의 정확도를 확인하기 위해 첨부파일 있는 문서와 없는 문서를 고루 섞은 데이터를 활용했음. 데이터 수가 충분하면 첨부 파일 유무에 상관 없이 불러오는 것도 문제 없을 것으로 예상 함. 기관 분류, 날짜 분류 등에 쿼리문을 변경해서 활용할 수 있을 것으로 기대
 
