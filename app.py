@@ -1,4 +1,10 @@
 #-*- coding:utf-8 -*-
+import os
+import sys
+
+file_dir = os.path.dirname(__file__)
+sys.path.append(file_dir)
+
 from flask import Flask, jsonify, request, Response
 from flask_restful import Resource, Api
 from elasticsearch import Elasticsearch
@@ -8,7 +14,9 @@ from operator import itemgetter
 import time
 import json
 import sys
-from rcmdHelper import rcmd as rc
+#from relatedDocs import rcmd as rc
+
+from common.config import INDEX
 
 import os
 if os.name == "nt":
@@ -23,35 +31,40 @@ sys.path.insert(0, './common')
 import re
 import tfidf
 # Implement KR-Wordrank
-from krwordrank.hangle import normalize
-from krwordrank.word import KRWordRank
+# from krwordrank.hangle import normalize
+# from krwordrank.word import KRWordRank
 
 app = Flask(__name__)
 # app.config['TESTING'] = True
 app.config['JSON_AS_ASCII'] = False
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 
+isLocalEs = 0
+#local es mode:
+if(isLocalEs):
+    # Url address of Elasticsearch
+    import socket
+    def get_ip_address():
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        return s.getsockname()[0]
 
-# Url address of Elasticsearch
-import socket
-def get_ip_address():
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(("8.8.8.8", 80))
-    return s.getsockname()[0]
-
-serverUrl = get_ip_address()  # '192.168.0.110'
-if(serverUrl != "http://203.252.112.15:9200"):
-    serverUrl="http://localhost:9200"
+    serverUrl = get_ip_address()  # '192.168.0.110'
+    if(serverUrl != "http://203.252.112.15:9200"):
+        serverUrl="http://localhost:9200"
+    else:
+        serverUrl = "http//203.252.112.14:9200"
 else:
-    serverUrl = "http//203.252.112.14:9200"
-
+    serverUrl = "http://203.252.112.14:9200"
 # ElasticSearch connection
 es = Elasticsearch(serverUrl)
 app = Flask(__name__)
 api = Api(app)
 
 
-CORS(app, support_credentials=True)
+# CORS(app, support_credentials=True)
+CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 
 @app.route("/hello",methods=['GET'])
@@ -119,20 +132,20 @@ def lda():
     return json.dumps(result, ensure_ascii=False)
 
 #recomandation function
-@app.route('/rcmd', methods=['GET', 'POST'])
-def rcmd():
-    print("recomandation function init.")
+#@app.route('/rcmd', methods=['GET', 'POST'])
+#def rcmd():
+#    print("recomandation function init.")
 
-    if request.method == 'POST':
-        req = request.json
-        idList = req["idList"]
+#    if request.method == 'POST':
+#        req = request.json
+#        idList = req["idList"]
 
-    # print("Get id list from Front-End: ",idList)
+#     # print("Get id list from Front-End: ",idList)
 
-    rcmdList = rc.getRcmd(idList)
-    print("rcmd function done!")
-    
-    return json.dumps(rcmdList, ensure_ascii=False)
+#    rcmdList = rc.getRcmd(idList)
+#    print("rcmd function done!")
+#    
+#    return json.dumps(rcmdList, ensure_ascii=False)
 
 
 
@@ -173,7 +186,9 @@ def textRank():
         # tokenized_doc = ' '.join(tokenized_doc) 
         # print("형태소 분석 이후 단어 토큰의 개수",len(tokenized_doc)) 
 
-    result = keywords(tokenized_doc, words = 15 , scores=True)
+    # result = keywords(tokenized_doc, words = 15 , scores=True)
+    result = keywords(tokenized_doc)
+
     # with open(DIR_FE, 'w', -1, "utf-8") as f:
     with open("./wrCul.json", 'w', -1, "utf-8") as f:
         json.dump(result, f, ensure_ascii=False)
@@ -182,7 +197,7 @@ def textRank():
 
 def wordRank():
     #Retreive text from elasticsearch
-    results = es.get(index='nkdb', doc_type='nkdb', id='5dc9fc5033ec463330e97e94')
+    results = es.get(index=INDEX, doc_type='nkdb', id='5dc9fc5033ec463330e97e94')
     texts = json.dumps(results['_source'], ensure_ascii=False)
 
     # split the text by sentences
@@ -262,8 +277,10 @@ def draw():
      
         allDocs["query"]["bool"]["filter"][0]["range"]["post_date"]["gte"]= str(startYear+(i*offset))+"-01||/M"
         allDocs["query"]["bool"]["filter"][0]["range"]["post_date"]["lte"]= str(startYear+((i+1) *offset))+"-01||/M"
+        # print("query body has been built!")
+        res = es.search(index=INDEX, body=allDocs)
+        # print(res)
 
-        res = es.search(index="nkdb", body=allDocs)
         numOfDocs = res["hits"]["total"]["value"]
         wholeDataArr.append(numOfDocs)
         print(numOfDocs)
@@ -290,12 +307,13 @@ def draw():
         searchDocs["query"]["bool"]["filter"][0]["range"]["post_date"]["gte"]= str(startYear+(i*offset))+"-01||/M"
         searchDocs["query"]["bool"]["filter"][0]["range"]["post_date"]["lte"]= str(startYear+((i+1) *offset))+"-01||/M"
         searchDocs["query"]["bool"]["must"][0]["match"]["post_body"] = keyword
-
-        res = es.search(index="nkdb", body=searchDocs)
+        # print("ready to search")
+        res = es.search(index=INDEX, body=searchDocs)
+        print(res)
         numOfDocs = res["hits"]["total"]["value"]
         searchDataArr.append(numOfDocs)
 
-        print(numOfDocs)
+        # print(numOfDocs)
 
     dic = {}
     resultWholeArr = []
@@ -316,7 +334,7 @@ def draw():
     resultArr.append(resultWholeArr)
     resultArr.append(resultSearchArr)
 
-    print(resultArr)
+    # print(resultArr)
 
     return json.dumps(resultArr, ensure_ascii=False)
 
@@ -334,7 +352,7 @@ def test():
         "size": 1000,
     }
 
-    res = es.search(index="nkdb", body=body)
+    res = es.search(index=INDEX, body=body)
 
     resultArr = res["hits"]["hits"]
 
@@ -389,7 +407,7 @@ def test():
 #     #Make a dictionary [word, weight]
 #     for word, r in sorted(keywords.items(), key=lambda x:x[1], reverse=True)[:30]:
 #         dic["y"]=r
-#         dic["label"]=word
+#         dic["label"]=wordkeyword
 #         result.append(dic)
 #         dic={}
 

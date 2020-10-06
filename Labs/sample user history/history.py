@@ -7,7 +7,7 @@ homeDir = curDir.parent.parent
 import sys
 sys.path.append(str(homeDir))
 
-from common import cmm
+from common import config
 from common import esFunc
 from common import prs
 
