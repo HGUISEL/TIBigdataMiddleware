@@ -210,7 +210,7 @@ def readyData(num_doc, isCont = False):
     corpus_with_id_title_content = esLoadDocs(num_doc)# load data and update num_doc
 
     # phase 2 형태소 분석기 + 내용 없는 문서 지우기
-    
+
     print("\n\n#####Phase 1-2 : 데이터 전처리 실행#####")
     (idList,titles, tokenized_doc, contents) = dataPrePrcs(corpus_with_id_title_content)
 
@@ -230,5 +230,5 @@ def readyData(num_doc, isCont = False):
 
 
 if __name__ == "__main__":
-   readyData(100)
-    # esLoadDocs(10)
+#    readyData(100)
+    esLoadDocs(10)

@@ -14,7 +14,7 @@ from operator import itemgetter
 import time
 import json
 import sys
-#from rcmdHelper import rcmd as rc
+#from relatedDocs import rcmd as rc
 
 from common.config import INDEX
 

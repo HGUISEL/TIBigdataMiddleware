@@ -27,7 +27,7 @@ app.py
 
 ## prs.py
 ### data pre process function module
-* function : loadData()
+* function : esLoadDocs()
   * purpose : 
     * esFunc을 사용해서 쿼리를 보내 데이터를 호출
     * 서버에 연결 불가 혹은 서버 연결 옵션에 따라 저장되어 있는 sample data을 호출
@@ -48,6 +48,8 @@ app.py
 
 ## esFunc.py
 ### elasticsearch quary functions module
+* 참고 : esFunc 모듈을 만들 당시 문서의 수가 극소했음. 문서가 첨부파일을 가지고 있으면 질 좋은 문서였고, 첨부파일이 없으면 시덥잖은 문서였음. 데이터 분석 알고리즘의 정확도를 확인하기 위해 첨부파일 있는 문서와 없는 문서를 고루 섞은 데이터를 활용했음. 데이터 수가 충분하면 첨부 파일 유무에 상관 없이 불러오는 것도 문제 없을 것으로 예상 함. 기관 분류, 날짜 분류 등에 쿼리문을 변경해서 활용할 수 있을 것으로 기대
+
 
 * **function : genQuery(boolean, [int])**
   * prpose : es에 보낼 쿼리를 만든다.
