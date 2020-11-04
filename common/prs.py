@@ -49,6 +49,7 @@ def loadData(num_doc = NUM_DOC):
     # print(N
     # UM_DOC)
     global NUM_DOC
+    """
     if NUM_DOC != num_doc:
         NUM_DOC = num_doc
         print("NUM_DOC updated to ", NUM_DOC)
@@ -73,6 +74,17 @@ def loadData(num_doc = NUM_DOC):
             corpus = json.load(f)
         
         print("connection to Backend server failed!")
+    """
+    if NUM_DOC != num_doc:
+        NUM_DOC = num_doc
+        print("NUM_DOC updated to ", NUM_DOC)
+    print("데이터 로드 중...")
+    if BACKEND_CONCT == False:
+        raise Exception("서버 연결 불가")
+    corpus = esFunc.esGetDocs(NUM_DOC)
+    print("connection to Backend server succeed!")
+    print(len(corpus),"개의 문서를 가져옴")# 문서의 수... 내용 없으면 뺀다...
+
     showTime() 
     NUM_DOC = len(corpus) # 전체 사용 가능한 문서 수를 업데이트한다.
     print("NUM_DOC updated to ", NUM_DOC)

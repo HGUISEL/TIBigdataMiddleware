@@ -26,7 +26,7 @@ import tfidf
 from krwordrank.hangle import normalize
 from krwordrank.word import KRWordRank
 
-app = Flask(__name__)
+app = Flask(__name__)#flask 객체를 app에 할당
 # app.config['TESTING'] = True
 app.config['JSON_AS_ASCII'] = False
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
@@ -43,7 +43,7 @@ serverUrl = get_ip_address()  # '192.168.0.110'
 if(serverUrl != "http://203.252.112.15:9200"):
     serverUrl="http://localhost:9200"
 else:
-    serverUrl = "http//203.252.112.14:9200"
+    serverUrl = "http://203.252.112.14:9200"
 
 # ElasticSearch connection
 es = Elasticsearch(serverUrl)
@@ -108,6 +108,7 @@ LDA 잠재 디리클레 할당 모듈화
 """
 ################################################
 # With LDA gensim library
+
 import LDA
 @app.route('/lda', methods=['GET'])
 def lda():
@@ -125,14 +126,15 @@ SVM
 """
 ################################################
 # With LDA gensim library
+
 import SVM
-@app.route('/lda', methods=['GET'])
-def SVM():
+@app.route('/svm', methods=['GET'])#app객체로 라우팅 경로 설정
+def svm():
     app = Flask(__name__)
     app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
     
-    result = SVM.SVM(10) ##문서 10개 돌림 
-    # print
+    result = SVM.model(10) ##문서 10개 돌림 
+    
     return json.dumps(result, ensure_ascii=False)
 
 
@@ -422,4 +424,6 @@ def after_request(response):
     return response
 
 
+#서버 구동
 app.run(host="0.0.0.0",port=5000, debug=True)
+

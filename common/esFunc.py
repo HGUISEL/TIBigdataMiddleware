@@ -8,7 +8,7 @@ sys.path.append(file_dir)
 
 from cmm import SAMP_DATA_DIR
 
-backEndUrl = "http://203.252.112.14:9200"
+backEndUrl = "http://203.252.117.210:9200"
 es = Elasticsearch(backEndUrl)
 
 INDEX = "nkdb"
