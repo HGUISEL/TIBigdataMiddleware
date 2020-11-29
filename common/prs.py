@@ -1,6 +1,3 @@
-# KUBIC module : prs.py
-# created Data : 어제 :(
-# purpose : 데이터 전처리 모듈
 import traceback
 # from datetime import datetime
 import os
@@ -151,6 +148,7 @@ def readyData(num_doc, isCont = False):
     titles = []
     contents = []
 
+
     # print("in readyData after if, ", NUM_DOC)
 
     # Phase 1 : ES에서 문서 쿼리 및 content와 title 분리 전처리
@@ -164,6 +162,7 @@ def readyData(num_doc, isCont = False):
     idList = corpusIdTtlCtt["id"]
     titles = corpusIdTtlCtt["titles"]
     contents = corpusIdTtlCtt["contents"]
+    
     # phase 2 형태소 분석기 + 내용 없는 문서 지우기
     print("\n\n#####Phase 1-2 : 데이터 전처리 실행#####")
     tokenized_doc = dataPrePrcs(contents)
