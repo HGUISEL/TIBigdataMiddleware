@@ -70,7 +70,7 @@ from apscheduler.jobstores.base import JobLookupError
 
 
 
-@app.route('/svm', methods=['GET'])#app객체로 라우팅 경로 설정
+#@app.route('/svm', methods=['GET'])#app객체로 라우팅 경로 설정
 def svm():
     app = Flask(__name__)
     app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
@@ -84,7 +84,7 @@ def svm():
     #scheduler 1달 단위로 1~12월까지 해서  (지금 설정은 하되 쓰지 않게)
     result=SVM.MoEs(date)
     return json.dumps(result, ensure_ascii=False)
-@app.route('/train', methods=['GET'])#app객체로 라우팅 경로 설정
+#@app.route('/train', methods=['GET'])#app객체로 라우팅 경로 설정
 def train():
     pp = Flask(__name__)
     app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
