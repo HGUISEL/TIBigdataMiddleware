@@ -279,8 +279,7 @@ def LDA(ndoc, nit = NUM_ITER, ntp = NUM_TOPICS):
     # Phase 1 : READY DATA
     print("\n\n##########Phase 1 : READY DATA##########")
     (doc_id, titles, tokenized_doc, contents) = prs.readyData(ndoc, True)
-   
-
+    print(len(doc_id))
     # LDA 알고리즘
     print("\n\n##########Phase 2 : LDA Algo##########")
     result = runLda(titles, tokenized_doc,contents)

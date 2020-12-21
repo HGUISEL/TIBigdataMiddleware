@@ -7,7 +7,11 @@ purpose : common features for all algorithm usage
 import time
 from datetime import datetime
 
+<<<<<<< HEAD
 SAMP_DATA_DIR = "/home/dapi1/TIBigdataMiddleware/raw data sample/rawData.json" 
+=======
+SAMP_DATA_DIR = "./raw data sample/rawData.json" 
+>>>>>>> 2230148de8c57812fd3f5bd2cef1e5922e231d0c
 
 LDA_DIR_FE = "../TIBigdataFE/src/assets/special_first/data.json"
 
