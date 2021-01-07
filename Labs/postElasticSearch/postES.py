@@ -6,14 +6,14 @@ with open(FILE_DIR,'r', encoding="utf-8") as fp:
     esData = json.load(fp)
 
 meaningful_data = esData['hits']['hits']
-
+indexName = "frontend_test"
 body = ""
 
 for i,d in enumerate(meaningful_data):
     body +=         json.dumps({'index' : 
     {
-    '_index' : d['_index'],
-    '_type' : d['_type'],
+    '_index' : indexName,
+    '_type' : indexName,
     '_id' : d['_id']
     
     }
@@ -46,6 +46,6 @@ from elasticsearch import Elasticsearch
 
 
 
-DB_URL = "http://localhost:9200/nkdb"
+DB_URL = "localhost:9200/"+indexName
 es = Elasticsearch(DB_URL)
 es.bulk(body)

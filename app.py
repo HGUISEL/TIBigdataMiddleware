@@ -14,9 +14,9 @@ from operator import itemgetter
 import time
 import json
 import sys
-from rcmdHelper import rcmd as rc
+#from relatedDocs import rcmd as rc
 
-from common.cmm import INDEX
+from common.config import INDEX
 
 import os
 if os.name == "nt":
@@ -31,8 +31,8 @@ sys.path.insert(0, './common')
 import re
 import tfidf
 # Implement KR-Wordrank
-from krwordrank.hangle import normalize
-from krwordrank.word import KRWordRank
+# from krwordrank.hangle import normalize
+# from krwordrank.word import KRWordRank
 
 app = Flask(__name__)
 # app.config['TESTING'] = True
@@ -132,20 +132,20 @@ def lda():
     return json.dumps(result, ensure_ascii=False)
 
 #recomandation function
-@app.route('/rcmd', methods=['GET', 'POST'])
-def rcmd():
-    print("recomandation function init.")
+#@app.route('/rcmd', methods=['GET', 'POST'])
+#def rcmd():
+#    print("recomandation function init.")
 
-    if request.method == 'POST':
-        req = request.json
-        idList = req["idList"]
+#    if request.method == 'POST':
+#        req = request.json
+#        idList = req["idList"]
 
-    # print("Get id list from Front-End: ",idList)
+#     # print("Get id list from Front-End: ",idList)
 
-    rcmdList = rc.getRcmd(idList)
-    print("rcmd function done!")
-    
-    return json.dumps(rcmdList, ensure_ascii=False)
+#    rcmdList = rc.getRcmd(idList)
+#    print("rcmd function done!")
+#    
+#    return json.dumps(rcmdList, ensure_ascii=False)
 
 
 
@@ -186,7 +186,9 @@ def textRank():
         # tokenized_doc = ' '.join(tokenized_doc) 
         # print("형태소 분석 이후 단어 토큰의 개수",len(tokenized_doc)) 
 
-    result = keywords(tokenized_doc, words = 15 , scores=True)
+    # result = keywords(tokenized_doc, words = 15 , scores=True)
+    result = keywords(tokenized_doc)
+
     # with open(DIR_FE, 'w', -1, "utf-8") as f:
     with open("./wrCul.json", 'w', -1, "utf-8") as f:
         json.dump(result, f, ensure_ascii=False)
@@ -281,7 +283,7 @@ def draw():
 
         numOfDocs = res["hits"]["total"]["value"]
         wholeDataArr.append(numOfDocs)
-        # print(numOfDocs)
+        print(numOfDocs)
 
         searchDocs = {
             "query" : {
@@ -307,7 +309,7 @@ def draw():
         searchDocs["query"]["bool"]["must"][0]["match"]["post_body"] = keyword
         # print("ready to search")
         res = es.search(index=INDEX, body=searchDocs)
-        # print(res)
+        print(res)
         numOfDocs = res["hits"]["total"]["value"]
         searchDataArr.append(numOfDocs)
 
@@ -405,7 +407,7 @@ def test():
 #     #Make a dictionary [word, weight]
 #     for word, r in sorted(keywords.items(), key=lambda x:x[1], reverse=True)[:30]:
 #         dic["y"]=r
-#         dic["label"]=word
+#         dic["label"]=wordkeyword
 #         result.append(dic)
 #         dic={}
 
