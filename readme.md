@@ -6,6 +6,7 @@ app.py
       ----cmm.py
       ----prs.py
     ----LDA.py
+    ----SVM.py
 ```
 ## app.py
 * flask main app
