@@ -1,0 +1,33 @@
+### 아래와 같은 확장자 무시 ###
+**/*.csv
+**/*.jpg
+**/*.json
+**/*.pickle
+**/esAccount.py
+**/__pycache__/*
+**/**/esAccount.py
+**/**/__pycache__/*
+
+### HaEunMok ###
+model/
+env/
+train_data/
+topic_analysis/esAccount.py
+topic_analysis/MongoAccount.py
+topic_analysis/__pycache__/
+testdisk.log
+
+### byk ###
+TextMining/__pycache__/
+mecab-0.996-ko-0.9.2/
+mecab-ko-dic-2.1.1-20180720/
+
+TextMining/Analyzer/__pycache__/
+TextMining/Tokenizer/__pycache__/
+TextMining/Tokenizer/esAccount.py
+.viminfo
+kubic_sslFile.py
+tib_topic_model
+
+### baek ###
+tfidfs/

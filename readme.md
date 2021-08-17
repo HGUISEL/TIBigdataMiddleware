@@ -6,7 +6,8 @@ app.py
       ----cmm.py
       ----prs.py
     ----LDA.py
-```
+    ----SVM.py
+    ----CNN.py
 ## app.py
 * flask main app
 

@@ -1,5 +1,11 @@
 #-*- coding:utf-8 -*-
-from flask import Flask, jsonify, request, Response
+import os
+import sys
+
+file_dir = os.path.dirname(__file__)
+sys.path.append(file_dir)
+
+from flask import Flask, jsonify, request, Response, render_template, copy_current_request_context, current_app
 from flask_restful import Resource, Api
 from elasticsearch import Elasticsearch
 from flask_cors import CORS, cross_origin
@@ -9,6 +15,9 @@ import time
 import json
 import sys
 from rcmdHelper import rcmd as rc
+
+#error
+#from common.cmm import INDEX
 
 import os
 if os.name == "nt":
@@ -26,52 +35,350 @@ import tfidf
 from krwordrank.hangle import normalize
 from krwordrank.word import KRWordRank
 
+#import tfidf
+import tfidf_all
+import datetime
+import time
+
 app = Flask(__name__)
 # app.config['TESTING'] = True
 app.config['JSON_AS_ASCII'] = False
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 
-
+isLocalEs = 0
+#local es mode:
 # Url address of Elasticsearch
-import socket
-def get_ip_address():
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(("8.8.8.8", 80))
-    return s.getsockname()[0]
-
-serverUrl = get_ip_address()  # '192.168.0.110'
-if(serverUrl != "http://203.252.112.15:9200"):
-    serverUrl="http://localhost:9200"
-else:
-    serverUrl = "http//203.252.112.14:9200"
+from topic_analysis.get_es_address import get_es_address
+get_es_address(isLocalEs)
 
 # ElasticSearch connection
 es = Elasticsearch(serverUrl)
-app = Flask(__name__)
+app = Flask(__name__) 
 api = Api(app)
 
-
 CORS(app, support_credentials=True)
+#CORS(app)
+#cors =CORS(app, resource ={r" ":{"":""}})
+#app.config['CORS_HEADERS'] = 'Content-Type'
+
+#################################################
+
+from TextMining.Tokenizer.kubic_mystorage import *
+from TextMining.Tokenizer.kubic_data import *
+from TextMining.Tokenizer.kubic_morph import *
+from TextMining.Analyzer.kubic_wordCount import *
+from TextMining.Analyzer.kubic_tfidf import *
+from TextMining.Analyzer.kubic_semanticNetworkAnalysis import *
+
+import kubic_sslFile as kubic_ssl
+from bson import json_util
+import subprocess
+import schedule
+import time
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.jobstores.base import JobLookupError
+
+#angular 사전메세지를 위한 코드
+@app.after_request
+def after_request(response):
+  response.headers.add('Access-Control-Allow-Origin', '*')
+  response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+  response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+  return response
+
+#TextMining package 실행
+@app.route("/preprocessing",methods=['GET', 'POST']) #서버 켜져있는 방법알기위해서 GET 사용
+def preprocessing():
+    #21.08.11 app=Flask(__name__)
+    #21.08.11 app.config['JSONIFY_PRETTYPRINT_REGULAR']=True
+    print("************************Preprocessing************************")
+
+### Angular + Flask    
+    # 전처리 실행 버튼 -> 메세지를 유저한테 back -> user ip에서 post를 /preprocessing으로 보냄 -> 
+    # 플라스크 request method로 Angular가 보내는 json data 받아서 사용
+
+    # Angular에서 보내는 data 
+    if request.method == 'POST':
+        data = request.json
+        print(data, type(data))
+        email = data['userEmail']
+        keyword = data['keyword']
+        savedDate = data['savedDate']
+        wordclass = data['wordclass']
+
+        stopwordTF = data['stopword']
+        synonymTF = data['synonym']
+        compoundTF = data['compound']
+    else: return 'GET result' # 지영수정
+
+    # email = "21800409@handong.edu"
+    # keyword = "통일"
+    # savedDate = "2021-08-06T11:52:05.706Z"
+
+    if(checkEmail(email) == False): #외부 해킹을 대비해 email을 mongodb에 있는 사용자인지 확인하기
+        # return json.dump({'returnCode': 401, 'errMsg': '로그인정보가 없습니다'}) #returnCode, errMsg
+        return jsonify({'returnCode': 401, 'errMsg': '로그인 정보가 없습니다'})
+
+    #result = compound(email, keyword, savedDate, wordclass)
+    result = compound(email, keyword, savedDate, wordclass, stopwordTF, synonymTF, compoundTF)
+    #print("전처리 결과\n", result[0], result[1])
+
+    if result[0] == False: #사용자사전 format안맞을 때
+        resultDic = {'returnCode':'400', 'errMsg':result[1], #'returnDate' : datetime.datetime.now(), 
+'activity' : 'preprocessing', 'email' : email, 'keyword' : keyword, 'savedDate' : savedDate}
+        return jsonify(resultDic) #json.dumps(resultDic, ensure_ascii=False, default=json_util.default)
+    else:
+        resultDic = {#'returnDate' : datetime.datetime.now(), 
+'activity' : 'preprocessing', 'email' : email, 'keyword' : keyword, 'result' : result[1], 'savedDate' : savedDate}
+        return jsonify(resultDic) #json.dumps(resultDic, ensure_ascii=False, default=json_util.default)
 
 
-@app.route("/hello",methods=['GET'])
-def hello():
-    app = Flask(__name__)
-    app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
-    contents = "ndllocvcv"
 
-    from konlpy.tag import Mecab
-    tagger = Mecab()
-    t = tagger.pos("고양이는 양옹뉴턴야옹")
-    print("========================================")
-    return json.dumps(t, ensure_ascii=False)
+@app.route("/textmining",methods=['GET', 'POST'])
+def textmining():
+    
+#     return textmining_request(request)
+    
+# # @copy_current_request_context 
+# def textmining_request(req):
+
+    #21.08.11 app=Flask(__name__)
+    #21.08.11 app.config['JSONIFY_PRETTYPRINT_REGULAR']=True
+    print("************************Textmining************************")
+    ### Angular post data
+
+    try: 
+        # current_app.preprocess_request()
+        if request.method == 'POST':
+            data = request.json 
+            print(data)
+            email = data['userEmail']
+            keyword = data['keyword']
+            savedDate = data['savedDate']
+            optionList = data['optionList']
+            analysisName = data['analysisName']
+        else: return 'GET result'
+    except Exception as e :
+        resultDic = {
+            "result": e
+        }
+        return json.dumps(resultDic, default=json_util.default, ensure_ascii=False)
 
 
+    # email = '21600280@handong.edu'
+    # keyword = "통일"
+    # savedDate = "2021-08-06T11:52:05.706Z"
 
-@app.route("/tfidfRaw",methods=['GET'])
+
+    if analysisName == 'count':
+        print("빈도수 분석을 시작합니다\n")
+        result = word_count(email, keyword, savedDate, optionList, analysisName)
+        print("\n빈도수 분석 결과\n", result)
+        resultDic = {#'returnDate' : datetime.datetime.now(), 
+        'activity' : analysisName, 'email' : email, 
+        'keyword' : keyword, 'savedDate' : savedDate, 'optionList' : optionList, 'result' : result}
+    
+    elif analysisName == 'tfidf':
+        print("tfidf 분석을 시작합니다\n")
+        result = tfidf(email, keyword, savedDate, optionList, analysisName)
+        print("\ntfidf 분석 결과\n", result)
+        resultDic = {#'returnDate' : datetime.datetime.now(), 
+        'activity' : analysisName, 'email' : email, 
+        'keyword' : keyword, 'savedDate' : savedDate, 'optionList' : optionList, 'result' : result}
+
+    # for semanticNetworkAnalysis
+    elif analysisName == 'network':
+        print("의미연결망 분석을 시작합니다\n")
+        result1, result2 = semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName)
+        print("\n의미연결망 분석 결과\n")
+        print("\n 연결망 json(dict)", result1, "\n")
+        print("\n 중심성 json(dict)", result2, "\n")
+        
+        resultDic = {#'returnDate' : datetime.datetime.now(), 
+        'activity' : analysisName, 'email' : email,
+        'keyword' : keyword, 'savedDate' : savedDate, 'optionList' : optionList, 'result1' : result1, 'result2': result2 }
+
+    else: return 'result'
+
+    return json.dumps(resultDic, default=json_util.default, ensure_ascii=False)
+
+###################################################################################################################
+
+#################################################
+#"""
+#SVM
+#2020.09.
+#"""
+#################################################
+import SVM
+import schedule
+import time
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.jobstores.base import JobLookupError
+from topic_analysis.__get_logger import __get_logger
+
+#@app.route('/svm', methods=['GET'])#app객체로 라우팅 경로 설정
+def svm():
+    #app=Flask(__name__)
+    #app.config['JSONIFY_PRETTYPRINT_REGULAR']=True
+
+    now=datetime.datetime.now()
+    date=now.strftime('%Y-%m-%d')
+
+    filename='./log/svm.log'
+    with open(filename, "a") as f:
+        f.write(date)
+        f.write("\n")
+    print("svm.log에 모델예측 실행 날짜를 기록하였습니다.")
+    
+    result=SVM.MoEs(date)
+
+    return json.dumps(result, ensure_ascii=False)
+#@app.route('/train', methods=['GET'])#app객체로 라우팅 경로 설정
+def svm_train():
+    #app = Flask(__name__)
+    #app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
+
+    now=datetime.datetime.now()
+    date=now.strftime('%Y-%m-%d')
+
+    filename='./log/svm_train.log'
+    with open(filename, "a") as f:	
+        f.write(date)
+        f.write("\n")
+    print("svm_train.log에 모델학습 실행 날짜를 기록하였습니다.")
+    result=SVM.SVMTrain()
+
+    print("SVM 모델 학습을 완료하였습니다.")
+    return "SVM 모델 학습 완료"
+
+#SVM 모델을 훈련시키는 scheduler
+sched_train = BackgroundScheduler(daemon=True)
+sched_train.add_job(svm_train,'interval',days=30)
+#sched_train.add_job(svm_train)
+sched_train.start()
+
+
+#SVM_모델을 실행하는 scheduler
+sched = BackgroundScheduler(daemon=True)
+#sched.add_job(svm)
+sched.add_job(svm,'interval',days=30)
+sched.start()
+
+#################################################
+#"""
+#CNN
+#2021.02.
+#"""
+#################################################
+import CNN
+import schedule
+import time
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.jobstores.base import JobLookupError
+
+#@app.route('/svm', methods=['GET'])#app객체로 라우팅 경로 설정
+def cnn():
+    #app = Flask(__name__)
+    #app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
+
+    now = datetime.datetime.now()
+    date = now.strftime('%Y-%m-%d')
+
+
+    filename = './log/cnn.log'
+    with open(filename,"a") as f:
+        f.write(date)
+        f.write("\n")
+    print("날짜를 기록하였습니다")
+    result=CNN.MoEs(date)
+    return json.dumps(result, ensure_ascii=False)
+
+#@app.route('/train', methods=['GET'])#app객체로 라우팅 경로 설정
+def cnn_train():
+    #app = Flask(__name__)
+    #app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
+    
+    now=datetime.datetime.now()
+    date=now.strftime('%Y-%m-%d')
+
+    filename='./log/cnn_train.log'
+    with open(filename, "a") as f:
+        f.write(date)
+        f.write("\n")
+    print("cnn_train.log에 모델학습 실행 날짜를 기록하였습니다.")
+    result=CNN. cnn_train()
+    print("CNN 모델 학습을 완료하였습니다.")
+    return "CNN 모델 학습 완료"   
+
+#sched_train = BackgroundScheduler(daemon=True)
+#sched_train.add_job(cnn_train,'interval',hours=24)
+#sched_train.add_job(cnn_train)
+#sched_train.start()
+
+#sched = BackgroundScheduler(daemon=True)
+#sched.add_job(cnn)
+#sched.start()
+
+#################################################
+#"""
+#Multi-SVM
+#2021.02
+#"""
+#################################################
+import Multi_SVM
+import schedule
+import time
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.jobstores.base import JobLookupError
+
+#@app.route('/svm', methods=['GET'])#app객체로 라우팅 경로 설정
+def multi_SVM():
+    #app = Flask(__name__)
+    #app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
+
+    now = datetime.datetime.now()
+    date = now.strftime('%Y-%m-%d')
+
+    filename = './log/multi_svm.log'
+    with open(filename,"a") as f:
+        f.write(date)
+        f.write("\n")
+    print("날짜를 기록하였습니다")
+    result=multi_SVM.MoEs(date)
+    return json.dumps(multi_SVM, ensure_ascii=False)
+
+#@app.route('/train', methods=['GET'])#app객체로 라우팅 경로 설정
+def multi_SVM_train():
+    #app = Flask(__name__)
+    #app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
+    now=datetime.datetime.now()
+    date=now.strftime('%Y-%m-%d')
+
+    filename='./log/multi_svm_train.log'
+    with open(filename, "a") as f:
+        f.write(date)
+        f.write("\n")
+    print("multi_svm_train.log에 모델학습 실행 날짜를 기록하였습니다.")
+    result=Multi_SVM.SVMTrain()
+    print("MULTI_SVM 모델 학습을 완료하였습니다.")
+    return "MULTI_SVM 모델 학습 완료"
+
+#sched_train = BackgroundScheduler(daemon=True)
+#sched_train.add_job(multi_SVM_train)
+#sched_train.add_job(multi_SVM_train,'interval',hours=24)
+#sched_train.start()
+
+#sched = BackgroundScheduler(daemon=True)
+#sched.add_job(multi_SVM)
+#sched.start()
+
+################################################################
+
+#@app.route("/tfidfRaw",methods=['GET'])
 def tfidfRaw():
-    app = Flask(__name__)
-    app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
+    #app = Flask(__name__)
+    #app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 
     Numdoc = 600
 
@@ -81,14 +388,29 @@ def tfidfRaw():
 
 @app.route("/tfidfTable",methods=['GET'])
 def tfidfTable():
-    app = Flask(__name__)
-    app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
+    #app = Flask(__name__)
+    #app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 
     Numdoc = 600
-
     contents = tfidf.getTfidfTable(Numdoc)
-    #return json.dumps(contents, ensure_ascii=False)
     return json.dumps(contents, ensure_ascii=False)
+
+#@app.route("/allTfidfTable",methods=['GET'])
+def allTfidfTable():
+    #app = Flask(__name__)
+    #app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
+    print("get request")
+    tfidf_all.getAllTfidfTable()
+
+
+###################################################################################################################
+
+#sched_train = BackgroundScheduler(daemon=True)
+#sched_train.add_job(allTfidfTable)
+#sched_train.add_job(multi_SVM_train,'interval',hours=24)
+#sched_train.start()
+#@app.route("/tfidfTable",methods=['GET'])
+
 
 #########################################
 # 191227 ES Test update : use esFunc module
@@ -99,7 +421,11 @@ def esTest():
     
     return json.dumps(result, ensure_ascii=False)
 
+#@app.route('/testRead', methods=['GET'])
+def testRead():
+    result = esFunc.dataLoad()
 
+    return json.dumps(result, ensure_ascii=False)
 
 ################################################
 """
@@ -111,8 +437,8 @@ LDA 잠재 디리클레 할당 모듈화
 import LDA
 @app.route('/lda', methods=['GET'])
 def lda():
-    app = Flask(__name__)
-    app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
+    #app = Flask(__name__)
+    #app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
     
     result = LDA.LDA(10) ##문서 10개 돌림 
     # print
@@ -133,7 +459,6 @@ def rcmd():
     print("rcmd function done!")
     
     return json.dumps(rcmdList, ensure_ascii=False)
-
 
 
 def textRank():
@@ -173,7 +498,9 @@ def textRank():
         # tokenized_doc = ' '.join(tokenized_doc) 
         # print("형태소 분석 이후 단어 토큰의 개수",len(tokenized_doc)) 
 
-    result = keywords(tokenized_doc, words = 15 , scores=True)
+    # result = keywords(tokenized_doc, words = 15 , scores=True)
+    result = keywords(tokenized_doc)
+
     # with open(DIR_FE, 'w', -1, "utf-8") as f:
     with open("./wrCul.json", 'w', -1, "utf-8") as f:
         json.dump(result, f, ensure_ascii=False)
@@ -182,7 +509,7 @@ def textRank():
 
 def wordRank():
     #Retreive text from elasticsearch
-    results = es.get(index='nkdb', doc_type='nkdb', id='5dc9fc5033ec463330e97e94')
+    results = es.get(index=INDEX, doc_type='nkdb', id='5dc9fc5033ec463330e97e94')
     texts = json.dumps(results['_source'], ensure_ascii=False)
 
     # split the text by sentences
@@ -262,8 +589,10 @@ def draw():
      
         allDocs["query"]["bool"]["filter"][0]["range"]["post_date"]["gte"]= str(startYear+(i*offset))+"-01||/M"
         allDocs["query"]["bool"]["filter"][0]["range"]["post_date"]["lte"]= str(startYear+((i+1) *offset))+"-01||/M"
+        # print("query body has been built!")
+        res = es.search(index=INDEX, body=allDocs)
+        # print(res)
 
-        res = es.search(index="nkdb", body=allDocs)
         numOfDocs = res["hits"]["total"]["value"]
         wholeDataArr.append(numOfDocs)
         print(numOfDocs)
@@ -290,12 +619,13 @@ def draw():
         searchDocs["query"]["bool"]["filter"][0]["range"]["post_date"]["gte"]= str(startYear+(i*offset))+"-01||/M"
         searchDocs["query"]["bool"]["filter"][0]["range"]["post_date"]["lte"]= str(startYear+((i+1) *offset))+"-01||/M"
         searchDocs["query"]["bool"]["must"][0]["match"]["post_body"] = keyword
-
-        res = es.search(index="nkdb", body=searchDocs)
+        # print("ready to search")
+        res = es.search(index=INDEX, body=searchDocs)
+        print(res)
         numOfDocs = res["hits"]["total"]["value"]
         searchDataArr.append(numOfDocs)
 
-        print(numOfDocs)
+        # print(numOfDocs)
 
     dic = {}
     resultWholeArr = []
@@ -334,7 +664,7 @@ def test():
         "size": 1000,
     }
 
-    res = es.search(index="nkdb", body=body)
+    res = es.search(index=INDEX, body=body)
 
     resultArr = res["hits"]["hits"]
 
@@ -364,7 +694,6 @@ def test():
 
     return json.dumps(resultDic, ensure_ascii=False)
 
-
 # def rank(contents):
 #      #split the text by sentences
 #     sentences = re.split(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', contents)
@@ -389,7 +718,7 @@ def test():
 #     #Make a dictionary [word, weight]
 #     for word, r in sorted(keywords.items(), key=lambda x:x[1], reverse=True)[:30]:
 #         dic["y"]=r
-#         dic["label"]=word
+#         dic["label"]=wordkeyword
 #         result.append(dic)
 #         dic={}
 
@@ -404,4 +733,29 @@ def after_request(response):
     return response
 
 
-app.run(host="0.0.0.0",port=5000, debug=True)
+# 21.08.17 add error handling
+from flask import json
+from werkzeug.exceptions import HTTPException
+
+@app.errorhandler(HTTPException)
+def handle_exception(e):
+    """Return JSON instead of HTML for HTTP errors."""
+    # start with the correct headers and status code from the error
+    response = e.get_response()
+    # replace the body with JSON
+    response.data = json.dumps({
+        "code": e.code,
+        "name": e.name,
+        "description": e.description,
+    })
+    response.content_type = "application/json"
+    return response
+
+if __name__ == "__main__": # 다른 코드에 import되어있을 경우에는 실행되지 않도록 함
+
+    # flask run(실행하면 port를 정해줄수 있는데 default는 5000): 5000 , python app.py는 5050
+    # 앞으로 Angular에서 5050으로 보내줄 것임
+#    app.run(host="0.0.0.0", port=5050) 
+    
+    context=(kubic_ssl.crt,kubic_ssl.key) #gitignore 비밀경로
+    app.run(host='0.0.0.0', port=15050, ssl_context=context, debug=True)   
