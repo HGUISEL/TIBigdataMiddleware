@@ -21,7 +21,7 @@ testdisk.log
 TextMining/__pycache__/
 mecab-0.996-ko-0.9.2/
 mecab-ko-dic-2.1.1-20180720/
-
+TextMining/userlocallibmecab/
 TextMining/Analyzer/__pycache__/
 TextMining/Tokenizer/__pycache__/
 TextMining/Tokenizer/esAccount.py
