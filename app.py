@@ -49,8 +49,10 @@ isLocalEs = 0
 #local es mode:
 # Url address of Elasticsearch
 
-# ElasticSearch connection
+#esAccount.address(isLocalEs)
 import topic_analysis.esAccount as esAcc
+# ElasticSearch connection
+
 es = Elasticsearch(
         [esAcc.host],
         http_auth=(esAcc.id, esAcc.password),

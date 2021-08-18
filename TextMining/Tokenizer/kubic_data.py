@@ -1,7 +1,8 @@
 from elasticsearch import Elasticsearch
 
 import TextMining.Tokenizer.esAccount as esAcc 
-from TextMining.Tokenizer.kubic_mystorage import *
+from TextMining.Tokenizer.kubic_mystorage import *#
+#from TextMining.Tokenizer.kubic_mystorage import getMyDocByEmail2
 
 #python app.py하면 문제,,
 # import esAccount as esAcc
