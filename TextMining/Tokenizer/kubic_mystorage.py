@@ -5,7 +5,7 @@ import pandas as pd
 import json
 from konlpy.tag import Mecab
 
-from TextMining.Tokenizer.kubic_data import *
+#from TextMining.Tokenizer.kubic_data import *
 
 client = MongoClient('localhost', 27017)
 db = client.user

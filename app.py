@@ -48,11 +48,18 @@ app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 isLocalEs = 0
 #local es mode:
 # Url address of Elasticsearch
-from topic_analysis.get_es_address import get_es_address
-get_es_address(isLocalEs)
 
+#esAccount.address(isLocalEs)
+import topic_analysis.esAccount as esAcc
 # ElasticSearch connection
-es = Elasticsearch(serverUrl)
+
+es = Elasticsearch(
+        [esAcc.host],
+        http_auth=(esAcc.id, esAcc.password),
+        scheme="https",
+        port= esAcc.port,
+        verify_certs=False
+)
 app = Flask(__name__) 
 api = Api(app)
 
