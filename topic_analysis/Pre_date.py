@@ -12,7 +12,6 @@ from elasticsearch import Elasticsearch
 import os.path
 import traceback
 import sys
-import esFunc
 import re
 import logging
 

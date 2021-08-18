@@ -90,8 +90,6 @@ six==1.16.0
 smart-open==5.1.0
 tensorboard==2.2.2
 tensorboard-plugin-wit==1.8.0
-tensorflow==2.2.0
-tensorflow-estimator==2.2.0
 termcolor==1.1.0
 threadpoolctl==2.1.0
 tqdm==4.61.1
