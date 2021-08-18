@@ -102,7 +102,8 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName)
     sorted_between_cen = dict(sorted(between_cen.items(), key=lambda item: item[1], reverse = True))
 
     # dataframe 만들기
-    cen_dict = { "count": list(top_words.keys()), "degree_cen": list(sorted_between_cen.keys()) , "eigenvector_cen": list(sorted_eigenvector_cen.keys()), "closeness_cen": list(sorted_closeness_cen.keys()), "between_cen": list(sorted_between_cen.keys())}
+    cen_dict = { "count": top_words, "degree_cen": sorted_between_cen , "eigenvector_cen": sorted_eigenvector_cen, "closeness_cen": sorted_closeness_cen, "between_cen": sorted_between_cen}
+
 
     print("MongoDB에 데이터를 저장합니다.")
 
@@ -135,5 +136,5 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName)
 
 
 
-#semanticNetworkAnalysis('sujinyang@handong.edu', '북한', "2021-07-08T11:46:03.973Z", 100, 'tfidf')
-# result1, result2 = semanticNetworkAnalysis('21600280@handong.edu', '북한', "2021-07-08T11:46:03.973Z", 100, 'tfidf')
+#semanticNetworkAnalysis('21600280@handong.edu', '북한', "2021-07-08T11:46:03.973Z", 100, 'tfidf')
+#semanticNetworkAnalysis('21600280@handong.edu', '북한', "2021-07-08T11:46:03.973Z", 100, 'tfidf')
