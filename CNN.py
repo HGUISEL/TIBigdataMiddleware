@@ -27,34 +27,34 @@ if os.name == "nt":# 윈도우 운영체제
     from eunjeon import Mecab
 else:# 현재 리눅스 서버 및 맥은 konlpy으로 미캡 모듈 import
     from konlpy.tag import Mecab
-    
+
 def make_dir():
     log_path='./log'
     model_path='./model'
-    svm_log='./log/multi_svm.log'
-    svm_train='./log/multi_svm_train.log'
-    log_error='./log/multi_svm_error.log'
+    svm_log='./log/cnn.log'
+    svm_train='./log/cnn_train.log'
+    log_error='./log/cnn_error.log'
     train_data='./train_data'
 
 
     if not os.path.exists(log_path):
         os.mkdir(log_path)
-        logger.info("multi_svm의 log를 저장할./log 디렉토리를 생성하였습니다.")
+        logger.info("cnn의 log를 저장할./log 디렉토리를 생성하였습니다.")
         if not os.path.exists(log_error):
             os.touch(log_error)
-            logger.info("multi_svm의 error를 저장할./log/multi_svm_error.log파일을 생성하였습니다.")
+            logger.info("cnn의 error를 저장할./log/cnn.log파일을 생성하였습니다.")
         if not os.path.exists(svm_log):
             os.touch(svm_log)
-            logger.info("multi_svm을 사용한 주제예측을 시행일자가 저장될 ./log/multi_svm.log파일이 생성하었습니다.")
+            logger.info("cnn을 사용한 주제예측을 시행일자가 저장될 ./log/cnn.log파일이 생성하었습니다.")
         if not os.path.exists(svm_train):
             os.touch(svm_train)
-            logger.info("multi_svm 모델훈련 시행일자가 저장될 ./log/multi_svm_train.log파일을 생성하였습니다")
+            logger.info("cnn 모델훈련 시행일자가 저장될 ./log/cnn_train.log파일을 생성하였습니다")
     if not os.path.exists(model_path):
         os.mkdir(model_path)
-        logger.info("multi_svm model을 저장할 ./model 디렉토리를 생성하였습니다.")
+        logger.info("cnn model을 저장할 ./model 디렉토리를 생성하였습니다.")
     if not os.path.exists(train_data):
         os.mkdir(train_data)
-        logger.info("multi_svm 모델 train data가 저장될 ./train_data 디렉토리를 생성하였습니다.")
+        logger.info("cnn 모델 train data가 저장될 ./train_data 디렉토리를 생성하였습니다.")
 
 ### Word2Vec해주는 함수 ###
 def W2V():
