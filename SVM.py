@@ -41,16 +41,16 @@ def make_dir():
         if not os.path.exists(log_error):
             os.touch(log_error)
             logger.info("svm의 error를 저장할./log/svm_error.log파일을 생성하였습니다.")
-        elif not os.path.exists(svm_log):
+        if not os.path.exists(svm_log):
             os.touch(svm_log)
             logger.info("svm을 사용한 주제예측을 시행일자가 저장될 ./log/svm.log파일이 생성하었습니다.")
-        elif not os.path.exists(svm_train):
+        if not os.path.exists(svm_train):
             os.touch(svm_train)
             logger.info("svm 모델훈련 시행일자가 저장될 ./log/svm_train.log파일을 생성하였습니다")
-    elif not os.path.exists(model_path):
+    if not os.path.exists(model_path):
         os.mkdir(model_path)
         logger.info("svm model을 저장할 ./model 디렉토리를 생성하였습니다.")
-    elif not os.path.exists(train_data):
+    if not os.path.exists(train_data):
         os.mkdir(train_data)
         logger.info("svm 모델 train data가 저장될 ./train_data 디렉토리를 생성하였습니다.")
 

@@ -80,7 +80,7 @@ def getCompound(email, keyword, savedDate):
     json_compfile = json.dumps(doc[0]['compound'], ensure_ascii=False)
     dict_compfile = json.loads(json_compfile)
     return dict_compfile
-
+    
 def tfidf(email, keyword, savedDate, optionList, analysisName):
     corpus = search_in_mydoc2(email, keyword, savedDate)['all_content'].tolist()    #문장으로 이루어진 doc
     nTokens = optionList
