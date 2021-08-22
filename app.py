@@ -1,3 +1,11 @@
+##############loging####################
+import logging
+
+logging.basicConfig(level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
+app.logger.info("log start")
+
+#########################################
+
 #-*- coding:utf-8 -*-
 import os
 import sys

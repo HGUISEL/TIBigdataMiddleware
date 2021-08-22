@@ -27,7 +27,7 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName)
     '''
     graph json 만들기
     '''
-    print("mongodb에서 전처리 내용을 가져왔습니다.")
+    
     top_words = json.loads(getCount(email, keyword, savedDate, optionList)[0])
     preprocessed = getPreprocessing(email, keyword, savedDate, optionList)[0]
     
@@ -122,6 +122,7 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName)
     }
 
     #db.network.insert_one(doc) 
+    print("MongoDB에 저장 주석처리했습니다.")
     print("MongoDB에 저장되었습니다.")
 
 
@@ -134,5 +135,5 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName)
 
 
 
-#semanticNetworkAnalysis('21600280@handong.edu', '북한', "2021-07-08T11:46:03.973Z", 100, 'tfidf')
+semanticNetworkAnalysis('21600280@handong.edu', '북한', "2021-07-08T11:46:03.973Z", 100, 'tfidf')
 #semanticNetworkAnalysis('21600280@handong.edu', '북한', "2021-07-08T11:46:03.973Z", 100, 'tfidf')
