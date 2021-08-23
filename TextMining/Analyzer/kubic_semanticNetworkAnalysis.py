@@ -3,8 +3,6 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname('TextMining/Tokenizer'))))
 
 from numpy.core.records import array
- 
-from matplotlib import rc
 
 
 from TextMining.Tokenizer.kubic_morph import *
@@ -29,7 +27,7 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName)
     '''
     graph json 만들기
     '''
-    print("mongodb에서 전처리 내용을 가져왔습니다.")
+    
     top_words = json.loads(getCount(email, keyword, savedDate, optionList)[0])
     preprocessed = getPreprocessing(email, keyword, savedDate, optionList)[0]
     
