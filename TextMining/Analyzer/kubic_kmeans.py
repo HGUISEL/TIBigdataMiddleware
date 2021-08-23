@@ -32,9 +32,9 @@ import scipy.cluster.hierarchy as shc
 import logging
 
 logger = logging.getLogger()
-#logging.basicConfig(level=logging.INFO, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
-logging.basicConfig(level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
-
+logging.basicConfig(level=logging.INFO, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
+#logging.basicConfig(level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
+#logging.basicConfig(filename = "kmeans_debug.log", level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
 
 def kmeans(email, keyword, savedDate, optionList, analysisName):
 
@@ -57,9 +57,57 @@ def kmeans(email, keyword, savedDate, optionList, analysisName):
     logger.debug(kmeans.labels_)
 
     pca = PCA(n_components=2)
-
     principalComponents=pca.fit_transform(df)
     principalDF = pd.DataFrame(data = principalComponents, columns = ['principal_component_1', 'principal_component_2'])
-    print(principalDF)
+    logger.info("PCA로 2차원화")
+    logger.debug(principalDF)
+    logger.debug(kmeans.labels_)
+
+    indexList = [ item for item in principalDF.index]
+
+    # https://observablehq.com/@d3/scatterplot-with-shapes
+
+    jsonDict = dict()
+    textList = list()
+    
+    for textNum in indexList:
+        textDict = dict()
+        textDict["category"] = kmeans.labels_[textNum]
+        textDict["x"] = principalDF["principal_component_1"][textNum]
+        textDict['y'] = principalDF["principal_component_2"][textNum]
+        textList.append(textDict)
+    
+    logger.debug(textList)
+    logger.info("Make kmeans plot graph json file")
+
+    cluster=AgglomerativeClustering(n_clusters=3, linkage='ward')
+    logger.debug(cluster.fit_predict(df))
+
+    clusterDict = dict()
+
+
+    
+    # logger.info("MongoDB에 데이터를 저장합니다.")
+    
+    # client=MongoClient(host='localhost',port=27017)
+    # db=client.textMining
+
+    # doc={
+    #     "userEmail" : email,
+    #     "keyword" : keyword,
+    #     "savedDate": savedDate,
+    #     "analysisDate" : datetime.datetime.now(),
+    #     #"duration" : ,
+    #     "resultGraphJson" : jsonDict,
+    #     "resultCenJson" : clusterDict
+    #     #"resultCSV":
+    # }
+
+    # db.network.insert_one(doc) 
+
+    # logger.info("MongoDB에 저장되었습니다.")
+
+    return jsonDict, clusterDict
+
 
 kmeans('21800520@handong.edu', '북한', "2021-08-10T10:59:29.974Z", 100, 'kmeans')
