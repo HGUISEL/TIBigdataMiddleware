@@ -213,6 +213,17 @@ def textmining():
         resultDic = {#'returnDate' : datetime.datetime.now(), 
         'activity' : analysisName, 'email' : email,
         'keyword' : keyword, 'savedDate' : savedDate, 'optionList' : optionList, 'result1' : result1, 'result2': result2 }
+    # for kmeans
+    elif analysisName == 'kmeans':
+        print("kmeans 분석을 시작합니다\n")
+        result1, result2 = kmeans(email, keyword, savedDate, optionList, analysisName)
+        print("\n kmeans 분석 결과\n")
+        print("\n plot json(dict)", result1, "\n")
+        print("\n cluster json(dict)", result2, "\n")
+        
+        resultDic = {#'returnDate' : datetime.datetime.now(), 
+        'activity' : analysisName, 'email' : email,
+        'keyword' : keyword, 'savedDate' : savedDate, 'optionList' : optionList, 'result1' : result1, 'result2': result2 }
 
     else: return 'result'
 
