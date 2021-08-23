@@ -1,11 +1,3 @@
-##############loging####################
-import logging
-
-logging.basicConfig(level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
-app.logger.info("log start")
-
-#########################################
-
 #-*- coding:utf-8 -*-
 import os
 import sys
@@ -78,6 +70,15 @@ CORS(app, support_credentials=True)
 #app.config['CORS_HEADERS'] = 'Content-Type'
 
 #################################################
+
+##############loging####################
+import logging
+
+logging.basicConfig(level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
+app.logger.info("log start")
+
+#########################################
+
 
 from TextMining.Tokenizer.kubic_mystorage import *
 from TextMining.Tokenizer.kubic_data import *
