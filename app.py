@@ -69,7 +69,6 @@ CORS(app, support_credentials=True)
 #cors =CORS(app, resource ={r" ":{"":""}})
 #app.config['CORS_HEADERS'] = 'Content-Type'
 
-#################################################
 
 ##############loging####################
 import logging
