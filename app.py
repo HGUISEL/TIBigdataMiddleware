@@ -81,6 +81,15 @@ app.logger.info("log start")
 
 #################################################
 
+##############loging####################
+import logging
+
+logging.basicConfig(level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
+app.logger.info("log start")
+
+#########################################
+
+
 from TextMining.Tokenizer.kubic_mystorage import *
 from TextMining.Tokenizer.kubic_data import *
 from TextMining.Tokenizer.kubic_morph import *
