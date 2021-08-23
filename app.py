@@ -1,11 +1,3 @@
-##############loging####################
-import logging
-
-logging.basicConfig(level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
-app.logger.info("log start")
-
-#########################################
-
 #-*- coding:utf-8 -*-
 import os
 import sys
@@ -76,6 +68,16 @@ CORS(app, support_credentials=True)
 #CORS(app)
 #cors =CORS(app, resource ={r" ":{"":""}})
 #app.config['CORS_HEADERS'] = 'Content-Type'
+
+
+##############loging####################
+import logging
+
+logging.basicConfig(level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
+app.logger.info("log start")
+
+#########################################
+
 
 #################################################
 
