@@ -85,6 +85,7 @@ from TextMining.Tokenizer.kubic_morph import *
 from TextMining.Analyzer.kubic_wordCount import *
 from TextMining.Analyzer.kubic_tfidf import *
 from TextMining.Analyzer.kubic_semanticNetworkAnalysis import *
+from TextMining.Analyzer.kubic_kmeans import *
 
 import kubic_sslFile as kubic_ssl
 from bson import json_util
