@@ -77,7 +77,7 @@ def search_in_mydoc2(email, keyword, savedDate):
 
     df['all_content'] = df['post_body'].str.cat(df['file_content'], sep=' ', na_rep='No data')
 
-    print("<내 보관함>\n", df)
+    #print("<내 보관함>\n", df)
     #print("<내용>\n", df['all_content'][0])
     return df[['idList', 'post_date', 'all_content']]    
       
