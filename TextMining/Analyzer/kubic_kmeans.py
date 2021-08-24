@@ -110,4 +110,4 @@ def kmeans(email, keyword, savedDate, optionList, analysisName):
     return textPCAList, clusterDict
 
 
-kmeans('21800520@handong.edu', '북한', "2021-08-10T10:59:29.974Z", 100, 'kmeans')
+# kmeans('21800520@handong.edu', '북한', "2021-08-10T10:59:29.974Z", 100, 'kmeans')
