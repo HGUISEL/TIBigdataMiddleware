@@ -40,6 +40,7 @@ def tfidf(email, keyword, savedDate, optionList, analysisName):
     #df_T = df_T[['word', 'rate']]
     
     print(df_T.index, df_T.values)
+    print(df)
 
     '''
     # barchar 및 워드클라우드 mongo저장 안함.

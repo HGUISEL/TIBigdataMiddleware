@@ -42,7 +42,17 @@ def word_count(email, keyword, savedDate, optionList, analysisName):
     #dict_words = dict(zip(word_list,count_list))
     dict_words = df.set_index('words').T.to_dict('records') #type: list
     dict_words = dict_words[0]
-    print("빈도수 분석결과\n", df, '\n', dict_words)
+
+    list_graph = list()
+
+    for key, value in dict_words.items():
+        node_dict = dict()
+        node_dict["word"] = key
+        node_dict["value"] = int(value)
+        list_graph.append(node_dict)
+
+    # print("빈도수 분석결과\n", df, '\n', dict_words)
+    print(list_graph)
 
     ## CSV파일로 저장
     # with open('wc_csvfile.csv','w') as f:
@@ -112,7 +122,8 @@ def word_count(email, keyword, savedDate, optionList, analysisName):
         "analysisDate" : datetime.datetime.now(),
         #"duration" : ,
         "nTokens" : nTokens,
-        "resultJson" : json.dumps(dict_words, ensure_ascii=False),
+        "result_graph" : json.dumps(list_graph, ensure_ascii=False),
+        "result_table" : json.dumps(dict_words, ensure_ascii=False),
         "resultBar" : barBinary,
         "resultWC" : wcBinary,
         #"resultCSV" :,
@@ -121,7 +132,6 @@ def word_count(email, keyword, savedDate, optionList, analysisName):
     
     print("MongoDB에 저장되었습니다.")
     
-    return dict_words
+    return dict_words, list_graph
  
-#word_count('sujinyang@handong.edu', '북한', "2021-07-08T11:46:03.973Z", 100, 'count')
 #word_count('21600280@handong.edu', '북한', "2021-07-08T11:46:03.973Z", 100, 'count')

@@ -189,11 +189,11 @@ def textmining():
 
     if analysisName == 'count':
         print("빈도수 분석을 시작합니다\n")
-        result = word_count(email, keyword, savedDate, optionList, analysisName)
+        result_table, result_graph = word_count(email, keyword, savedDate, optionList, analysisName)
         print("\n빈도수 분석 결과\n", result)
         resultDic = {#'returnDate' : datetime.datetime.now(), 
         'activity' : analysisName, 'email' : email, 
-        'keyword' : keyword, 'savedDate' : savedDate, 'optionList' : optionList, 'result' : result}
+        'keyword' : keyword, 'savedDate' : savedDate, 'optionList' : optionList, 'result_table' : result_table, 'result_graph': result_graph}
     
     elif analysisName == 'tfidf':
         print("tfidf 분석을 시작합니다\n")
@@ -217,7 +217,7 @@ def textmining():
     # for kmeans
     elif analysisName == 'kmeans':
         print("kmeans 분석을 시작합니다\n")
-        result1, result2 = kmeans(email, keyword, savedDate, optionList, analysisName)
+        result1, result2 = kmeans(email, keyword, savedDate, optionList, analysisName, clusterNum)
         print("\n kmeans 분석 결과\n")
         print("\n plot json(dict)", result1, "\n")
         print("\n cluster json(dict)", result2, "\n")

@@ -36,7 +36,7 @@ logger = logging.getLogger()
 logging.basicConfig(level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
 #logging.basicConfig(filename = "kmeans_debug.log", level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
 
-def kmeans(email, keyword, savedDate, optionList, analysisName):
+def kmeans(email, keyword, savedDate, optionList, analysisName, clusterNum):
 
     top_words = json.loads(getCount(email, keyword, savedDate, optionList)[0])
     preprocessed = getPreprocessing(email, keyword, savedDate, optionList)[0]
@@ -80,7 +80,7 @@ def kmeans(email, keyword, savedDate, optionList, analysisName):
     logger.debug(textPCAList)
     logger.info("Make kmeans plot graph json file")
 
-    cluster=AgglomerativeClustering(n_clusters=3, linkage='ward')
+    cluster=AgglomerativeClustering(n_clusters= clusterNum, linkage='ward')
     logger.debug(cluster.fit_predict(df))
 
     clusterDict = dict()
