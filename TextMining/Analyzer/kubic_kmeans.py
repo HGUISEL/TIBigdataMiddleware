@@ -31,7 +31,7 @@ import scipy.cluster.hierarchy as shc
 
 import logging
 
-logger = logging.getLogger("flask.app")
+logger = logging.getLogger("flask.app.kmeans")
 #logging.basicConfig(level=logging.INFO, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
 #logging.basicConfig(level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
 #logging.basicConfig(filename = "kmeans_debug.log", level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
@@ -110,4 +110,4 @@ def kmeans(email, keyword, savedDate, optionList, analysisName, clusterNum):
     return textPCAList, clusterDict
 
 
-kmeans('21800520@handong.edu', '북한', "2021-08-10T10:59:29.974Z", 100, 'kmeans', 3)
+#kmeans('21800520@handong.edu', '북한', "2021-08-10T10:59:29.974Z", 100, 'kmeans', 3)
