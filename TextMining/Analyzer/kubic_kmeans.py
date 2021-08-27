@@ -80,10 +80,10 @@ def kmeans(email, keyword, savedDate, optionList, analysisName, clusterNum):
     logger.debug(textPCAList)
     logger.info("Make kmeans plot graph json file")
 
-    cluster=AgglomerativeClustering(n_clusters= clusterNum, linkage='ward')
-    logger.debug(cluster.fit_predict(df))
+    # cluster=AgglomerativeClustering(n_clusters= clusterNum, linkage='ward')
+    # logger.debug(cluster.fit_predict(df))
 
-    clusterDict = dict()
+    # clusterDict = dict()
 
 
     
@@ -99,7 +99,6 @@ def kmeans(email, keyword, savedDate, optionList, analysisName, clusterNum):
         "analysisDate" : datetime.datetime.now(),
         #"duration" : ,
         "resultPCAList" : textPCAList,
-        "resultclusterJson" : clusterDict
         #"resultCSV":
     }
 
@@ -107,7 +106,7 @@ def kmeans(email, keyword, savedDate, optionList, analysisName, clusterNum):
 
     logger.info("MongoDB에 저장되었습니다.")
 
-    return textPCAList, clusterDict
+    return textPCAList
 
 
 #kmeans('21800520@handong.edu', '북한', "2021-08-10T10:59:29.974Z", 100, 'kmeans', 3)

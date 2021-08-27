@@ -39,8 +39,18 @@ def tfidf(email, keyword, savedDate, optionList, analysisName):
     #df_T['rate']= df.T.sum(axis=1) #단어별 tfidf 합친 값
     #df_T = df_T[['word', 'rate']]
     
-    print(df_T.index, df_T.values)
-    print(df)
+    tfidf_dict = dict(df_T)
+
+    list_graph = list()
+
+    for key, value in tfidf_dict.items():
+        node_dict = dict()
+        node_dict["word"] = key
+        node_dict["value"] = float(value)
+        list_graph.append(node_dict)
+
+    print(tfidf_dict)
+    print(list_graph)
 
     '''
     # barchar 및 워드클라우드 mongo저장 안함.
@@ -113,7 +123,6 @@ def tfidf(email, keyword, savedDate, optionList, analysisName):
 
     print("MongoDB에 저장되었습니다.")
     '''
-    return df
+    return tfidf_dict, list_graph
 
-#tfidf('sujinyang@handong.edu', '북한', "2021-07-08T11:46:03.973Z", 100, 'tfidf')
-#tfidf('21600280@handong.edu', '통일', "2021-07-08T11:46:03.973Z", 100, 'tfidf')
+#tfidf('21600280@handong.edu', '통일', "2021-08-06T11:52:05.706Z", 100, 'tfidf')

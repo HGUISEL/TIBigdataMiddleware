@@ -99,9 +99,22 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName)
     sorted_closeness_cen = dict(sorted(closeness_cen.items(), key=lambda item: item[1], reverse = True))
     sorted_between_cen = dict(sorted(between_cen.items(), key=lambda item: item[1], reverse = True))
 
-    # dataframe 만들기
-    cen_dict = { "count": top_words, "degree_cen": sorted_between_cen , "eigenvector_cen": sorted_eigenvector_cen, "closeness_cen": sorted_closeness_cen, "between_cen": sorted_between_cen}
 
+    def table_to_graph(t_dict):
+        g_list = list()
+        for key, value in t_dict.items():
+            g_dict = dict()
+            g_dict['word'] = key
+            g_dict['value'] = value
+            g_list.append(g_dict)
+        return g_list
+
+    # dataframe 만들기
+    cen_dict = { "count": table_to_graph(top_words), 
+                "degree_cen": table_to_graph(sorted_between_cen) , 
+                "eigenvector_cen": table_to_graph(sorted_eigenvector_cen), 
+                "closeness_cen": table_to_graph(sorted_closeness_cen), 
+                "between_cen": table_to_graph(sorted_between_cen)}
 
     print("MongoDB에 데이터를 저장합니다.")
 
