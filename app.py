@@ -207,8 +207,6 @@ def textmining():
         print("의미연결망 분석을 시작합니다\n")
         result_graph, result_table = semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName)
         print("\n의미연결망 분석 결과\n")
-        print("\n 연결망 json(dict)", result1, "\n")
-        print("\n 중심성 json(dict)", result2, "\n")
         
         resultDic = {#'returnDate' : datetime.datetime.now(), 
         'activity' : analysisName, 'email' : email,
@@ -224,7 +222,7 @@ def textmining():
         
         resultDic = {#'returnDate' : datetime.datetime.now(), 
         'activity' : analysisName, 'email' : email,
-        'keyword' : keyword, 'savedDate' : savedDate, 'optionList' : optionList, 'result' : result}
+        'keyword' : keyword, 'savedDate' : savedDate, 'optionList' : optionList, 'result_graph' : result}
 
     else: return 'result'
 
