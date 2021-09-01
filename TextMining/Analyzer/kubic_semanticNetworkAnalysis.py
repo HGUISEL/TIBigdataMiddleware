@@ -135,22 +135,22 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName)
 
 
 
-    # client=MongoClient(host='localhost',port=27017)
-    # db=client.textMining
+    client=MongoClient(host='localhost',port=27017)
+    db=client.textMining
 
-    # doc={
-    #     "userEmail" : email,
-    #     "keyword" : keyword,
-    #     "savedDate": savedDate,
-    #     "analysisDate" : datetime.datetime.now(),
-    #     #"duration" : ,
-    #     "resultGraphJson" : jsonDict,
-    #     "resultCenJson" : cen_dict
-    #     #"resultCSV":
-    # }
+    doc={
+        "userEmail" : email,
+        "keyword" : keyword,
+        "savedDate": savedDate,
+        "analysisDate" : datetime.datetime.now(),
+        #"duration" : ,
+        "resultGraphJson" : jsonDict,
+        "resultCenJson" : cen_dict
+        #"resultCSV":
+    }
 
-    # db.network.insert_one(doc) 
-    # print("MongoDB에 저장되었습니다.")
+    db.network.insert_one(doc) 
+    print("MongoDB에 저장되었습니다.")
 
 
     return jsonDict, cen_dict
@@ -163,4 +163,4 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName)
 
 
 #semanticNetworkAnalysis('21600280@handong.edu', '북한', "2021-07-08T11:46:03.973Z", 100, 'tfidf')
-semanticNetworkAnalysis('21600280@handong.edu', '북한', "2021-07-08T11:46:03.973Z", 10, 'tfidf')
+#semanticNetworkAnalysis('21600280@handong.edu', '북한', "2021-07-08T11:46:03.973Z", 10, 'tfidf')
