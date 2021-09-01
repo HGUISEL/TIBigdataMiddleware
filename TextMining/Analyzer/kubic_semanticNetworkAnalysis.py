@@ -27,13 +27,27 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName)
     '''
     graph json 만들기
     '''
-    
+
     top_words = json.loads(getCount(email, keyword, savedDate, optionList)[0])
+    print(top_words)
+    # print(top_words.keys())
     preprocessed = getPreprocessing(email, keyword, savedDate, optionList)[0]
     
 
-    wordToId = {w:i for i, w in enumerate(top_words.keys())}
-    idToWord = {i:w for i, w in enumerate(top_words.keys())}
+    wordToId = dict()
+    for w, i in enumerate(top_words.keys()):
+        wordToId[i] = w
+        if w == int(optionList)-1:
+            break
+    
+    idToWord = dict()
+    for i, w in enumerate(top_words.keys()):
+        idToWord[i] = w
+        if i == int(optionList)-1:
+            break
+
+    print(wordToId)
+    # print(idToWord)
 
     adjacent_matrix = np.zeros((int(optionList), int(optionList)), int)
 
@@ -79,6 +93,7 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName)
         nodeList.append(nodeDict)
     
     jsonDict["nodes"] = nodeList
+    print(nodeList)
 
     edgeList = list()
     for s,t in network.edges:
@@ -116,26 +131,26 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName)
                 "closeness_cen": table_to_graph(sorted_closeness_cen), 
                 "between_cen": table_to_graph(sorted_between_cen)}
 
-    print("MongoDB에 데이터를 저장합니다.")
+    # print("MongoDB에 데이터를 저장합니다.")
 
 
 
-    client=MongoClient(host='localhost',port=27017)
-    db=client.textMining
+    # client=MongoClient(host='localhost',port=27017)
+    # db=client.textMining
 
-    doc={
-        "userEmail" : email,
-        "keyword" : keyword,
-        "savedDate": savedDate,
-        "analysisDate" : datetime.datetime.now(),
-        #"duration" : ,
-        "resultGraphJson" : jsonDict,
-        "resultCenJson" : cen_dict
-        #"resultCSV":
-    }
+    # doc={
+    #     "userEmail" : email,
+    #     "keyword" : keyword,
+    #     "savedDate": savedDate,
+    #     "analysisDate" : datetime.datetime.now(),
+    #     #"duration" : ,
+    #     "resultGraphJson" : jsonDict,
+    #     "resultCenJson" : cen_dict
+    #     #"resultCSV":
+    # }
 
-    db.network.insert_one(doc) 
-    print("MongoDB에 저장되었습니다.")
+    # db.network.insert_one(doc) 
+    # print("MongoDB에 저장되었습니다.")
 
 
     return jsonDict, cen_dict
@@ -148,4 +163,4 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName)
 
 
 #semanticNetworkAnalysis('21600280@handong.edu', '북한', "2021-07-08T11:46:03.973Z", 100, 'tfidf')
-#semanticNetworkAnalysis('21600280@handong.edu', '북한', "2021-07-08T11:46:03.973Z", 100, 'tfidf')
+semanticNetworkAnalysis('21600280@handong.edu', '북한', "2021-07-08T11:46:03.973Z", 10, 'tfidf')
