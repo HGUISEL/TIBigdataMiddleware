@@ -106,7 +106,13 @@ def getPreprocessing(email, keyword, savedDate, optionList):
 #print(getPreprocessing('21600280@handong.edu', '북한', "2021-07-08T11:46:03.973Z", 30)[0])
 
 def getCount(email, keyword, savedDate, optionList):
-    doc = dbTM.count.find_one({"userEmail":email, "keyword":keyword, "savedDate":savedDate})
-    return doc['resultJson'], doc['nTokens']
+    # for analysisDate : datetime.datetime.strptime(savedDate[:-1], "%Y-%m-%d %H:%M:%S.%f"
+    doc = dbTM.count.find_one({"userEmail":email, "keyword":keyword, "savedDate": savedDate})
+    print(doc["_id"])
+    try:
+        str(doc['resultJson'])
+        return doc['resultJson'], doc['nTokens']
+    except:
+        return doc["result_graph"], doc['nTokens']
 
-#print(getCount('21600280@handong.edu', '북한', "2021-07-08T11:46:03.973Z", 30)[0])
+#getCount('21800520@handong.edu', '북한', "2021-08-10T10:59:29.974Z", 30)
