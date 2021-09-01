@@ -113,6 +113,6 @@ def getCount(email, keyword, savedDate, optionList):
         str(doc['resultJson'])
         return doc['resultJson'], doc['nTokens']
     except:
-        return doc["result_graph"], doc['nTokens']
+        return doc["result_table"], doc['nTokens']
 
 #getCount('21800520@handong.edu', '북한', "2021-08-10T10:59:29.974Z", 30)
