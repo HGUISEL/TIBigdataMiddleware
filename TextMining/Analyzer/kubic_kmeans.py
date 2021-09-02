@@ -52,7 +52,7 @@ def kmeans(email, keyword, savedDate, optionList, analysisName, clusterNum):
     logger.info("DTM생성 완료")
     logger.debug(df)    
 
-    kmeans = KMeans(n_clusters=3).fit(df)   
+    kmeans = KMeans(n_clusters=clusterNum).fit(df)   
     logger.info("비계층적 군집분석 실행(군집수 3개)")
     logger.debug(kmeans.labels_)
 
