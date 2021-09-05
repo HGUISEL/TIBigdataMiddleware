@@ -22,42 +22,45 @@ from collections import defaultdict
 from collections import Counter
 import nltk
 import networkx as nx
+import operator
 
 import logging
 
-#logger = logging.getLogger("flask.app.ngrams")
+logger = logging.getLogger("flask.app.ngrams")
 
-logger = logging.getLogger()
-logging.basicConfig(level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
+# logger = logging.getLogger()
+# logging.basicConfig(level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
 
 def ngrams(email, keyword, savedDate, optionList, analysisName, n):
     logger.info("ngram start")
 
-    top_words = json.loads(getCount(email, keyword, savedDate, optionList)[0])
     preprocessed = getPreprocessing(email, keyword, savedDate, optionList)[0]
     
     bglist = []
     for sentence in preprocessed:
         bglist += list(nltk.ngrams(sentence, n))
-
     bgCountDict = Counter(bglist)
 
-    # ngramToId = {w:i for i, w in enumerate(bgCountDict.keys())}
-    # idTongram = {i:w for i, w in enumerate(bgCountDict.keys())}
-    
-    # adjacent_matrix = np.zeros((int(optionList), int(optionList)), int)
+    sortedBgCountDict = dict(sorted(bgCountDict.items(), key=operator.itemgetter(1), reverse=True))
 
-    # for ngram in bgCountDict.keys():
-    #     for wi, i in ngramToId.items():
-    #         if wi in sentence:
-    #             for wj, j in ngramToId.items():
-    #                 if i !=j and wj in sentence:
-    #                     adjacent_matrix[i][j] +=1
+    top_words = dict()
+    i = 0
+    for key, v in sortedBgCountDict.items():
+      if v > 1 and i < optionList:
+        for word in key:
+            if word in top_words.keys():
+                top_words[word] += 1
+            else:
+                top_words[word] = 1
+        logger.debug(str(key) + str(v))
+        i += 1
+
+    logger.debug(top_words)
 
     wordToId = {w:i for i, w in enumerate(top_words.keys())}
     idToWord = {i:w for i, w in enumerate(top_words.keys())}
 
-    adjacent_matrix = np.zeros((int(optionList), int(optionList)), int)
+    adjacent_matrix = np.zeros((len(top_words.keys()), len(top_words.keys())), int)
 
     for ngram in bgCountDict.keys():
         for wi, i in wordToId.items():
@@ -76,6 +79,7 @@ def ngrams(email, keyword, savedDate, optionList, analysisName, n):
         wrd = idToWord[n]
         nodeDict["id"] = int(n)
         nodeDict["name"] = wrd
+        nodeDict["count"] = top_words[wrd]
 
         nodeList.append(nodeDict)
     
@@ -94,4 +98,4 @@ def ngrams(email, keyword, savedDate, optionList, analysisName, n):
     logger.debug(jsonDict["nodes"])
 
 
-#ngrams('21600280@handong.edu', '북한', "2021-07-08T11:46:03.973Z", 100, 'tfidf', 2)
+# ngrams('21600280@handong.edu', '북한', "2021-07-08T11:46:03.973Z", 50, 'tfidf', 3)
