@@ -87,6 +87,9 @@ from TextMining.Analyzer.kubic_wordCount import *
 from TextMining.Analyzer.kubic_tfidf import *
 from TextMining.Analyzer.kubic_semanticNetworkAnalysis import *
 from TextMining.Analyzer.kubic_kmeans import *
+from TextMining.Analyzer.kubic_ngrams import *
+from TextMining.Analyzer.kubic_hcluster import *
+
 
 import kubic_sslFile as kubic_ssl
 from bson import json_util
@@ -223,6 +226,31 @@ def textmining():
         resultDic = {#'returnDate' : datetime.datetime.now(), 
         'activity' : analysisName, 'email' : email,
         'keyword' : keyword, 'savedDate' : savedDate, 'optionList' : optionList, 'result_graph' : result}
+        
+    # for ngrams
+    elif analysisName == 'ngrams':
+        ngramNum = 2 # data["ngramNum"]
+        print("고정된 ngramNum으로 ngrams 분석 시작합니다.")
+        result = ngrams(email, keyword, savedDate, optionList, analysisName, ngramNum)
+        print("\n ngrams 분석 결과\n")
+        print(result)
+        
+        resultDic = {#'returnDate' : datetime.datetime.now(), 
+        'activity' : analysisName, 'email' : email,
+        'keyword' : keyword, 'savedDate' : savedDate, 'optionList' : optionList, 'result_graph' : result}
+    
+    # for hcluster
+    elif analysisName == 'hcluster':
+        treeLevel = 2 # data["ngramNum"]
+        print("고정된 treeLevle로 hcluster 분석 시작합니다.")
+        result = ngrams(email, keyword, savedDate, optionList, analysisName, treeLevel)
+        print("\n hcluster 분석 결과\n")
+        print(result)
+        
+        resultDic = {#'returnDate' : datetime.datetime.now(), 
+        'activity' : analysisName, 'email' : email,
+        'keyword' : keyword, 'savedDate' : savedDate, 'optionList' : optionList, 'result_graph' : result}
+        
 
     else: return 'result'
 

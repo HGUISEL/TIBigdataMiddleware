@@ -35,9 +35,9 @@ from scipy.cluster.hierarchy import dendrogram, linkage
 
 import logging
 
-logger = logging.getLogger()
+logger = logging.getLogger("flask.app.hcluster")
 #logging.basicConfig(level=logging.INFO, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
-logging.basicConfig(level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
+#logging.basicConfig(level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
 
 
 def plot_dendrogram(model, **kwargs):
@@ -103,7 +103,7 @@ def create_tree(linked):
     recurTree(tree)
     return tree
 
-def hcluster(email, keyword, savedDate, optionList, analysisName, clusterNum):
+def hcluster(email, keyword, savedDate, optionList, analysisName, treeLevel):
     top_words = json.loads(getCount(email, keyword, savedDate, optionList)[0])
     preprocessed = getPreprocessing(email, keyword, savedDate, optionList)[0]
 
@@ -114,17 +114,6 @@ def hcluster(email, keyword, savedDate, optionList, analysisName, clusterNum):
 
     x = vec.fit_transform(preprocessed)
     df = pd.DataFrame(x.toarray(), columns=vec.get_feature_names())
-
-    kmeans = KMeans(n_clusters=clusterNum).fit(df)   
-    logger.info("비계층적 군집분석 실행(군집수 3개)")
-    logger.debug(kmeans.labels_)
-
-    pca = PCA(n_components=2)
-    principalComponents=pca.fit_transform(df)
-    principalDF = pd.DataFrame(data = principalComponents, columns = ['principal_component_1', 'principal_component_2'])
-    logger.info("PCA로 2차원화")
-    logger.debug(principalDF)
-    logger.debug(kmeans.labels_)
 
     # https://observablehq.com/@d3/scatterplot-with-shapes
 
