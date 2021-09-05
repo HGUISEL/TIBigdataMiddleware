@@ -47,7 +47,6 @@ def plot_dendrogram(model, **kwargs):
     counts = np.zeros(model.children_.shape[0])
     n_samples = len(model.labels_)
     for i, merge in enumerate(model.children_):
-        print(i, merge)
         current_count = 0
         for child_idx in merge:
             if child_idx < n_samples:
@@ -127,10 +126,32 @@ def hcluster(email, keyword, savedDate, optionList, analysisName, treeLevel):
     # plot the top three levels of the dendrogram
     linkage_matrix = plot_dendrogram(model, truncate_mode='level', p=5)
 
-    logger.debug(create_tree(linkage_matrix))
+    result = create_tree(linkage_matrix)
+
+    logger.debug(result)
+
+
+    logger.info("MongoDB에 데이터를 저장합니다.")
+    
+    client=MongoClient(host='localhost',port=27017)
+    db=client.textMining
+
+    doc={
+        "userEmail" : email,
+        "keyword" : keyword,
+        "savedDate": savedDate,
+        "analysisDate" : datetime.datetime.now(),
+        #"duration" : ,
+        "result" : result,
+        #"resultCSV":
+    }
+
+    db.kmeans.insert_one(doc) 
+
+    logger.info("MongoDB에 저장되었습니다.")
 
     return create_tree(linkage_matrix)
 
 
 
-# hcluster('21800520@handong.edu', '북한', "2021-08-10T10:59:29.974Z", 100, 'kmeans', 3)
+hcluster('21800520@handong.edu', '북한', "2021-08-10T10:59:29.974Z", 100, 'kmeans', 3)
