@@ -146,12 +146,12 @@ def hcluster(email, keyword, savedDate, optionList, analysisName, treeLevel):
         #"resultCSV":
     }
 
-    db.kmeans.insert_one(doc) 
+    db.hcluster.insert_one(doc) 
 
     logger.info("MongoDB에 저장되었습니다.")
 
-    return create_tree(linkage_matrix)
+    return result
 
 
 
-hcluster('21800520@handong.edu', '북한', "2021-08-10T10:59:29.974Z", 100, 'kmeans', 3)
+# hcluster('21800520@handong.edu', '북한', "2021-08-10T10:59:29.974Z", 100, 'hcluster', 3)

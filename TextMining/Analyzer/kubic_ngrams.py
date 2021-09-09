@@ -46,7 +46,7 @@ def ngrams(email, keyword, savedDate, optionList, analysisName, n):
     top_words = dict()
     i = 0
     for key, v in sortedBgCountDict.items():
-      if v > 1 and i < optionList:
+      if v > 1 and i < int(optionList):
         for word in key:
             if word in top_words.keys():
                 top_words[word] += 1
@@ -95,7 +95,9 @@ def ngrams(email, keyword, savedDate, optionList, analysisName, n):
     
     jsonDict["links"] = edgeList
 
-    logger.debug(jsonDict["nodes"])
+    logger.debug(jsonDict)
 
+    return jsonDict
+    
 
 # ngrams('21600280@handong.edu', '북한', "2021-07-08T11:46:03.973Z", 50, 'tfidf', 3)
