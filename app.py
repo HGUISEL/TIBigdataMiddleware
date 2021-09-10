@@ -147,10 +147,12 @@ def preprocessing():
     if result[0] == False: #사용자사전 format안맞을 때
         resultDic = {'returnCode':'400', 'errMsg':result[1], #'returnDate' : datetime.datetime.now(), 
 'activity' : 'preprocessing', 'email' : email, 'keyword' : keyword, 'savedDate' : savedDate}
+        print("전처리가 완료되었습니다.")
         return jsonify(resultDic) #json.dumps(resultDic, ensure_ascii=False, default=json_util.default)
     else:
         resultDic = {#'returnDate' : datetime.datetime.now(), 
 'activity' : 'preprocessing', 'email' : email, 'keyword' : keyword, 'result' : result[1], 'savedDate' : savedDate}
+        print("전처리가 완료되었습니다.")
         return jsonify(resultDic) #json.dumps(resultDic, ensure_ascii=False, default=json_util.default)
 
 
