@@ -26,17 +26,9 @@ index = esAcc.index
 
 ## Collect data from es(post_date, post_body, file_content) and return dataframe
 def search_in_mydoc2(email, keyword, savedDate):
-    df = pd.DataFrame()
     #savedDate = datetime.datetime.strptime(savedDate, "%Y-%m-%dT%H:%M:%S.%fZ")
-    idList = getMyDocByEmail2(email, keyword, savedDate)
+    idList = getMyDocByEmail2(email, keyword, savedDate) # es애서 삭제된 id도 포함
     print('idList=', idList)
-
-    df['idList'] = idList
-
-    dateList=[]
-    bodyList=[]
-    fileList=[]    
-    titleList=[]
 
     response=es.search( 
         index=index, 
@@ -52,11 +44,21 @@ def search_in_mydoc2(email, keyword, savedDate):
             }
         }
     )
+
     countDoc =len(response['hits']['hits'])
     
+    # 실제로 받아온 response 에 근거하여, idlist 를 새로 만듦
+
     hangul = re.compile('[^ ㄱ-ㅣ가-힣]+')
 
+    idList=[]
+    dateList=[]
+    bodyList=[]
+    fileList=[]    
+    titleList=[]
+
     for i in range(countDoc):
+        docId = response["hits"]["hits"][i]["_source"].get("_id")
         postDate = response["hits"]["hits"][i]["_source"].get("post_date")
         postTitle = response["hits"]["hits"][i]["_source"].get("post_title")
         postBody= response["hits"]["hits"][i]["_source"].get("post_body")
@@ -65,11 +67,14 @@ def search_in_mydoc2(email, keyword, savedDate):
         fileContent = str(fileContent).replace("None",'')
         fileContent = hangul.sub('', fileContent)
 
+        idList.append(docId)
         dateList.append(postDate)
         bodyList.append(postBody)
         fileList.append(fileContent)
         titleList.append(postTitle)    
     
+    df = pd.DataFrame()
+    df['idList'] = idList
     df['post_date'] = dateList
     df['post_title'] = titleList
     df['post_body'] = bodyList
