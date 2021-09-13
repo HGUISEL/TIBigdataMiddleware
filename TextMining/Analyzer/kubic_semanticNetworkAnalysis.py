@@ -21,12 +21,25 @@ import gridfs
 import csv
 from collections import defaultdict
 
-def filter_links(edgeList, linkStrength, minWeight, maxWeight):
-    strengthVal = ( maxWeight - minWeight ) * (int(linkStrength / 100) 
-    for lst_dict in edgeList:
-        if lst_dict['weight'] <= strengthVal + minWeight 
-            edgeList.remove(lst_dict)
-    return edgeList
+def filter_links(edges, matrix, linkStrength, minWeight, maxWeight):
+    if linkStrength == 100 or minWeight == maxWeight:
+        return edgeList
+    elif linkStrength == 0:
+        return None
+    else:
+        strengthVal = ( maxWeight - minWeight ) * (int(linkStrength) / 100) 
+        edgeList = list()
+        for s,t in edges:
+            edgeDict = dict()
+            edgeDict["source"] = int(s)
+            edgeDict["target"] = int(t) 
+            if int(matrix[s][t]) > strengthVal + minWeight:
+                edgeDict["weight"] = int(matrix[s][t])
+                edgeList.append(edgeDict)
+
+        print(minWeight, maxWeight, strengthVal)
+        return edgeList
+    
         
 
 def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName, linkStrength):
@@ -100,20 +113,9 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName,
         nodeList.append(nodeDict)
     
     jsonDict["nodes"] = nodeList
-    print(nodeList)
+    # print(nodeList)
 
-    edgeList = list()
-    for s,t in network.edges:
-        edgeDict = dict()
-        edgeDict["source"] = int(s)
-        edgeDict["target"] = int(t)
-        edgeDict["weight"] = int(adjacent_matrix[s][t])
-        edgeList.append(edgeDict)
-    
-    jsonDict["links"] = filter_links(edgeList, linkStrength, np.min(adjacent_matrix), np.max(adjacent_matrix))
-
-
-
+    jsonDict["links"] = filter_links(network.edges, adjacent_matrix, linkStrength, np.min(adjacent_matrix[adjacent_matrix>0]), np.max(adjacent_matrix))
 
     # 큰 순서대로 sort
     sorted_degree_cen = dict(sorted(degree_cen.items(), key=lambda item: item[1], reverse = True))
@@ -137,7 +139,7 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName,
                 "eigenvector_cen": table_to_graph(sorted_eigenvector_cen), 
                 "closeness_cen": table_to_graph(sorted_closeness_cen), 
                 "between_cen": table_to_graph(sorted_between_cen)}
-
+    print(len(jsonDict['links']))
     # print("MongoDB에 데이터를 저장합니다.")
 
 
@@ -170,4 +172,4 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName,
 
 
 #semanticNetworkAnalysis('21600280@handong.edu', '북한', "2021-07-08T11:46:03.973Z", 100, 'tfidf')
-#semanticNetworkAnalysis('21600280@handong.edu', '북한', "2021-07-08T11:46:03.973Z", 10, 'tfidf')
+semanticNetworkAnalysis('21800520@handong.edu', '북한', "2021-08-10T10:59:29.974Z", 100, 'network', 50)
