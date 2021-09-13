@@ -21,8 +21,15 @@ import gridfs
 import csv
 from collections import defaultdict
 
+def filter_links(edgeList, linkStrength, minWeight, maxWeight):
+    strengthVal = ( maxWeight - minWeight ) * (int(linkStrength / 100) 
+    for lst_dict in edgeList:
+        if lst_dict['weight'] <= strengthVal + minWeight 
+            edgeList.remove(lst_dict)
+    return edgeList
+        
 
-def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName):
+def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName, linkStrength):
 
     '''
     graph json 만들기
@@ -103,7 +110,7 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName)
         edgeDict["weight"] = int(adjacent_matrix[s][t])
         edgeList.append(edgeDict)
     
-    jsonDict["links"] = edgeList
+    jsonDict["links"] = filter_links(edgeList, linkStrength, np.min(adjacent_matrix), np.max(adjacent_matrix))
 
 
 

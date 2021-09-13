@@ -178,7 +178,7 @@ def textmining():
             email = data['userEmail']
             keyword = data['keyword']
             savedDate = data['savedDate']
-            optionList = data['optionList']
+            optionList = data['option1']
             analysisName = data['analysisName']
         else: return 'GET result'
     except Exception as e :
@@ -209,8 +209,9 @@ def textmining():
 
     # for semanticNetworkAnalysis
     elif analysisName == 'network':
+        linkStrength = data['option2']
         print("의미연결망 분석을 시작합니다\n")
-        result_graph, result_table = semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName)
+        result_graph, result_table = semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName, linkStrength)
         print("\n의미연결망 분석 결과\n")
         
         resultDic = {#'returnDate' : datetime.datetime.now(), 
@@ -242,7 +243,7 @@ def textmining():
     
     # for hcluster
     elif analysisName == 'hcluster':
-        treeLevel = 2 # data["ngramNum"]
+        treeLevel = data["option2"]
         print("고정된 treeLevle로 hcluster 분석 시작합니다.")
         result = ngrams(email, keyword, savedDate, optionList, analysisName, treeLevel)
         print("\n hcluster 분석 결과\n")
