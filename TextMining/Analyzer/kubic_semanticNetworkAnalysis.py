@@ -172,4 +172,4 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName,
 
 
 #semanticNetworkAnalysis('21600280@handong.edu', '북한', "2021-07-08T11:46:03.973Z", 100, 'tfidf')
-semanticNetworkAnalysis('21800520@handong.edu', '북한', "2021-08-10T10:59:29.974Z", 100, 'network', 50)
+#semanticNetworkAnalysis('21800520@handong.edu', '북한', "2021-08-10T10:59:29.974Z", 100, 'network', 50)
