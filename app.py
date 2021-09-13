@@ -219,9 +219,8 @@ def textmining():
     
     # for kmeans
     elif analysisName == 'kmeans':
-        clusterNum = int(data["clusterNum"])
         print("kmeans 분석을 시작합니다\n")
-        result = kmeans(email, keyword, savedDate, optionList, analysisName, clusterNum)
+        result = kmeans(email, keyword, savedDate, optionList, analysisName)
         print("\n kmeans 분석 결과\n")
         print(result)
         

@@ -36,7 +36,7 @@ logger = logging.getLogger("flask.app.kmeans")
 #logging.basicConfig(level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
 #logging.basicConfig(filename = "kmeans_debug.log", level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
 
-def kmeans(email, keyword, savedDate, optionList, analysisName, clusterNum):
+def kmeans(email, keyword, savedDate, optionList, analysisName):
 
     top_words = json.loads(getCount(email, keyword, savedDate, optionList)[0])
     preprocessed = getPreprocessing(email, keyword, savedDate, optionList)[0]
@@ -53,7 +53,7 @@ def kmeans(email, keyword, savedDate, optionList, analysisName, clusterNum):
     logger.debug(df)    
 
     try:
-        kmeans = KMeans(n_clusters=clusterNum).fit(df)    
+        kmeans = KMeans(n_clusters=optionList).fit(df)    
     except:
         resultDict = dict()
         resultDict['Error'] = 'clusterNum is larger than number of  document' 
