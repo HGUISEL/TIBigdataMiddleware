@@ -178,7 +178,7 @@ def textmining():
             email = data['userEmail']
             keyword = data['keyword']
             savedDate = data['savedDate']
-            optionList = data['option1']
+            optionList = data['option']
             analysisName = data['analysisName']
         else: return 'GET result'
     except Exception as e :
