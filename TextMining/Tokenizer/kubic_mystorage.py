@@ -103,6 +103,10 @@ def getPreprocessing(email, keyword, savedDate, optionList):
     doc = dbTM.preprocessing.find_one({"userEmail":email, "keyword":keyword, "savedDate":savedDate})# saved date issue
     return doc['tokenList'], doc['nTokens']
 
+def getPreprocessingAddTitle(email, keyword, savedDate, optionList):
+    doc = dbTM.preprocessing.find_one({"userEmail":email, "keyword":keyword, "savedDate":savedDate, "addTitle" : "Yes"})# saved date issue
+    return doc['tokenList'], doc['titleList'], doc['nTokens']
+
 #print(getPreprocessing('21600280@handong.edu', '북한', "2021-07-08T11:46:03.973Z", 30)[0])
 
 def getCount(email, keyword, savedDate, optionList):

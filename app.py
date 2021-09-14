@@ -142,16 +142,17 @@ def preprocessing():
 
     #result = compound(email, keyword, savedDate, wordclass)
     result = compound(email, keyword, savedDate, wordclass, stopwordTF, synonymTF, compoundTF)
+    result_add_title = compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymTF, compoundTF)
     #print("전처리 결과\n", result[0], result[1])
 
-    if result[0] == False: #사용자사전 format안맞을 때
-        resultDic = {'returnCode':'400', 'errMsg':result[1], #'returnDate' : datetime.datetime.now(), 
+    if result_add_title[0] == False: #사용자사전 format안맞을 때
+        resultDic = {'returnCode':'400', 'errMsg':result_add_title[1], #'returnDate' : datetime.datetime.now(), 
 'activity' : 'preprocessing', 'email' : email, 'keyword' : keyword, 'savedDate' : savedDate}
         print("전처리가 완료되었습니다.")
         return jsonify(resultDic) #json.dumps(resultDic, ensure_ascii=False, default=json_util.default)
     else:
         resultDic = {#'returnDate' : datetime.datetime.now(), 
-'activity' : 'preprocessing', 'email' : email, 'keyword' : keyword, 'result' : result[1], 'savedDate' : savedDate}
+'activity' : 'preprocessing', 'email' : email, 'keyword' : keyword, 'result' : result_add_title[1], 'savedDate' : savedDate}
         print("전처리가 완료되었습니다.")
         return jsonify(resultDic) #json.dumps(resultDic, ensure_ascii=False, default=json_util.default)
 
