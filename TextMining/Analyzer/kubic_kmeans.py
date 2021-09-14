@@ -33,24 +33,26 @@ import logging
 
 logger = logging.getLogger("flask.app.kmeans")
 #logging.basicConfig(level=logging.INFO, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
-#logging.basicConfig(level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
+logging.basicConfig(level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
 #logging.basicConfig(filename = "kmeans_debug.log", level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
 
 def kmeans(email, keyword, savedDate, optionList, analysisName):
 
     top_words = json.loads(getCount(email, keyword, savedDate, optionList)[0])
-    preprocessed = getPreprocessing(email, keyword, savedDate, optionList)[0]
-
+    # preprocessed = getPreprocessing(email, keyword, savedDate, optionList)[0]
+    preprocessed, titleList = getPreprocessingAddTitle(email, keyword, savedDate, optionList)
+    titleList = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
     logger.info("mongodb에서 전처리 내용을 가져왔습니다.")
-    logger.debug(len(preprocessed[1]))
+    logger.debug(len(preprocessed))
+
+    logger.debug(preprocessed[0][0:10])
 
     vec = CountVectorizer(analyzer = lambda x:x) # list형태를 input받을 수 있도록 함
 
     x = vec.fit_transform(preprocessed)
-    df = pd.DataFrame(x.toarray(), columns=vec.get_feature_names())
-
+    df = pd.DataFrame(x.toarray(), columns=vec.get_feature_names(), index = titleList)
     logger.info("DTM생성 완료")
-    logger.debug(df)    
+    logger.debug('\n' + str(df[['세션', '대북', '남북', '김영호']]))    
 
     try:
         kmeans = KMeans(n_clusters=optionList).fit(df)    
@@ -77,11 +79,13 @@ def kmeans(email, keyword, savedDate, optionList, analysisName):
     jsonDict = dict()
     textPCAList = list()
     
-    for textNum in indexList:
+    for i in range(len(indexList)):
+        textNum = indexList[i]
         textDict = dict()
         textDict["category"] = int(kmeans.labels_[textNum])
         textDict["x"] = int(principalDF["principal_component_1"][textNum])
         textDict['y'] = int(principalDF["principal_component_2"][textNum])
+        textDict['title'] = titleList[i]
         textPCAList.append(textDict)
     
     logger.debug(textPCAList)
@@ -116,4 +120,4 @@ def kmeans(email, keyword, savedDate, optionList, analysisName):
     return textPCAList
 
 
-#kmeans('21800520@handong.edu', '북한', "2021-08-10T10:59:29.974Z", 100, 'kmeans', 3)
+# kmeans('21800520@handong.edu', '북한', "2021-08-10T10:59:29.974Z", 3, 'kmeans')

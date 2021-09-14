@@ -89,6 +89,67 @@ def search_in_mydoc2(email, keyword, savedDate):
 #search_in_mydoc2('21600280@handong.edu', '북한', "2021-07-08T11:46:03.973Z")
 #search_in_mydoc2('21800409@handong.edu', '북한', "2021-08-04T03:48:54.395Z")
 
+def search_in_mydoc_add_title(email, keyword, savedDate):
+    #savedDate = datetime.datetime.strptime(savedDate, "%Y-%m-%dT%H:%M:%S.%fZ")
+    idList = getMyDocByEmail2(email, keyword, savedDate) # es애서 삭제된 id도 포함
+    print('idList=', idList)
+
+    response=es.search( 
+        index=index, 
+        body={
+            "_source":['_id', 'post_title', 'post_date','post_body', 'file_extracted_content'],
+            "size":100,
+            "query":{
+                "bool":{
+                    "filter":{
+                        'terms':{'hash_key':idList}
+                    }
+                }
+            }
+        }
+    )
+
+
+    countDoc =len(response['hits']['hits'])
+    
+    # 실제로 받아온 response 에 근거하여, idlist 를 새로 만듦
+
+    hangul = re.compile('[^ ㄱ-ㅣ가-힣]+')
+
+    idList=[]
+    dateList=[]
+    bodyList=[]
+    fileList=[]    
+    titleList=[]
+
+    for i in range(countDoc):
+        docId = response["hits"]["hits"][i]["_source"].get("_id")
+        postDate = response["hits"]["hits"][i]["_source"].get("post_date")
+        postTitle = response["hits"]["hits"][i]["_source"].get("post_title")
+        postBody= response["hits"]["hits"][i]["_source"].get("post_body")
+        fileContent = response["hits"]["hits"][i]["_source"].get("file_extracted_content")
+        
+        fileContent = str(fileContent).replace("None",'')
+        fileContent = hangul.sub('', fileContent)
+
+        idList.append(docId)
+        dateList.append(postDate)
+        bodyList.append(postBody)
+        fileList.append(fileContent)
+        titleList.append(postTitle)    
+    
+    df = pd.DataFrame()
+    df['idList'] = idList
+    df['post_date'] = dateList
+    df['post_title'] = titleList
+    df['post_body'] = bodyList
+    df['file_content'] = fileList
+
+    df['all_content'] = df['post_body'].str.cat(df['file_content'], sep=' ', na_rep='No data')
+
+    #print("<내 보관함>\n", df)
+    #print("<내용>\n", df['all_content'][0])
+    return df[['idList', 'post_date', 'all_content', 'post_title']]
 #########################################
 
 # def search_in_mydoc(email):
