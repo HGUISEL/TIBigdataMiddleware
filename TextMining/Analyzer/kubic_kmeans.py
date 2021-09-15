@@ -40,8 +40,7 @@ def kmeans(email, keyword, savedDate, optionList, analysisName):
 
     top_words = json.loads(getCount(email, keyword, savedDate, optionList)[0])
     # preprocessed = getPreprocessing(email, keyword, savedDate, optionList)[0]
-    preprocessed, titleList = getPreprocessingAddTitle(email, keyword, savedDate, optionList)
-    titleList = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
+    preprocessed, titleList = getPreprocessingAddTitle(email, keyword, savedDate, optionList)[0:2]
     logger.info("mongodb에서 전처리 내용을 가져왔습니다.")
     logger.debug(len(preprocessed))
 
@@ -51,11 +50,10 @@ def kmeans(email, keyword, savedDate, optionList, analysisName):
 
     x = vec.fit_transform(preprocessed)
     df = pd.DataFrame(x.toarray(), columns=vec.get_feature_names(), index = titleList)
-    logger.info("DTM생성 완료")
-    logger.debug('\n' + str(df[['세션', '대북', '남북', '김영호']]))    
+    logger.info("DTM생성 완료")  
 
     try:
-        kmeans = KMeans(n_clusters=optionList).fit(df)    
+        kmeans = KMeans(n_clusters=int(optionList)).fit(df)    
     except:
         resultDict = dict()
         resultDict['Error'] = 'clusterNum is larger than number of  document' 

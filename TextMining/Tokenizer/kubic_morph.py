@@ -20,12 +20,14 @@ import re
 ## Morphological analysis(형태소 분석)
 from konlpy.tag import Kkma
 
+import logging
+logger = logging.getLogger("flask.app.kmeans")
+
 # 전처리 & 불용어사전적용
 def stop_syn(email, keyword, savedDate, mecab, wordclass, stopwordTF, synonymTF):
 #def stop_syn(email, keyword, savedDate, mecab, wordclass): 
-    print("전처리를 시작합니다")
     datas = search_in_mydoc2(email, keyword, savedDate)
-    print("data2: ", datas)
+    # print("data2: ", datas)
     nDocs = len(datas)
     
     if stopwordTF == True:
@@ -117,13 +119,23 @@ def get_jongsung_TF(sample_word):
 #file not found error
 def compound(email, keyword, savedDate, wordclass, stopwordTF, synonymTF, compoundTF):
 #def compound(email, keyword, savedDate, wordclass): 
+
+    identification = str(email)+'_'+'preprocessing(compound)'+'_'+str(savedDate)+"// "
+    logger.info(identification + '전처리(compound함수)를 시작합니다.')
+
     file_data = []
-    print(email, '\t', keyword, '\t', savedDate, '에 대한 전처리를 진행합니다.')
 
     if compoundTF == True:
-      compound_file = getCompound(email, keyword, savedDate)  #사용자가 등록한 사전 적용
+        try:
+            logger.info(identification + '사용자가 등록한 사전을 적용합니다.')
+            compound_file = getCompound(email, keyword, savedDate)  #사용자가 등록한 사전 적용
+
+        except Exception as e:
+            app.logger.error(identification+ "사용자 사전 적용에 실패했습니다.")
+            return
     else:
-      compound_file = getCompound("default","", "")  # 지정해놓은 default 사용자사전 적용
+        logger.info(identification + 'default 사전을 적용합니다.')
+        compound_file = getCompound("default","", "")  # 지정해놓은 default 사용자사전 적용
   
     if(compound_file != False):
         com_df = pd.DataFrame(list(compound_file.items()), columns=['단어', '품사'])
@@ -217,20 +229,38 @@ def compound(email, keyword, savedDate, wordclass, stopwordTF, synonymTF, compou
 #compound('21800409@handong.edu', '북한', "2021-08-04T03:48:54.395Z", '010', False, False, False)[1]
 
 def stop_syn_add_title(email, keyword, savedDate, mecab, wordclass, stopwordTF, synonymTF):
-    print("전처리를 시작합니다")
-    datas = search_in_mydoc2_add_title(email, keyword, savedDate)
-    print("data2: ", datas)
+    
+    identification = str(email)+'_'+'preprocessing(stop_syn)'+'_'+str(savedDate)+"// "
+    logger.info(identification + '전처리(불용어사전 적용하기)를 시작합니다.')
+
+    logger.info(identification + 'es에서 데이터를 가져옵니다.')
+    datas = search_in_mydoc_add_title(email, keyword, savedDate)
+
+    # if datas[0] == 'failed':
+    #     logger.error(identification + 'es에서 데이터 가져오는 것을 실패하였습니다. \n 실패사유:' + datas[1])
+    #     return False, datas[1]
+
     nDocs = len(datas)
     
-    if stopwordTF == True:
-      stopword_file = getStopword(email, keyword, savedDate)
-    else:
-      stopword_file = getStopword('default','', '')
+    try:
+        if stopwordTF == True:
+          stopword_file = getStopword(email, keyword, savedDate)
+        else:
+          stopword_file = getStopword('default','', '')
+        logger.info(identification + 'stopword 적용완료')
+    except Exception as e:
+        return False, "stopword를 적용할 수 없습니다. 세부사항: " + str(e)
 
-    if synonymTF == True:
-      synonym_file = getSynonym(email, keyword, savedDate)
-    else:
-      synonym_file = getSynonym('default','', '')
+    try:
+        if synonymTF == True:
+            synonym_file = getSynonym(email, keyword, savedDate)
+        else:
+            synonym_file = getSynonym('default','', '') 
+            logger.info(identification + 'synonym 적용완료')
+
+    except Exception as e:
+        logger.error(identification + 'synonym 적용오류: '+ str(e))
+        return False, "synonym을 적용할 수 없습니다. 세부사항: " + str(e)
 
     # stopword_file = getStopword(email, keyword, savedDate) #사용자가 등록한 불용어
     # synonym_file = getSynonym(email, keyword, savedDate) #사용자가 등록한 유의어
@@ -242,39 +272,45 @@ def stop_syn_add_title(email, keyword, savedDate, mecab, wordclass, stopwordTF, 
     print(datas[:100])
     '''
 
-    # 형태소추출
-    resultList = []   
-    #datas = datas[0:1]
-    for i in range(len(datas['all_content'])):
-        posList=[]
-        tokenToAnalyze=[]
+    try:
+        # 형태소추출
+        resultList = []   
+        #datas = datas[0:1]
+        for i in range(len(datas['all_content'])):
+            posList=[]
+            tokenToAnalyze=[]
 
-        poss = mecab.pos(datas['all_content'][i])
-        # datas['result'] = posList
-        # print(poss[:100])
+            poss = mecab.pos(datas['all_content'][i])
+            # datas['result'] = posList
+            # print(poss[:100])
 
-        for token, pos in poss:
-            if wordclass[0]=='1' and pos == 'VV': # 동사만
-                tokenToAnalyze.append(token)
-            if wordclass[1]=='1' and pos.startswith('N'): # 명사
-                tokenToAnalyze.append(token)
-            if wordclass[2]=='1' and pos == 'VA': # 형용사 
-                tokenToAnalyze.append(token)
-        
-        #print("저장된 토큰\n", tokenToAnalyze)
+            for token, pos in poss:
+                if wordclass[0]=='1' and pos == 'VV': # 동사만
+                    tokenToAnalyze.append(token)
+                if wordclass[1]=='1' and pos.startswith('N'): # 명사
+                    tokenToAnalyze.append(token)
+                if wordclass[2]=='1' and pos == 'VA': # 형용사 
+                    tokenToAnalyze.append(token)
+            
+            #print("저장된 토큰\n", tokenToAnalyze)
+            # 불용어처리
+            if(stopword_file != False):
+                for j in range(len(tokenToAnalyze)):
+                    if tokenToAnalyze[j] not in stopword_file:
+                        posList.append(tokenToAnalyze[j]) ############
+            else:
+                logger.error(identification +"불용어 처리에서 오류가 발생했습니다.")
+                return False, "불용어사전 형식 오류"   
+                #print("전처리 결과\n", posList[:100])
+            resultList.append(posList)
+        logger.info(identification +"형태소 추출 및 불용어사전 처리를 완료하였습니다.")
 
-    # 불용어처리
-        if(stopword_file != False):
-            for j in range(len(tokenToAnalyze)):
-                if tokenToAnalyze[j] not in stopword_file:
-                    posList.append(tokenToAnalyze[j]) ############
-        else:
-            return False, "불용어사전 형식 오류"
-            #print("전처리 결과\n", posList[:100])
-        resultList.append(posList)
+    except Exception as e:
+        logger.error(identification + '형태소 추출 오류: '+ str(e))
+        return False, "형태소 추출 오류, 세부사항: "+ str(e)
     
     #print('\n유의어, 복합어사전 적용 전: ', resultList[0][20000:20100]) #16 이메일
-    print('\n유의어, 복합어사전 적용 전: ', resultList[0][1700:1900]) ##### 
+    # print('\n유의어, 복합어사전 적용 전: ', resultList[0][1700:1900]) ##### 
 
     #유의어를 json형식으로 받고 dict 이용(split필요x)
     if(synonym_file != False):
@@ -289,7 +325,7 @@ def stop_syn_add_title(email, keyword, savedDate, mecab, wordclass, stopwordTF, 
                 for j in range(len(syn_df.columns)):
                     for k in range(len(ri)): 
                         if ri[k] == syn_df.iloc[i,j]:
-                            print(k, "번째, ", "**유의어 \"" ,ri[k] , "\"(을)를 찾았습니다. \"", syn_df.columns[i], '\"(으)로 변경합니다.')
+                            # print(k, "번째, ", "**유의어 \"" ,ri[k] , "\"(을)를 찾았습니다. \"", syn_df.columns[i], '\"(으)로 변경합니다.')
                             ri[k] = syn_df.columns[i]   
         #print("\n유의어사전 적용 후:", resultList[0][200:300], len(resultList[0]))
     else:
@@ -299,19 +335,30 @@ def stop_syn_add_title(email, keyword, savedDate, mecab, wordclass, stopwordTF, 
         textDict = dict()
         textDict["title"] = datas['post_title']
         textDict['content'] = resultList
-            
+    else:
+        return False, "누락된 결과가 았습니다. \n  결과 수 :" + str(len(resultList)) + " 제목 수: " + str(len(datas['post_title']))
+        
     return True, textDict
 
 
 def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymTF, compoundTF):
 #def compound(email, keyword, savedDate, wordclass): 
+
+    identification = str(email)+'_'+'preprocessing(compound)'+'_'+str(savedDate)+"// "
+    logger.info(identification + '전처리(compound함수)를 시작합니다.')
+
     file_data = []
-    print(email, '\t', keyword, '\t', savedDate, '에 대한 전처리를 진행합니다.')
 
     if compoundTF == True:
-      compound_file = getCompound(email, keyword, savedDate)  #사용자가 등록한 사전 적용
+        try:
+            compound_file = getCompound(email, keyword, savedDate)  #사용자가 등록한 사전 적용
+            logger.info(identification + '사용자가 등록한 사전을 적용했습니다.')
+        except Exception as e:
+            ogger.error(identification+ "사용자 사전 적용에 실패했습니다.")
+            return False, e
     else:
-      compound_file = getCompound("default","", "")  # 지정해놓은 default 사용자사전 적용
+        logger.info(identification + 'default 사전을 적용합니다.')
+        compound_file = getCompound("default","", "")  # 지정해놓은 default 사용자사전 적용
   
     if(compound_file != False):
         com_df = pd.DataFrame(list(compound_file.items()), columns=['단어', '품사'])
@@ -321,11 +368,14 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
             file_data.append(line)
     else:
         return False, "복합어사전 형식 오류"
- 
-    with open("/home/dapi2/TIBigdataMiddleware/TextMining/mecab-ko-dic-2.1.1-20180720/user-dic/my-dic.csv", 'w', encoding='utf-8') as f: 
-        for line in file_data: 
-            f.write(line)
- 
+    
+    try:
+        with open("/home/dapi2/TIBigdataMiddleware/TextMining/mecab-ko-dic-2.1.1-20180720/user-dic/my-dic.csv", 'w', encoding='utf-8') as f: 
+            for line in file_data: 
+                f.write(line)
+    except Exception as e:
+        return False, "파일 열기 오류  세부사항: "+ str(e)
+
     class cd:
         def __init__(self, newPath):
             self.newPath = os.path.expanduser(newPath)
@@ -360,17 +410,19 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
     success, doc = stop_syn_add_title(email, keyword, savedDate, mecab, wordclass, stopwordTF, synonymTF)
 
     
-    print("전처리 결과: ", doc['content'][0][1700:1900]) #동사, 형용사 --> 추출한 개수가 적기 때문에 출력안됨
+    # print("전처리 결과: ", doc['content'][0][1700:1900]) #동사, 형용사 --> 추출한 개수가 적기 때문에 출력안됨
     #print("전처리 결과 [0]번째 doc: ", doc[0][1700:1800])
     #print("전처리 결과 [1]번째 doc: ", doc[1][1700:1800])
-
-    #nTokens: 전처리 토큰개수
-    nTokens=0
-    for i in range(len(doc)):
-        for j in range(len(doc['content'][i][""])):
-            length = len(doc['content'][i])
-        nTokens = length + nTokens
-    #print(nTokens)
+    if success == True:
+        #nTokens: 전처리 토큰개수
+        nTokens=0
+        for i in range(len(doc['content'])):
+            for j in range(len(doc['content'][i])):
+                length = len(doc['content'][i])
+            nTokens = length + nTokens
+        #print(nTokens)
+    else:
+        return success, doc
 
     if success == True:
     # 사용자사전 test code, true일때만
@@ -394,14 +446,15 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
         #"duration" : ,
         #"nDocs" : nDocs,
         "nTokens" : nTokens,
-        "tokenList" : doc['content'],
-        "titleList" : doc['title'],
+        "tokenList" : list(doc['content']),
+        "titleList" : list(doc['title']),
         "addTitle" : "Yes"
         }
         db.preprocessing.insert(mdoc)
 
         print('MongoDB에 저장 되었습니다.')
-
+    else:
+        return success, doc
     return success, doc['content'][0][:100] #전체 형태소 분석한 단어들의 목록 (kubic 미리보기에 뜨도록)
 
 #compound_add_text("21800409@handong.edu", "통일", "2021-08-06T11:52:05.706Z", "010", False, False, False)

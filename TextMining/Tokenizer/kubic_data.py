@@ -89,55 +89,60 @@ def search_in_mydoc2(email, keyword, savedDate):
 #search_in_mydoc2('21600280@handong.edu', '북한', "2021-07-08T11:46:03.973Z")
 #search_in_mydoc2('21800409@handong.edu', '북한', "2021-08-04T03:48:54.395Z")
 
+
 def search_in_mydoc_add_title(email, keyword, savedDate):
     #savedDate = datetime.datetime.strptime(savedDate, "%Y-%m-%dT%H:%M:%S.%fZ")
     idList = getMyDocByEmail2(email, keyword, savedDate) # es애서 삭제된 id도 포함
-    print('idList=', idList)
 
-    response=es.search( 
-        index=index, 
-        body={
-            "_source":['_id', 'post_title', 'post_date','post_body', 'file_extracted_content'],
-            "size":100,
-            "query":{
-                "bool":{
-                    "filter":{
-                        'terms':{'hash_key':idList}
+    if idList[0] == 'failed':
+        return 'failed', idList[1]
+
+    try:
+        response=es.search( 
+            index=index, 
+            body={
+                "_source":['_id', 'post_title', 'post_date','post_body', 'file_extracted_content'],
+                "size":100,
+                "query":{
+                    "bool":{
+                        "filter":{
+                            'terms':{'hash_key':idList}
+                        }
                     }
                 }
             }
-        }
-    )
+        )
 
-
-    countDoc =len(response['hits']['hits'])
+        countDoc =len(response['hits']['hits'])
     
-    # 실제로 받아온 response 에 근거하여, idlist 를 새로 만듦
+        # 실제로 받아온 response 에 근거하여, idlist 를 새로 만듦
 
-    hangul = re.compile('[^ ㄱ-ㅣ가-힣]+')
+        hangul = re.compile('[^ ㄱ-ㅣ가-힣]+')
 
-    idList=[]
-    dateList=[]
-    bodyList=[]
-    fileList=[]    
-    titleList=[]
+        idList=[]
+        dateList=[]
+        bodyList=[]
+        fileList=[]    
+        titleList=[]
 
-    for i in range(countDoc):
-        docId = response["hits"]["hits"][i]["_source"].get("_id")
-        postDate = response["hits"]["hits"][i]["_source"].get("post_date")
-        postTitle = response["hits"]["hits"][i]["_source"].get("post_title")
-        postBody= response["hits"]["hits"][i]["_source"].get("post_body")
-        fileContent = response["hits"]["hits"][i]["_source"].get("file_extracted_content")
-        
-        fileContent = str(fileContent).replace("None",'')
-        fileContent = hangul.sub('', fileContent)
+        for i in range(countDoc):
+            docId = response["hits"]["hits"][i]["_source"].get("_id")
+            postDate = response["hits"]["hits"][i]["_source"].get("post_date")
+            postTitle = response["hits"]["hits"][i]["_source"].get("post_title")
+            postBody= response["hits"]["hits"][i]["_source"].get("post_body")
+            fileContent = response["hits"]["hits"][i]["_source"].get("file_extracted_content")
+            
+            fileContent = str(fileContent).replace("None",'')
+            fileContent = hangul.sub('', fileContent)
 
-        idList.append(docId)
-        dateList.append(postDate)
-        bodyList.append(postBody)
-        fileList.append(fileContent)
-        titleList.append(postTitle)    
-    
+            idList.append(docId)
+            dateList.append(postDate)
+            bodyList.append(postBody)
+            fileList.append(fileContent)
+            titleList.append(postTitle)    
+    except Exception as e:
+        return 'failed', "search_in_mydoc_add_title: es search 후 구조화 과정에서 문제가 생겼습니다. \n 세부사항: "+str(e)    
+
     df = pd.DataFrame()
     df['idList'] = idList
     df['post_date'] = dateList

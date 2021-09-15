@@ -10,18 +10,24 @@ from konlpy.tag import Mecab
 client = MongoClient('localhost', 27017)
 db = client.user
 def getMyDocByEmail2(email, keyword, savedDate):
-    savedDate = datetime.datetime.strptime(savedDate, "%Y-%m-%dT%H:%M:%S.%fZ") 
+    try:
+        savedDate = datetime.datetime.strptime(savedDate, "%Y-%m-%dT%H:%M:%S.%fZ") 
+    except Exception as e:
+        return 'failed', "getMyDocByEmail2: savedDate가 형식에 맞지 않습니다.  " + str(e)
     #print(savedDate)
+
     doc = db.mydocs.find_one({"userEmail": email})
     #print(doc)
     docList = []
-
-    for idx in range(len(doc['keywordList'])):
-        #print(doc['keywordList'][idx])
-        docList.append(doc['keywordList'][idx])
-        if docList[idx]['keyword'] == keyword and docList[idx]['savedDate'] == savedDate:#datetime.datetime.strptime(savedDate, "%Y-%m-%dT%H:%M:%S.%fZ"):
-            #print("저장된 도큐먼트 id: ", docList[idx]['savedDocHashKeys'])
-            return docList[idx]['savedDocHashKeys']
+    try:
+        for idx in range(len(doc['keywordList'])):
+            #print(doc['keywordList'][idx])
+            docList.append(doc['keywordList'][idx])
+            if docList[idx]['keyword'] == keyword and docList[idx]['savedDate'] == savedDate:#datetime.datetime.strptime(savedDate, "%Y-%m-%dT%H:%M:%S.%fZ"):
+                #print("저장된 도큐먼트 id: ", docList[idx]['savedDocHashKeys'])
+                return docList[idx]['savedDocHashKeys']
+    except Exception as e:
+        return 'failed', "getMyDocByEmail2: mongo에 내보관함 데이터가 없습니다. " + str(e)
 
 #getMyDocByEmail2('21600280@handong.edu', '북한', "2021-07-08T11:46:03.973Z")
 #getMyDocByEmail2('21800409@handong.edu', '북한', "2021-08-04T03:48:54.395Z")
@@ -112,7 +118,7 @@ def getPreprocessingAddTitle(email, keyword, savedDate, optionList):
 def getCount(email, keyword, savedDate, optionList):
     # for analysisDate : datetime.datetime.strptime(savedDate[:-1], "%Y-%m-%d %H:%M:%S.%f"
     doc = dbTM.count.find_one({"userEmail":email, "keyword":keyword, "savedDate": savedDate})
-    print(doc["_id"])
+    print(doc["_id"]) # 카운트가 없으면 먼저 카운트 하라고 말해줘야함.
     try:
         str(doc['resultJson'])
         return doc['resultJson'], doc['nTokens']
