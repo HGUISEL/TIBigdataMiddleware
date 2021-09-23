@@ -30,6 +30,7 @@ from sklearn.cluster import AgglomerativeClustering
 import scipy.cluster.hierarchy as shc
 
 import logging
+import traceback
 
 logger = logging.getLogger("flask.app.kmeans")
 #logging.basicConfig(level=logging.INFO, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
@@ -37,57 +38,81 @@ logger = logging.getLogger("flask.app.kmeans")
 #logging.basicConfig(filename = "kmeans_debug.log", level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
 
 def kmeans(email, keyword, savedDate, optionList, analysisName):
-
-    top_words = json.loads(getCount(email, keyword, savedDate, optionList)[0])
+    try:
+        identification = str(email)+'_'+analysisName+'_'+str(savedDate)+"// "
+        top_words = json.loads(getCount(email, keyword, savedDate, optionList)[0])
+    except Exception as e:
+        err = traceback.format_exc()
+        logger.error(identification+"빈도수분석 정보를 찾을 수 없습니다. 빈도수분석을 먼저 진행해주시기 바랍니다. \n"+str(err))
+        return "failed", "빈도수분석 정보를 찾을 수 없습니다. 빈도수분석을 먼저 진행해주시기 바랍니다. 세부사항:" + str(e)
+    try:
     # preprocessed = getPreprocessing(email, keyword, savedDate, optionList)[0]
-    preprocessed, titleList = getPreprocessingAddTitle(email, keyword, savedDate, optionList)[0:2]
-    logger.info("mongodb에서 전처리 내용을 가져왔습니다.")
-    logger.debug(len(preprocessed))
+        preprocessed, titleList = getPreprocessingAddTitle(email, keyword, savedDate, optionList)[0:2]
+        logger.info(identification+"mongodb에서 전처리 내용을 가져왔습니다.")
+        logger.debug(len(preprocessed))
+        logger.debug(preprocessed[0][0:10])
 
-    logger.debug(preprocessed[0][0:10])
-
-    vec = CountVectorizer(analyzer = lambda x:x) # list형태를 input받을 수 있도록 함
-
-    x = vec.fit_transform(preprocessed)
-    df = pd.DataFrame(x.toarray(), columns=vec.get_feature_names(), index = titleList)
-    logger.info("DTM생성 완료")  
+    except Exception as e:
+        err = traceback.format_exc()
+        logger.error(identification+"빈도수분석 정보를 찾을 수 없습니다. 빈도수분석을 먼저 진행해주시기 바랍니다. \n"+str(err))
+        return "failed", "빈도수분석 정보를 찾을 수 없습니다. 빈도수분석을 먼저 진행해주시기 바랍니다. 세부사항:" + str(e)
 
     try:
+        logger.info(identification+"벡터화를 실시합니다.")
+        vec = CountVectorizer(analyzer = lambda x:x) # list형태를 input받을 수 있도록 함
+
+        x = vec.fit_transform(preprocessed)
+        df = pd.DataFrame(x.toarray(), columns=vec.get_feature_names(), index = titleList)
+        logger.info("벡터화 완료")  
+    except Exception as e:
+        err = traceback.format_exc()
+        logger.error(identification+"벡터화과정에서 에러가 발생했습니다. \n"+str(err))
+        return "failed", "벡터화과정에서 에러가 발생했습니다. 세부사항:" + str(e)
+
+    try:
+        logger.info(identification + "군집분석을 실시합니다.")
         kmeans = KMeans(n_clusters=int(optionList)).fit(df)    
-    except:
-        resultDict = dict()
-        resultDict['Error'] = 'clusterNum is larger than number of  document' 
-        logger.debug(resultDict)
-        return resultDict
+    except Exception as e:
+        err = traceback.format_exc()
+        logger.error(identification+"문서 개수보다 군집 수가 많습니다. \n"+str(err))
+        return "failed", "문서 개수보다 군집 수가 많습니다. 군집수를 문서개수보다 적게 해주시기 바랍니다. 세부사항:" + str(e)
 
-    logger.info("비계층적 군집분석 실행(군집수 3개)")
-    logger.debug(kmeans.labels_)
+    try:
+        logger.info(identification + "분할군집분석 실행(군집수 3개)")
+        logger.debug(kmeans.labels_)
 
-    pca = PCA(n_components=2)
-    principalComponents=pca.fit_transform(df)
-    principalDF = pd.DataFrame(data = principalComponents, columns = ['principal_component_1', 'principal_component_2'])
-    logger.info("PCA로 2차원화")
-    logger.debug(principalDF)
-    logger.debug(kmeans.labels_)
+        pca = PCA(n_components=2)
+        principalComponents=pca.fit_transform(df)
+        principalDF = pd.DataFrame(data = principalComponents, columns = ['principal_component_1', 'principal_component_2'])
+    except Exception as e:
+        err = traceback.format_exc()
+        logger.error(identification+"분할군집분석 실행중 오류가 발생했습니다. \n"+str(err))
+        return "failed", "분할군집분석 실행중 오류가 발생했습니다. 세부사항:" + str(e)
 
-    indexList = [ item for item in principalDF.index]
+    try:
+        logger.info(identification+"결과를 json파일로 만듭니다.")
+        indexList = [ item for item in principalDF.index]
+        # https://observablehq.com/@d3/scatterplot-with-shapes
 
-    # https://observablehq.com/@d3/scatterplot-with-shapes
+        jsonDict = dict()
+        textPCAList = list()
+        
+        for i in range(len(indexList)):
+            textNum = indexList[i]
+            textDict = dict()
+            textDict["category"] = int(kmeans.labels_[textNum])
+            textDict["x"] = int(principalDF["principal_component_1"][textNum])
+            textDict['y'] = int(principalDF["principal_component_2"][textNum])
+            textDict['title'] = titleList[i]
+            textPCAList.append(textDict)
+        logger.debug(textPCAList)
 
-    jsonDict = dict()
-    textPCAList = list()
+    except Exception as e:
+        err = traceback.format_exc()
+        logger.error(identification+"분할군집분석 결과를 json파일로 만드는 중에 오류가 발생했습니다. \n"+str(err))
+        return "failed", "분할군집분석 결과를 json파일로 만드는 중에 오류가 발생했습니다. 세부사항:" + str(e)
+        
     
-    for i in range(len(indexList)):
-        textNum = indexList[i]
-        textDict = dict()
-        textDict["category"] = int(kmeans.labels_[textNum])
-        textDict["x"] = int(principalDF["principal_component_1"][textNum])
-        textDict['y'] = int(principalDF["principal_component_2"][textNum])
-        textDict['title'] = titleList[i]
-        textPCAList.append(textDict)
-    
-    logger.debug(textPCAList)
-    logger.info("Make kmeans plot graph json file")
 
     # cluster=AgglomerativeClustering(n_clusters= clusterNum, linkage='ward')
     # logger.debug(cluster.fit_predict(df))
@@ -95,27 +120,31 @@ def kmeans(email, keyword, savedDate, optionList, analysisName):
     # clusterDict = dict()
 
 
-    
-    logger.info("MongoDB에 데이터를 저장합니다.")
-    
-    client=MongoClient(host='localhost',port=27017)
-    db=client.textMining
+    try:
+        logger.info(identification + "MongoDB에 데이터를 저장합니다.")
+        
+        client=MongoClient(host='localhost',port=27017)
+        db=client.textMining
 
-    doc={
-        "userEmail" : email,
-        "keyword" : keyword,
-        "savedDate": savedDate,
-        "analysisDate" : datetime.datetime.now(),
-        #"duration" : ,
-        "resultPCAList" : textPCAList,
-        #"resultCSV":
-    }
+        doc={
+            "userEmail" : email,
+            "keyword" : keyword,
+            "savedDate": savedDate,
+            "analysisDate" : datetime.datetime.now(),
+            #"duration" : ,
+            "resultPCAList" : textPCAList,
+            #"resultCSV":
+        }
 
-    db.kmeans.insert_one(doc) 
+        db.kmeans.insert_one(doc) 
+        logger.info(identification + "MongoDB에 저장되었습니다.")
 
-    logger.info("MongoDB에 저장되었습니다.")
+    except Exception as e:
+        err = traceback.format_exc()
+        logger.error(identification + "MongoDB에 결과를 저장하는 중에 오류가 발생했습니다. \n"+str(err))
+        return "failed", "MongoDB에 결과를 저장하는 중에 오류가 발생했습니다. 세부사항:" + str(e)
 
-    return textPCAList
+    return True, textPCAList
 
 
 # kmeans('21800520@handong.edu', '북한', "2021-08-10T10:59:29.974Z", 3, 'kmeans')

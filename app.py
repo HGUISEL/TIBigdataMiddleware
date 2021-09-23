@@ -243,14 +243,15 @@ def textmining():
     
     # for kmeans
     elif analysisName == 'kmeans':
-        print("kmeans 분석을 시작합니다\n")
-        result = kmeans(email, keyword, savedDate, optionList, analysisName)
-        print("\n kmeans 분석 결과\n")
-        print(result)
-        
-        resultDic = {#'returnDate' : datetime.datetime.now(), 
-        'activity' : analysisName, 'email' : email,
-        'keyword' : keyword, 'savedDate' : savedDate, 'optionList' : optionList, 'result_graph' : result}
+        app.logger.info(identification + "kmeans 분석 시작")
+        result1, result2 = kmeans(email, keyword, savedDate, optionList, analysisName)
+        if result1 == True:        
+            resultDic = {'returnCode': 200,#'returnDate' : datetime.datetime.now(), 
+            'activity' : analysisName, 'email' : email,
+            'keyword' : keyword, 'savedDate' : savedDate, 'optionList' : optionList, 'result_graph' : result2}
+        else:
+            app.logger.error(identification + "kmeans 분석 실패")
+            resultDic = {'returnCode': 400, 'errMsg': "분할군집분석 실패 \n"+ result2}
         
     # for ngrams
     elif analysisName == 'ngrams':
