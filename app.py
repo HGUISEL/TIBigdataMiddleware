@@ -220,11 +220,15 @@ def textmining():
 
     
     elif analysisName == 'tfidf':
-        print("tfidf 분석을 시작합니다\n")
+        app.logger.info(identification + "tfidf 분석 시작")
         result_table, result_graph = tfidf(email, keyword, savedDate, optionList, analysisName)
-        resultDic = {#'returnDate' : datetime.datetime.now(), 
-        'activity' : analysisName, 'email' : email, 
-        'keyword' : keyword, 'savedDate' : savedDate, 'optionList' : optionList, 'result_table' : result_table, 'result_graph': result_graph}
+        if result_table == 'failed':
+            app.logger.error(identification + "tfidf 분석 실패")
+            resultDic = {'returnCode': 400, 'errMsg': "tfidf 분석 실패 \n"+ result_graph}
+        else:
+            resultDic = {'returnCode': 200, #'returnDate' : datetime.datetime.now(), 
+            'activity' : analysisName, 'email' : email, 
+            'keyword' : keyword, 'savedDate' : savedDate, 'optionList' : optionList, 'result_table' : result_table, 'result_graph': result_graph}
 
     # for semanticNetworkAnalysis
     elif analysisName == 'network':

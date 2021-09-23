@@ -19,38 +19,63 @@ import gridfs
 import csv
 from collections import defaultdict
 
+import logging
+import traceback
+
+logger = logging.getLogger("flask.app.tfidf")
+
+
 def tfidf(email, keyword, savedDate, optionList, analysisName):
-    corpus = search_in_mydoc2(email, keyword, savedDate)['all_content'].tolist()    #문장으로 이루어진 doc
-    nTokens = optionList
-    #print("corpus\n", corpus, "\nNumber of Doc: ",len(corpus))
-    top_words = getCount(email, keyword, savedDate, optionList)[0]
-    top_words = json.loads(top_words)
+    identification = str(email)+'_'+analysisName+'_'+str(savedDate)+"// "
+    try:
+        logger.info(identification + "분석에 필요한 데이터를 가져옵니다.")
+        corpus = search_in_mydoc2(email, keyword, savedDate)['all_content'].tolist()    #문장으로 이루어진 doc
+        nTokens = optionList
+        #print("corpus\n", corpus, "\nNumber of Doc: ",len(corpus))
+        top_words = getCount(email, keyword, savedDate, optionList)[0]
+        top_words = json.loads(top_words)
     
-    tfidf_vectorizer = TfidfVectorizer().fit(top_words)
-    feature_names = tfidf_vectorizer.get_feature_names()
+    except Exception as e:
+        err = traceback.format_exc()
+        logger.error(identification+"분석에 필요한 데이터를 가져올 수 없습니다. \n"+str(err))
+        return "failed", "분석에 필요한 데이터를 가져올 수 없습니다. \n 세부사항:" + str(e)
 
-    df = pd.DataFrame(tfidf_vectorizer.transform(corpus).toarray(), columns=feature_names)
-    words = tfidf_vectorizer.get_feature_names()
-    print("Tfidf 단어사전\n",words)
-    print("Tfidf 결과\n", df)    
-    
-    df_T = df.T.sum(axis=1)
-    #df_T['word'] = words
-    #df_T['rate']= df.T.sum(axis=1) #단어별 tfidf 합친 값
-    #df_T = df_T[['word', 'rate']]
-    
-    tfidf_dict = dict(df_T)
+    try:
+        logger.info(identification + "데이터를 tfidf 벡터화 합니다.")
+        tfidf_vectorizer = TfidfVectorizer().fit(top_words)
+        feature_names = tfidf_vectorizer.get_feature_names()
+    except Exception as e:
+        err = traceback.format_exc()
+        logger.error(identification+"tfidf 백터화 과정에서 에러가 발생했습니다. \n"+str(err))
+        return "failed", "tfidf 백터화 과정에서 에러가 발생했습니다. \n 세부사항:" + str(e)
 
-    list_graph = list()
+    try:
+        df = pd.DataFrame(tfidf_vectorizer.transform(corpus).toarray(), columns=feature_names)
+        words = tfidf_vectorizer.get_feature_names()
+        # print("Tfidf 단어사전\n",words)
+        # print("Tfidf 결과\n", df)    
+        
+        df_T = df.T.sum(axis=1)
+        #df_T['word'] = words
+        #df_T['rate']= df.T.sum(axis=1) #단어별 tfidf 합친 값
+        #df_T = df_T[['word', 'rate']]
+        
+        tfidf_dict = dict(df_T)
 
-    for key, value in tfidf_dict.items():
-        node_dict = dict()
-        node_dict["word"] = key
-        node_dict["value"] = float(value)
-        list_graph.append(node_dict)
+        list_graph = list()
 
-    print(tfidf_dict)
-    print(list_graph)
+        for key, value in tfidf_dict.items():
+            node_dict = dict()
+            node_dict["word"] = key
+            node_dict["value"] = float(value)
+            list_graph.append(node_dict)
+    except Exception as e:
+        err = traceback.format_exc()
+        logger.error(identification+"tfidf 분석 결과를 구하는 과정에서 에러가 발생했습니다. \n"+str(err))
+        return "failed", "tfidf 분석 결과를 구하는 과정에서 에러가 발생했습니다. \n 세부사항:" + str(e)
+
+    # print(tfidf_dict)
+    # print(list_graph)
 
     '''
     # barchar 및 워드클라우드 mongo저장 안함.
