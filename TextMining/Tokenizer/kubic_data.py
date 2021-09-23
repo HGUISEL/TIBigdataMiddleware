@@ -93,9 +93,11 @@ def search_in_mydoc2(email, keyword, savedDate):
 def search_in_mydoc_add_title(email, keyword, savedDate):
     #savedDate = datetime.datetime.strptime(savedDate, "%Y-%m-%dT%H:%M:%S.%fZ")
     idList = getMyDocByEmail2(email, keyword, savedDate) # es애서 삭제된 id도 포함
-
-    if idList[0] == 'failed':
-        return 'failed', idList[1]
+    try:
+        if idList[0] == 'failed':
+            return 'failed', idList[1]
+    except Exception as e:
+        return 'failed', "getMyDocByEmail2의 리턴형식이 맞지 않습니다. "
 
     try:
         response=es.search( 
@@ -112,7 +114,10 @@ def search_in_mydoc_add_title(email, keyword, savedDate):
                 }
             }
         )
-
+    except Exception as e:
+        return 'failed', "search_in_mydoc_add_title: es search에서 문제가 생겼습니다. \n 세부사항: "+str(e)   
+    
+    try:
         countDoc =len(response['hits']['hits'])
     
         # 실제로 받아온 response 에 근거하여, idlist 를 새로 만듦
@@ -142,7 +147,7 @@ def search_in_mydoc_add_title(email, keyword, savedDate):
             titleList.append(postTitle)    
     except Exception as e:
         return 'failed', "search_in_mydoc_add_title: es search 후 구조화 과정에서 문제가 생겼습니다. \n 세부사항: "+str(e)    
-
+    
     df = pd.DataFrame()
     df['idList'] = idList
     df['post_date'] = dateList
@@ -152,9 +157,7 @@ def search_in_mydoc_add_title(email, keyword, savedDate):
 
     df['all_content'] = df['post_body'].str.cat(df['file_content'], sep=' ', na_rep='No data')
 
-    #print("<내 보관함>\n", df)
-    #print("<내용>\n", df['all_content'][0])
-    return df[['idList', 'post_date', 'all_content', 'post_title']]
+    return True, df[['idList', 'post_date', 'all_content', 'post_title']]
 #########################################
 
 # def search_in_mydoc(email):

@@ -139,21 +139,21 @@ def preprocessing():
 
     except KeyError as err:
         app.logger.error(identification+"request 키 에러입니다. request에 다음과 같은 키가 존재하지 않습니다. \n:"+str(err))
-        resultDic = {'returnCode': 200, 'errMsg': "request 키 에러입니다. request에 다음과 같은 키가 존재하지 않습니다. \n:"+str(err)}
+        resultDic = {'returnCode': 400, 'errMsg': "request 키 에러입니다. request에 다음과 같은 키가 존재하지 않습니다. \n:"+str(err)}
         return json.dumps(resultDic, ensure_ascii=False, default=json_util.default)
 
 
     if(checkEmail(email) == False): #외부 해킹을 대비해 email을 mongodb에 있는 사용자인지 확인하기
         # return json.dump({'returnCode': 401, 'errMsg': '로그인정보가 없습니다'}) #returnCode, errMsg
         app.logger.error(identification+ "로그인 정보가 없습니다.")
-        return jsonify({'returnCode': 200, 'errMsg': '로그인 정보가 없습니다'})
+        return jsonify({'returnCode': 400, 'errMsg': '로그인 정보가 없습니다'})
 
     # result = compound(email, keyword, savedDate, wordclass)
     # result = compound(email, keyword, savedDate, wordclass, stopwordTF, synonymTF, compoundTF)
     result_add_title = compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymTF, compoundTF)
     if result_add_title[0] == False:
         app.logger.error(identification+ "전처리에 실패아혔습니다. \n 실패사유:" + result_add_title[1])
-        return jsonify({'returnCode': 200, 'errMsg': "전처리에 실패하였습니다. \n 실패사유:" + result_add_title[1]})
+        return jsonify({'returnCode': 400, 'errMsg': "전처리에 실패하였습니다. \n 실패사유:" + result_add_title[1]})
     #print("전처리 결과\n", result[0], result[1])
 
     if result_add_title[0] == False: #사용자사전 format안맞을 때

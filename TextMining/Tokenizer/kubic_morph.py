@@ -21,6 +21,7 @@ import re
 from konlpy.tag import Kkma
 
 import logging
+import traceback
 logger = logging.getLogger("flask.app.kmeans")
 
 # 전처리 & 불용어사전적용
@@ -184,7 +185,6 @@ def compound(email, keyword, savedDate, wordclass, stopwordTF, synonymTF, compou
     success, doc = stop_syn(email, keyword, savedDate, mecab, wordclass, stopwordTF, synonymTF)
 
     
-    print("전처리 결과: ", doc[0][1700:1900]) #동사, 형용사 --> 추출한 개수가 적기 때문에 출력안됨
     #print("전처리 결과 [0]번째 doc: ", doc[0][1700:1800])
     #print("전처리 결과 [1]번째 doc: ", doc[1][1700:1800])
 
@@ -232,15 +232,19 @@ def stop_syn_add_title(email, keyword, savedDate, mecab, wordclass, stopwordTF, 
     
     identification = str(email)+'_'+'preprocessing(stop_syn)'+'_'+str(savedDate)+"// "
     logger.info(identification + '전처리(불용어사전 적용하기)를 시작합니다.')
+    try:
+        logger.info(identification + 'es에서 데이터를 가져옵니다.')
+        success, datas = search_in_mydoc_add_title(email, keyword, savedDate)
 
-    logger.info(identification + 'es에서 데이터를 가져옵니다.')
-    datas = search_in_mydoc_add_title(email, keyword, savedDate)
+        if success == 'failed':
+            logger.error(identification + 'es에서 데이터 가져오는 것을 실패하였습니다. \n 실패사유:' + datas)
+            return False, datas
 
-    # if datas[0] == 'failed':
-    #     logger.error(identification + 'es에서 데이터 가져오는 것을 실패하였습니다. \n 실패사유:' + datas[1])
-    #     return False, datas[1]
-
-    nDocs = len(datas)
+        nDocs = len(datas)
+    except Exception as e:
+        err = traceback.format_exc()
+        logger.error(identification + "es 데이터 형식이 잘못되었습니다. \n 실패사유:" + datas + str(err))
+        return False, datas
     
     try:
         if stopwordTF == True:
@@ -249,6 +253,8 @@ def stop_syn_add_title(email, keyword, savedDate, mecab, wordclass, stopwordTF, 
           stopword_file = getStopword('default','', '')
         logger.info(identification + 'stopword 적용완료')
     except Exception as e:
+        err = traceback.format_exc()
+        logger.error(identification + "stopword를 적용할 수 없습니다. 세부사항: " + str(err))
         return False, "stopword를 적용할 수 없습니다. 세부사항: " + str(e)
 
     try:
@@ -256,10 +262,11 @@ def stop_syn_add_title(email, keyword, savedDate, mecab, wordclass, stopwordTF, 
             synonym_file = getSynonym(email, keyword, savedDate)
         else:
             synonym_file = getSynonym('default','', '') 
-            logger.info(identification + 'synonym 적용완료')
+        logger.info(identification + 'synonym 적용완료')
 
     except Exception as e:
-        logger.error(identification + 'synonym 적용오류: '+ str(e))
+        err = traceback.format_exc()
+        logger.error(identification + 'synonym 적용오류: '+ str(err))
         return False, "synonym을 적용할 수 없습니다. 세부사항: " + str(e)
 
     # stopword_file = getStopword(email, keyword, savedDate) #사용자가 등록한 불용어
@@ -279,7 +286,6 @@ def stop_syn_add_title(email, keyword, savedDate, mecab, wordclass, stopwordTF, 
         for i in range(len(datas['all_content'])):
             posList=[]
             tokenToAnalyze=[]
-
             poss = mecab.pos(datas['all_content'][i])
             # datas['result'] = posList
             # print(poss[:100])
@@ -306,7 +312,8 @@ def stop_syn_add_title(email, keyword, savedDate, mecab, wordclass, stopwordTF, 
         logger.info(identification +"형태소 추출 및 불용어사전 처리를 완료하였습니다.")
 
     except Exception as e:
-        logger.error(identification + '형태소 추출 오류: '+ str(e))
+        err = traceback.format_exc()
+        logger.error(identification + '형태소 추출 오류: '+ str(err))
         return False, "형태소 추출 오류, 세부사항: "+ str(e)
     
     #print('\n유의어, 복합어사전 적용 전: ', resultList[0][20000:20100]) #16 이메일
@@ -354,8 +361,9 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
             compound_file = getCompound(email, keyword, savedDate)  #사용자가 등록한 사전 적용
             logger.info(identification + '사용자가 등록한 사전을 적용했습니다.')
         except Exception as e:
-            ogger.error(identification+ "사용자 사전 적용에 실패했습니다.")
-            return False, e
+            err = traceback.format_exc()
+            logger.error(identification+ "사용자 사전 적용에 실패했습니다." + str(err))
+            return False, str(e)
     else:
         logger.info(identification + 'default 사전을 적용합니다.')
         compound_file = getCompound("default","", "")  # 지정해놓은 default 사용자사전 적용
@@ -374,6 +382,7 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
             for line in file_data: 
                 f.write(line)
     except Exception as e:
+        logger.info(identification + "파일 열기 오류 세부사항: " + str(err))
         return False, "파일 열기 오류  세부사항: "+ str(e)
 
     class cd:
@@ -390,7 +399,7 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
     with cd("~/TIBigdataMiddleware/TextMining/mecab-ko-dic-2.1.1-20180720"):
         
         #subprocess.call("ls")
-        print("\n<<add-userdic.sh>>")
+        logger.info(identification + "\n<<add-userdic.sh>>")
         subprocess.call("ls")
 
         # subprocess.run('./autogen.sh')
@@ -399,7 +408,7 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
         subprocess.run("./tools/add-userdic.sh") #####error my-dic.csv을 메캅ko안에 
         subprocess.call("ls")
 
-        print("\n<<make install>>")
+        logger.info(identification + "\n<<make install>>")
         subprocess.call(["make", "install", 'DESTDIR=../userlocallibmecab/'])
     
     # usr 권한이 없어 사용 불가능하기 때문에, /home/dapi2/TIBigdataMiddleware/TextMining/userlocallibmecab 을 새로 만들고 사용
@@ -409,7 +418,6 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
     #success, doc = stop_syn(email, keyword, savedDate, mecab, wordclass)
     success, doc = stop_syn_add_title(email, keyword, savedDate, mecab, wordclass, stopwordTF, synonymTF)
 
-    
     # print("전처리 결과: ", doc['content'][0][1700:1900]) #동사, 형용사 --> 추출한 개수가 적기 때문에 출력안됨
     #print("전처리 결과 [0]번째 doc: ", doc[0][1700:1800])
     #print("전처리 결과 [1]번째 doc: ", doc[1][1700:1800])
@@ -431,7 +439,7 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
 
         for user_word in com_df['단어']:
             if not (user_word in alltokens):
-                print(user_word, 'is missing')
+                logger.error(user_word + 'is missing')
         
         # Mongodb 저장
         client=MongoClient(host='localhost',port=27017)
@@ -452,10 +460,20 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
         }
         db.preprocessing.insert(mdoc)
 
-        print('MongoDB에 저장 되었습니다.')
+        logger.info(identification + 'MongoDB에 저장 되었습니다.')
     else:
         return success, doc
-    return success, doc['content'][0][:100] #전체 형태소 분석한 단어들의 목록 (kubic 미리보기에 뜨도록)
+    return_mdoc={
+        "userEmail" : email,
+        "keyword" : keyword,
+        "savedDate": savedDate,
+        "processedDate": str(datetime.datetime.now()),
+        "nTokens" : nTokens,
+        "tokenList" : list(doc['content'][0][0:100]),
+        "titleList" : list(doc['title']),
+        "addTitle" : "Yes"
+        }
+    return success, return_mdoc #전체 형태소 분석한 단어들의 목록 (kubic 미리보기에 뜨도록) --> 출력 형태 변경
 
 #compound_add_text("21800409@handong.edu", "통일", "2021-08-06T11:52:05.706Z", "010", False, False, False)
 

@@ -13,7 +13,7 @@ def getMyDocByEmail2(email, keyword, savedDate):
     try:
         savedDate = datetime.datetime.strptime(savedDate, "%Y-%m-%dT%H:%M:%S.%fZ") 
     except Exception as e:
-        return 'failed', "getMyDocByEmail2: savedDate가 형식에 맞지 않습니다.  " + str(e)
+        return ('failed', "getMyDocByEmail2: savedDate가 형식에 맞지 않습니다.  " + str(e))
     #print(savedDate)
 
     doc = db.mydocs.find_one({"userEmail": email})
@@ -27,7 +27,7 @@ def getMyDocByEmail2(email, keyword, savedDate):
                 #print("저장된 도큐먼트 id: ", docList[idx]['savedDocHashKeys'])
                 return docList[idx]['savedDocHashKeys']
     except Exception as e:
-        return 'failed', "getMyDocByEmail2: mongo에 내보관함 데이터가 없습니다. " + str(e)
+        return ('failed', "getMyDocByEmail2: mongo에 내보관함 데이터가 없습니다. " + str(e))
 
 #getMyDocByEmail2('21600280@handong.edu', '북한', "2021-07-08T11:46:03.973Z")
 #getMyDocByEmail2('21800409@handong.edu', '북한', "2021-08-04T03:48:54.395Z")
