@@ -54,8 +54,8 @@ def kmeans(email, keyword, savedDate, optionList, analysisName):
 
     except Exception as e:
         err = traceback.format_exc()
-        logger.error(identification+"빈도수분석 정보를 찾을 수 없습니다. 빈도수분석을 먼저 진행해주시기 바랍니다. \n"+str(err))
-        return "failed", "빈도수분석 정보를 찾을 수 없습니다. 빈도수분석을 먼저 진행해주시기 바랍니다. 세부사항:" + str(e)
+        logger.error(identification+"전처리 정보를 가져오는데 실패하였습니다. \n"+str(err))
+        return "failed", "전처리 정보를 가져오는데 실패하였습니다. 세부사항:" + str(e)
 
     try:
         logger.info(identification+"벡터화를 실시합니다.")

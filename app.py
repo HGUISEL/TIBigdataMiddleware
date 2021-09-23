@@ -232,14 +232,25 @@ def textmining():
 
     # for semanticNetworkAnalysis
     elif analysisName == 'network':
-        linkStrength = data['option2']
-        print("의미연결망 분석을 시작합니다\n")
+        try:
+            linkStrength = data['option2']
+            if linkStrength == None:
+                raise Exception("option2가 비어있습니다!")
+        except Exception as e:
+            err = traceback.format_exc()
+            app.logger.error(identification+"request 키 에러입니다. request에 다음과 같은 키가 존재하지 않습니다. \n:"+str(err))
+            resultDic = {'returnCode': 400, 'errMsg': "request 키 에러입니다. request에 다음과 같은 키가 존재하지 않습니다. \n:"+str(e)}
+
+        app.logger.info(identification + "의미연결망 분석 시작" )
         result_graph, result_table = semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName, linkStrength)
-        print("\n의미연결망 분석 결과\n")
-        
-        resultDic = {#'returnDate' : datetime.datetime.now(), 
-        'activity' : analysisName, 'email' : email,
-        'keyword' : keyword, 'savedDate' : savedDate, 'optionList' : optionList, 'result_table' : result_table, 'result_graph': result_graph}
+
+        if result_graph == "failed":
+            app.logger.error(identification + "의미연결망 분석 실패")
+            resultDic = {'returnCode': 400, 'errMsg': "의미연결망 분석 실패 \n"+ result_table}
+        else:
+            resultDic = {'returnCode': 200,  #'returnDate' : datetime.datetime.now(), 
+            'activity' : analysisName, 'email' : email,
+            'keyword' : keyword, 'savedDate' : savedDate, 'optionList' : optionList, 'result_table' : result_table, 'result_graph': result_graph}
     
     # for kmeans
     elif analysisName == 'kmeans':
