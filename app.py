@@ -72,6 +72,7 @@ CORS(app, support_credentials=True)
 
 ##############loging####################
 import logging
+import traceback
 
 log_filename = "kubic_flask_" + str(datetime.datetime.now()) + ".log"
 logging.basicConfig(filename = "log_flask/"+log_filename, level=logging.INFO, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
@@ -137,9 +138,10 @@ def preprocessing():
             compoundTF = data['compound']
         else: return 'GET result' # 지영수정
 
-    except KeyError as err:
+    except KeyError as e:
+        err = traceback.format_exc()
         app.logger.error(identification+"request 키 에러입니다. request에 다음과 같은 키가 존재하지 않습니다. \n:"+str(err))
-        resultDic = {'returnCode': 400, 'errMsg': "request 키 에러입니다. request에 다음과 같은 키가 존재하지 않습니다. \n:"+str(err)}
+        resultDic = {'returnCode': 400, 'errMsg': "request 키 에러입니다. request에 다음과 같은 키가 존재하지 않습니다. \n:"+str(e)}
         return json.dumps(resultDic, ensure_ascii=False, default=json_util.default)
 
 
@@ -156,14 +158,13 @@ def preprocessing():
         return jsonify({'returnCode': 400, 'errMsg': "전처리에 실패하였습니다. \n 실패사유:" + result_add_title[1]})
     #print("전처리 결과\n", result[0], result[1])
 
-    if result_add_title[0] == False: #사용자사전 format안맞을 때
-        resultDic = {'returnCode':'400', 'errMsg':result_add_title[1], #'returnDate' : datetime.datetime.now(), 
-'activity' : 'preprocessing', 'email' : email, 'keyword' : keyword, 'savedDate' : savedDate}
-        app.logger.info(identification+ "전처리가 완료되었습니다")
-        return json.dumps(resultDic, ensure_ascii=False, default=json_util.default)
+    # if result_add_title[0] == False: #사용자사전 format안맞을 때
+    #     resultDic = {'returnCode': 400, 'errMsg': ""result_add_title[1]}
+    #     app.logger.info(identification+ "전처리가 완료되었습니다")
+    #     return json.dumps(resultDic, ensure_ascii=False, default=json_util.default)
     else:
-        resultDic = {#'returnDate' : datetime.datetime.now(), 
-'activity' : 'preprocessing', 'email' : email, 'keyword' : keyword, 'result' : result_add_title[1], 'savedDate' : savedDate}
+        resultDic = {'returnCode': 200, 
+        'activity' : 'preprocessing', 'email' : email, 'keyword' : keyword, 'result' : result_add_title[1], 'savedDate' : savedDate}
         app.logger.info(identification+ "전처리가 완료되었습니다")
         return json.dumps(resultDic, ensure_ascii=False, default=json_util.default)
 
@@ -179,24 +180,24 @@ def textmining():
 
     #21.08.11 app=Flask(__name__)
     #21.08.11 app.config['JSONIFY_PRETTYPRINT_REGULAR']=True
-    print("************************Textmining************************")
+    # print("************************Textmining************************")
     ### Angular post data
 
     try: 
         # current_app.preprocess_request()
         if request.method == 'POST':
             data = request.json 
-            print(data)
+            identification = str(data['userEmail'])+'_'+'textmining'+'_'+str(data['savedDate'])+"// "
             email = data['userEmail']
             keyword = data['keyword']
             savedDate = data['savedDate']
-            optionList = data['option']
+            optionList = data['option1']
             analysisName = data['analysisName']
         else: return 'GET result'
     except Exception as e :
-        resultDic = {
-            "result": e
-        }
+        err = traceback.format_exc()
+        app.logger.error(identification+"request 키 에러입니다. request에 다음과 같은 키가 존재하지 않습니다. \n:"+str(err))
+        resultDic = {'returnCode': 400, 'errMsg': "request 키 에러입니다. request에 다음과 같은 키가 존재하지 않습니다. \n:"+str(e)}
         return json.dumps(resultDic, default=json_util.default, ensure_ascii=False)
 
 
@@ -206,11 +207,17 @@ def textmining():
 
 
     if analysisName == 'count':
-        print("빈도수 분석을 시작합니다\n")
+        app.logger.info(identification + "빈도수 분석 시작")
         result_table, result_graph = word_count(email, keyword, savedDate, optionList, analysisName)
-        resultDic = {#'returnDate' : datetime.datetime.now(), 
-        'activity' : analysisName, 'email' : email, 
-        'keyword' : keyword, 'savedDate' : savedDate, 'optionList' : optionList, 'result_table' : result_table, 'result_graph': result_graph}
+        if result_table == 'failed':
+            app.logger.error(identification + "빈도수 분석 실패")
+            resultDic = {'returnCode': 400, 'errMsg': "빈도수 분석 실패 \n"+ result_graph}
+        else:
+            app.logger.error(identification + "빈도수 분석 성공")
+            resultDic = {'returnCode': 200, #'returnDate' : datetime.datetime.now(), 
+            'activity' : analysisName, 'email' : email, 
+            'keyword' : keyword, 'savedDate' : savedDate, 'optionList' : optionList, 'result_table' : result_table, 'result_graph': result_graph}
+
     
     elif analysisName == 'tfidf':
         print("tfidf 분석을 시작합니다\n")

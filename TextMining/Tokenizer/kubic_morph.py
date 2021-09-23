@@ -22,7 +22,7 @@ from konlpy.tag import Kkma
 
 import logging
 import traceback
-logger = logging.getLogger("flask.app.kmeans")
+logger = logging.getLogger("flask.app.morph")
 
 # 전처리 & 불용어사전적용
 def stop_syn(email, keyword, savedDate, mecab, wordclass, stopwordTF, synonymTF):
@@ -382,6 +382,7 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
             for line in file_data: 
                 f.write(line)
     except Exception as e:
+        err = traceback.format_exc()
         logger.info(identification + "파일 열기 오류 세부사항: " + str(err))
         return False, "파일 열기 오류  세부사항: "+ str(e)
 
