@@ -196,6 +196,7 @@ def textmining():
         else: return 'GET result'
     except Exception as e :
         err = traceback.format_exc()
+        identification = str(data['userEmail'])+'_'+'textmining'+'_'+str(data['savedDate'])+"// "
         app.logger.error(identification+"request 키 에러입니다. request에 다음과 같은 키가 존재하지 않습니다. \n:"+str(err))
         resultDic = {'returnCode': 400, 'errMsg': "request 키 에러입니다. request에 다음과 같은 키가 존재하지 않습니다. \n:"+str(e)}
         return json.dumps(resultDic, default=json_util.default, ensure_ascii=False)
