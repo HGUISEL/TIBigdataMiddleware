@@ -22,6 +22,8 @@ from collections import defaultdict
 import logging
 import traceback
 
+import operator
+
 logger = logging.getLogger("flask.app.tfidf")
 
 
@@ -61,7 +63,7 @@ def tfidf(email, keyword, savedDate, optionList, analysisName):
         #df_T = df_T[['word', 'rate']]
         
         tfidf_dict = dict(df_T)
-
+        tfidf_dict = dict(sorted(tfidf_dict.items(), reverse=True, key=lambda item: item[1]))
         list_graph = list()
 
         for key, value in tfidf_dict.items():
@@ -150,4 +152,4 @@ def tfidf(email, keyword, savedDate, optionList, analysisName):
     '''
     return tfidf_dict, list_graph
 
-#tfidf('21600280@handong.edu', '통일', "2021-08-06T11:52:05.706Z", 100, 'tfidf')
+# tfidf('21800520@handong.edu', '통일', "2021-09-07T06:59:01.626Z", 100, 'tfidf')
