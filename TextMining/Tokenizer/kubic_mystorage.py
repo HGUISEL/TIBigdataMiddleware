@@ -118,7 +118,10 @@ def getPreprocessingAddTitle(email, keyword, savedDate, optionList):
 def getCount(email, keyword, savedDate, optionList):
     # for analysisDate : datetime.datetime.strptime(savedDate[:-1], "%Y-%m-%d %H:%M:%S.%f"
     doc = dbTM.count.find_one({"userEmail":email, "keyword":keyword, "savedDate": savedDate})
+    if doc is None:
+        return None
     print(doc["_id"]) # 카운트가 없으면 먼저 카운트 하라고 말해줘야함.
+
     try:
         str(doc['resultJson'])
         return doc['resultJson'], doc['nTokens']

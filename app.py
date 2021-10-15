@@ -154,7 +154,7 @@ def preprocessing():
     # result = compound(email, keyword, savedDate, wordclass, stopwordTF, synonymTF, compoundTF)
     result_add_title = compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymTF, compoundTF)
     if result_add_title[0] == False:
-        app.logger.error(identification+ "전처리에 실패아혔습니다. \n 실패사유:" + result_add_title[1])
+        app.logger.error(identification+ "전처리에 실패하였습니다. \n 실패사유:" + result_add_title[1])
         return jsonify({'returnCode': 400, 'errMsg': "전처리에 실패하였습니다. \n 실패사유:" + result_add_title[1]})
     #print("전처리 결과\n", result[0], result[1])
 
@@ -251,7 +251,7 @@ def textmining():
         else:
             resultDic = {'returnCode': 200,  #'returnDate' : datetime.datetime.now(), 
             'activity' : analysisName, 'email' : email,
-            'keyword' : keyword, 'savedDate' : savedDate, 'optionList' : optionList, 'result_table' : result_table, 'result_graph': result_graph}
+            'keyword' : keyword, 'savedDate' : savedDate, 'option1' : optionList, "option2" : linkStrength, 'result_table' : result_table, 'result_graph': result_graph}
     
     # for kmeans
     elif analysisName == 'kmeans':

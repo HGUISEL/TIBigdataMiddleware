@@ -34,7 +34,13 @@ def tfidf(email, keyword, savedDate, optionList, analysisName):
         corpus = search_in_mydoc2(email, keyword, savedDate)['all_content'].tolist()    #문장으로 이루어진 doc
         nTokens = optionList
         #print("corpus\n", corpus, "\nNumber of Doc: ",len(corpus))
-        top_words = getCount(email, keyword, savedDate, optionList)[0]
+        top_words = getCount(email, keyword, savedDate, optionList)
+        if top_words is None:
+            logger.info(identification+"빈도수 분석 정보가 없습니다. 빈도수 분석을 먼저 실시합니다. ")
+            word_count(email, keyword, savedDate, optionList, "wordcount")
+            top_words = getCount(email, keyword, savedDate, optionList)[0]
+        else:
+            top_words = top_words[0]
         top_words = json.loads(top_words)
     
     except Exception as e:
