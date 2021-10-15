@@ -38,8 +38,13 @@ logger = logging.getLogger("flask.app.kmeans")
 #logging.basicConfig(filename = "kmeans_debug.log", level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
 
 def kmeans(email, keyword, savedDate, optionList, analysisName):
+    identification = str(email)+'_'+analysisName+'_'+str(savedDate)+"// "
+
+    if (str(type(int(optionList))) != "<class 'int'>" ):
+        logger.info(identification + "군집수는 양의 정수여야 합니다" + str(type(int(optionList))))
+        return "failed", "군집수는 양의 정수이어야 합니다. "
+    
     try:
-        identification = str(email)+'_'+analysisName+'_'+str(savedDate)+"// "
         logger.info(identification + "빈도수분석 정보를 가져옵니다.")
         top_words = getCount(email, keyword, savedDate, optionList)
         if top_words is None:

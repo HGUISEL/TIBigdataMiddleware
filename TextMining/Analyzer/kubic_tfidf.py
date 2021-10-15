@@ -29,6 +29,9 @@ logger = logging.getLogger("flask.app.tfidf")
 
 def tfidf(email, keyword, savedDate, optionList, analysisName):
     identification = str(email)+'_'+analysisName+'_'+str(savedDate)+"// "
+    if str(type(int(optionList))) != "<class 'int'>":
+        logger.info(identification + "분석할 단어수는 양의 정수여야 합니다" + str(type(int(optionList))))
+        return "failed", "분석할 단어수는 양의 정수이어야 합니다. "
     try:
         logger.info(identification + "분석에 필요한 데이터를 가져옵니다.")
         corpus = search_in_mydoc2(email, keyword, savedDate)['all_content'].tolist()    #문장으로 이루어진 doc

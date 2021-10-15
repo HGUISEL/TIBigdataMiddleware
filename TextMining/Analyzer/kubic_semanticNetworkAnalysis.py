@@ -53,8 +53,18 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName,
     '''
     graph json 만들기
     '''
+    identification = str(email)+'_'+analysisName+'_'+str(savedDate)+"// "
+    
+    if (str(type(int(optionList))) != "<class 'int'>" ):
+        logger.info(identification + "분석할 단어수는 양의 정수여야 합니다" + str(type(int(optionList))))
+        return "failed", "분석할 단어수는 양의 정수이어야 합니다. "
+    
+    if str(type(int(linkStrength))) != "<class 'int'>" or not ( 0 <= int(linkStrength) <= 100):
+        logger.info(identification + "연결강도는 0~100 사이의 양의 정수여야 합니다" + str(type(int(optionList))))
+        return "failed", "연결강도는 0~100 사이의 양의 정수여야 합니다 "
+
+
     try:
-        identification = str(email)+'_'+analysisName+'_'+str(savedDate)+"// "
         logger.info(identification + "빈도수분석 정보를 가져옵니다.")
         top_words = getCount(email, keyword, savedDate, optionList)
         if top_words is None:
