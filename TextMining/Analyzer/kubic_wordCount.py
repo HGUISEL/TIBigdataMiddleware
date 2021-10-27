@@ -27,10 +27,17 @@ def word_count(email, keyword, savedDate, optionList, analysisName):
     # mongo에서 전처리 결과 가져오기
     identification = str(email)+'_'+analysisName+'_'+str(savedDate)+"// "
 
-    if str(type(int(optionList))) != "<class 'int'>":
-        logger.info(identification + "분석할 단어수는 양의 정수여야 합니다" + str(type(int(optionList))))
-        return "failed", "분석할 단어수는 양의 정수이어야 합니다. "
+    try:
+        int(optionList)
+        if not(0 <= int(optionList)):
+            raise Exception("분석할 단어수는 양의 정수여야 합니다. 입력된 값: "+ str(optionList))
 
+    except Exception as e:
+        err = traceback.format_exc()
+        #logger.info(identification + "분석할 단어수는 양의 정수여야 합니다" +str(err))
+        print(identification + "분석할 단어수는 양의 정수여야 합니다" +str(err))
+        return "failed", "분석할 단어수는 양의 정수이어야 합니다. "
+        
     logger.info(identification+ "전처리 내용을 가져옵니다.")
 
     doc, nTokens = getPreprocessing(email, keyword, savedDate, optionList)
@@ -164,4 +171,4 @@ def word_count(email, keyword, savedDate, optionList, analysisName):
     
     return dict_words, list_graph
  
-#word_count('21600280@handong.edu', '북한', "2021-07-08T11:46:03.973Z", 100, 'count')
+word_count('21600280@handong.edu', '북한', "2021-07-08T11:46:03.973Z", 100, 'count')
