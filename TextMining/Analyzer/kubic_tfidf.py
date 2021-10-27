@@ -36,8 +36,8 @@ def tfidf(email, keyword, savedDate, optionList, analysisName):
             raise Exception("분석할 단어수는 양의 정수여야 합니다 입력된 값:" + str(optionList))
     except Exception as e:
         err = traceback.format_exc()
-        #logger.info(identification + "분석할 단어수는 양의 정수여야 합니다" + str(err))
-        print(identification + "분석할 단어수는 양의 정수여야 합니다" + str(err))
+        logger.info(identification + "분석할 단어수는 양의 정수여야 합니다" + str(err))
+        #print(identification + "분석할 단어수는 양의 정수여야 합니다" + str(err))
         return "failed", "분석할 단어수는 양의 정수이어야 합니다. "
     try:
         logger.info(identification + "분석에 필요한 데이터를 가져옵니다.")
@@ -168,4 +168,4 @@ def tfidf(email, keyword, savedDate, optionList, analysisName):
     '''
     return tfidf_dict, list_graph
 
-tfidf('21800520@handong.edu', '통일', "2021-09-07T06:59:01.626Z", "-100", 'tfidf')
+#tfidf('21800520@handong.edu', '통일', "2021-09-07T06:59:01.626Z", "-100", 'tfidf')
