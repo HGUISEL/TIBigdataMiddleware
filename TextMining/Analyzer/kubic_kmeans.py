@@ -39,10 +39,16 @@ logger = logging.getLogger("flask.app.kmeans")
 
 def kmeans(email, keyword, savedDate, optionList, analysisName):
     identification = str(email)+'_'+analysisName+'_'+str(savedDate)+"// "
+    try:
+        int(optionList)
+        if not(0 <= int(optionList)):
+            raise Exception("군집수는 양의 정수여야 합니다. 입력된 값: "+ str(optionList))
 
-    if (str(type(int(optionList))) != "<class 'int'>" ):
-        logger.info(identification + "군집수는 양의 정수여야 합니다" + str(type(int(optionList))))
-        return "failed", "군집수는 양의 정수이어야 합니다. "
+    except Exception as e:
+        err = traceback.format_exc()
+        #logger.info(identification + "분석할 단어수는 양의 정수여야 합니다" +str(err))
+        print(identification + "군집수는 양의 정수여야 합니다" +str(err))
+        return "failed", "군집수는 양의 정수여야 합니다. "
     
     try:
         logger.info(identification + "빈도수분석 정보를 가져옵니다.")
@@ -161,4 +167,4 @@ def kmeans(email, keyword, savedDate, optionList, analysisName):
     return True, textPCAList
 
 
-# kmeans('21800520@handong.edu', '북한', "2021-08-10T10:59:29.974Z", 3, 'kmeans')
+#kmeans('21800520@handong.edu', '북한', "2021-08-10T10:59:29.974Z", 3, 'kmeans')
