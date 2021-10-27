@@ -55,12 +55,24 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName,
     '''
     identification = str(email)+'_'+analysisName+'_'+str(savedDate)+"// "
     
-    if (str(type(int(optionList))) != "<class 'int'>" ):
-        logger.info(identification + "분석할 단어수는 양의 정수여야 합니다" + str(type(int(optionList))))
+    try:
+        int(optionList)
+        if not(0 <= int(optionList)):
+            raise Exception("분석할 단어수는 양의 정수여야 합니다. 입력된 값: "+ str(optionList))
+    except Exception as e:
+        err = traceback.format_exc()
+        #logger.info(identification + "분석할 단어수는 양의 정수여야 합니다" +str(err))
+        print(identification + "분석할 단어수는 양의 정수여야 합니다" +str(err))
         return "failed", "분석할 단어수는 양의 정수이어야 합니다. "
     
-    if str(type(int(linkStrength))) != "<class 'int'>" or not ( 0 <= int(linkStrength) <= 100):
-        logger.info(identification + "연결강도는 0~100 사이의 양의 정수여야 합니다" + str(type(int(optionList))))
+    try:
+        int(linkStrength)
+        if not(0 <= int(linkStrength) <= 100):
+            raise Exception("연결강도는 0~100 사이의 양의 정수여야 합니다")
+    except Exception as e:
+        err = traceback.format_exc()
+        print(identification + "연결강도는 0~100 사이의 양의 정수여야 합니다" +str(err))
+        #logger.info(identification + "연결강도는 0~100 사이의 양의 정수여야 합니다" +str(err))
         return "failed", "연결강도는 0~100 사이의 양의 정수여야 합니다 "
 
 
@@ -225,4 +237,4 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName,
 
 
 #semanticNetworkAnalysis('21600280@handong.edu', '북한', "2021-07-08T11:46:03.973Z", 100, 'tfidf')
-#semanticNetworkAnalysis('21800520@handong.edu', '북한', "2021-08-10T10:59:29.974Z", 100, 'network', 50)
+semanticNetworkAnalysis('21800520@handong.edu', '북한', "2021-08-10T10:59:29.974Z", "100", 'network', 10000)
