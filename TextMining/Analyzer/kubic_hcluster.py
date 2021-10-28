@@ -103,55 +103,59 @@ def create_tree(linked):
     return tree
 
 def hcluster(email, keyword, savedDate, optionList, analysisName, treeLevel):
-    top_words = json.loads(getCount(email, keyword, savedDate, optionList)[0])
-    preprocessed = getPreprocessing(email, keyword, savedDate, optionList)[0]
+    try:
+        top_words = json.loads(getCount(email, keyword, savedDate, optionList)[0])
+        preprocessed = getPreprocessing(email, keyword, savedDate, optionList)[0]
 
-    logger.info("mongodb에서 전처리 내용을 가져왔습니다.")
-    logger.debug(len(preprocessed[1]))
+        logger.info("mongodb에서 전처리 내용을 가져왔습니다.")
+        logger.debug(len(preprocessed[1]))
 
-    vec = CountVectorizer(analyzer = lambda x:x) # list형태를 input받을 수 있도록 함
+        vec = CountVectorizer(analyzer = lambda x:x) # list형태를 input받을 수 있도록 함
 
-    x = vec.fit_transform(preprocessed)
-    df = pd.DataFrame(x.toarray(), columns=vec.get_feature_names())
+        x = vec.fit_transform(preprocessed)
+        df = pd.DataFrame(x.toarray(), columns=vec.get_feature_names())
 
-    # https://observablehq.com/@d3/scatterplot-with-shapes
+        # https://observablehq.com/@d3/scatterplot-with-shapes
 
-    cluster=AgglomerativeClustering(None, distance_threshold=0)
-    # logger.debug(cluster.fit_predict(df))
+        cluster=AgglomerativeClustering(None, distance_threshold=0)
+        # logger.debug(cluster.fit_predict(df))
 
-    # clusterDict = dict()
-    
-    model = cluster.fit(df)
-    logger.debug(model)
-    # plot the top three levels of the dendrogram
-    linkage_matrix = plot_dendrogram(model, truncate_mode='level', p=5)
+        # clusterDict = dict()
+        
+        model = cluster.fit(df)
+        logger.debug(model)
+        # plot the top three levels of the dendrogram
+        linkage_matrix = plot_dendrogram(model, truncate_mode='level', p=5)
 
-    result = create_tree(linkage_matrix)
+        result = create_tree(linkage_matrix)
 
-    logger.debug(result)
-
-
-    logger.info("MongoDB에 데이터를 저장합니다.")
-    
-    client=MongoClient(host='localhost',port=27017)
-    db=client.textMining
-
-    doc={
-        "userEmail" : email,
-        "keyword" : keyword,
-        "savedDate": savedDate,
-        "analysisDate" : datetime.datetime.now(),
-        #"duration" : ,
-        "result" : result,
-        #"resultCSV":
-    }
-
-    db.hcluster.insert_one(doc) 
-
-    logger.info("MongoDB에 저장되었습니다.")
-
-    return result
+        logger.debug(result)
 
 
+        # logger.info("MongoDB에 데이터를 저장합니다.")
+        
+        # client=MongoClient(host='localhost',port=27017)
+        # db=client.textMining
 
-# hcluster('21800520@handong.edu', '북한', "2021-08-10T10:59:29.974Z", 100, 'hcluster', 3)
+        # doc={
+        #     "userEmail" : email,
+        #     "keyword" : keyword,
+        #     "savedDate": savedDate,
+        #     "analysisDate" : datetime.datetime.now(),
+        #     #"duration" : ,
+        #     "result" : result,
+        #     #"resultCSV":
+        # }
+
+        # db.hcluster.insert_one(doc) 
+
+        # logger.info("MongoDB에 저장되었습니다.")
+        return True, result 
+    except Exception as e:
+        import traceback
+        err = traceback.format_exc()
+        return False, err
+
+
+
+#hcluster('21800520@handong.edu', '북한', "2021-08-10T10:59:29.974Z", 100, 'hcluster', 3)
