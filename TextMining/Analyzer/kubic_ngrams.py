@@ -28,76 +28,106 @@ import logging
 
 logger = logging.getLogger("flask.app.ngrams")
 
-# logger = logging.getLogger()
-# logging.basicConfig(level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
+#logger = logging.getLogger()
+#logging.basicConfig(level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
 
-def ngrams(email, keyword, savedDate, optionList, analysisName, n):
+def filter_links(edges, matrix, linkStrength, minWeight, maxWeight):
+    if linkStrength == 100 or minWeight == maxWeight:
+        edgeList = list()
+        for s,t in edges:
+            edgeDict = dict()
+            edgeDict["source"] = int(s)
+            edgeDict["target"] = int(t) 
+            edgeDict["weight"] = int(matrix[s][t])
+            edgeList.append(edgeDict)
+        logger.debug(str(len(edgeList)))
+        return edgeList
+    elif linkStrength == 0:
+        return None
+    else:
+        strengthVal = ( maxWeight - minWeight ) * (int(linkStrength) / 100) 
+        edgeList = list()
+        for s,t in edges:
+            edgeDict = dict()
+            edgeDict["source"] = int(s)
+            edgeDict["target"] = int(t) 
+            if int(matrix[s][t]) > strengthVal + minWeight:
+                edgeDict["weight"] = int(matrix[s][t])
+                edgeList.append(edgeDict)
+
+        logger.debug(str(minWeight)+" "+str(maxWeight)+" "+str(strengthVal)+" "+str(len(edgeList)))
+        return edgeList
+
+def ngrams(email, keyword, savedDate, optionList, analysisName, n, linkStrength):
     logger.info("ngram start")
+    try:
+        preprocessed = getPreprocessing(email, keyword, savedDate, optionList)[0]
+        n = int(n)
+        optionList = int(optionList)
+        bglist = []
+        for sentence in preprocessed:
+            bglist += list(nltk.ngrams(sentence, n))
 
-    preprocessed = getPreprocessing(email, keyword, savedDate, optionList)[0]
+        bgCountDict = Counter(bglist)
+
+        sortedBgCountDict = dict(sorted(bgCountDict.items(), key=operator.itemgetter(1), reverse=True))
+        sortedBgCountList = list(sortedBgCountDict.items())
+        #logger.debug(sortedBgCountList[0:optionList])
+        
+        top_words = dict(sortedBgCountList[0:optionList])
+        #logger.debug(enumerate(top_words.keys()))
+        
+        wordList = list()
+
+        for ngram in top_words.keys():
+            for word in ngram:
+                if word not in wordList:
+                    wordList.append(word)
+
+
+        wordToid = {w:i for i, w in enumerate(wordList)}
+        idToWord = {i:w for i, w in enumerate(wordList)}
+
+
+        adjacent_matrix = np.zeros((len(wordList), len(wordList)), int)
+
+        for ngram,ngram_count in top_words.items():
+            for i in range(len(ngram)-1):
+                c = wordToid[ngram[i]]
+                r = wordToid[ngram[i+1]]
+                adjacent_matrix[c][r] += ngram_count
+        network = nx.from_numpy_matrix(adjacent_matrix)
+
+
+        jsonDict = dict()
+        nodeList = list()
+        for n in network.nodes:
+            nodeDict = dict()
+            wrd = idToWord[n]
+            nodeDict["id"] = int(n)
+            nodeDict["name"] = wrd
+
+            nodeList.append(nodeDict)
+        
+        jsonDict["nodes"] = nodeList
+
+        edgeList = list()
+        for s,t in network.edges:
+            edgeDict = dict()
+            edgeDict["source"] = int(s)
+            edgeDict["target"] = int(t)
+            edgeDict["weight"] = int(adjacent_matrix[s][t])
+            edgeList.append(edgeDict)
+        
+        jsonDict["links"] = filter_links(network.edges, adjacent_matrix, linkStrength, np.min(adjacent_matrix[adjacent_matrix>0]), np.max(adjacent_matrix))
+
+        logger.debug(jsonDict)
+        #print(jsonDict)
+        return True, jsonDict
+    except Exception as e :
+        import traceback
+        err = traceback.format_exc()
+        return False, err
     
-    bglist = []
-    for sentence in preprocessed:
-        bglist += list(nltk.ngrams(sentence, n))
-    bgCountDict = Counter(bglist)
 
-    sortedBgCountDict = dict(sorted(bgCountDict.items(), key=operator.itemgetter(1), reverse=True))
-
-    top_words = dict()
-    i = 0
-    for key, v in sortedBgCountDict.items():
-      if v > 1 and i < int(optionList):
-        for word in key:
-            if word in top_words.keys():
-                top_words[word] += 1
-            else:
-                top_words[word] = 1
-        logger.debug(str(key) + str(v))
-        i += 1
-
-    logger.debug(top_words)
-
-    wordToId = {w:i for i, w in enumerate(top_words.keys())}
-    idToWord = {i:w for i, w in enumerate(top_words.keys())}
-
-    adjacent_matrix = np.zeros((len(top_words.keys()), len(top_words.keys())), int)
-
-    for ngram in bgCountDict.keys():
-        for wi, i in wordToId.items():
-            if wi in ngram:
-                for wj, j in wordToId.items():
-                    if i !=j and wj in ngram:
-                        adjacent_matrix[i][j] +=1
-
-    network = nx.from_numpy_matrix(adjacent_matrix)
-
-
-    jsonDict = dict()
-    nodeList = list()
-    for n in network.nodes:
-        nodeDict = dict()
-        wrd = idToWord[n]
-        nodeDict["id"] = int(n)
-        nodeDict["name"] = wrd
-        nodeDict["count"] = top_words[wrd]
-
-        nodeList.append(nodeDict)
-    
-    jsonDict["nodes"] = nodeList
-
-    edgeList = list()
-    for s,t in network.edges:
-        edgeDict = dict()
-        edgeDict["source"] = int(s)
-        edgeDict["target"] = int(t)
-        edgeDict["weight"] = int(adjacent_matrix[s][t])
-        edgeList.append(edgeDict)
-    
-    jsonDict["links"] = edgeList
-
-    logger.debug(jsonDict)
-
-    return jsonDict
-    
-
-# ngrams('21600280@handong.edu', '북한', "2021-07-08T11:46:03.973Z", 50, 'tfidf', 3)
+#ngrams('21800520@handong.edu', '북한', "2021-08-10T10:59:29.974Z", 10, 'tfidf', 3, 100)
