@@ -34,19 +34,24 @@ def word_count(email, keyword, savedDate, optionList, analysisName):
 
     except Exception as e:
         err = traceback.format_exc()
-        #logger.info(identification + "분석할 단어수는 양의 정수여야 합니다" +str(err))
-        print(identification + "분석할 단어수는 양의 정수여야 합니다" +str(err))
+        logger.info(identification + "분석할 단어수는 양의 정수여야 합니다" +str(err))
+        #print(identification + "분석할 단어수는 양의 정수여야 합니다" +str(err))
         return "failed", "분석할 단어수는 양의 정수이어야 합니다. "
-        
-    logger.info(identification+ "전처리 내용을 가져옵니다.")
+    try:
+        logger.info(identification+ "전처리 내용을 가져옵니다.")
+        doc, nTokens = getPreprocessing(email, keyword, savedDate, optionList)
+        if doc == "failed":
+            return doc, nTokens
+        else:
+            doc = sum(doc, []) # 중첩리스트 하나로 합치기
+            logger.info(identification+ "전처리 내용을 성공적으로 가져왔습니다.")
+            #print(doc, nTokens)    
+    except Exception as e:
+        err = traceback.format_exc()
+        logger.info(identification + "전처리 내용을 가져오는데 실패했습니다." +str(err))
+        #print(identification + "분석할 단어수는 양의 정수여야 합니다" +str(err))
+        return "failed", "전처리 내용을 가져오는데 실패했습니다. " + str(e)
 
-    doc, nTokens = getPreprocessing(email, keyword, savedDate, optionList)
-    if doc == "failed":
-        return doc, nTokens
-    else:
-        doc = sum(doc, []) # 중첩리스트 하나로 합치기
-        logger.info(identification+ "전처리 내용을 성공적으로 가져왔습니다.")
-        #print(doc, nTokens)    
     
     try:
         logger.info(identification+ "전처리 내용을 벡터화 합니다.")
@@ -171,4 +176,4 @@ def word_count(email, keyword, savedDate, optionList, analysisName):
     
     return dict_words, list_graph
  
-word_count('21600280@handong.edu', '북한', "2021-07-08T11:46:03.973Z", 100, 'count')
+#word_count('21600280@handong.edu', '북한', "2021-07-08T11:46:03.973Z", 100, 'count')
