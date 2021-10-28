@@ -16,8 +16,9 @@ def getMyDocByEmail2(email, keyword, savedDate):
         return ('failed', "getMyDocByEmail2: savedDate가 형식에 맞지 않습니다.  " + str(e))
     #print(savedDate)
 
-    doc = db.mydocs.find_one({"userEmail": email})
+    doc = db.mydocs.find({"userEmail": email}).sort("_id", -1).limit(1)
     #print(doc)
+    doc = doc[0]
     docList = []
     try:
         for idx in range(len(doc['keywordList'])):
@@ -106,26 +107,27 @@ def getCompound(email, keyword, savedDate):
 #getCompound("default","", "")
 
 def getPreprocessing(email, keyword, savedDate, optionList):
-    doc = dbTM.preprocessing.find_one({"userEmail":email, "keyword":keyword, "savedDate":savedDate})# saved date issue
-    return doc['tokenList'], doc['nTokens']
+    docs = dbTM.preprocessing.find({"userEmail":email, "keyword":keyword, "savedDate":savedDate}).sort("_id", -1).limit(1)# saved date issue
+    print(docs[0])
+    return docs[0]['tokenList'], docs[0]['nTokens']
 
 def getPreprocessingAddTitle(email, keyword, savedDate, optionList):
-    doc = dbTM.preprocessing.find_one({"userEmail":email, "keyword":keyword, "savedDate":savedDate, "addTitle" : "Yes"})# saved date issue
-    return doc['tokenList'], doc['titleList'], doc['nTokens']
+    doc = dbTM.preprocessing.find({"userEmail":email, "keyword":keyword, "savedDate":savedDate, "addTitle" : "Yes"}).sort("_id", -1).limit(1)# saved date issue
+    return doc[0]['tokenList'], doc[0]['titleList'], doc[0]['nTokens']
 
 #print(getPreprocessing('21600280@handong.edu', '북한', "2021-07-08T11:46:03.973Z", 30)[0])
 
 def getCount(email, keyword, savedDate, optionList):
     # for analysisDate : datetime.datetime.strptime(savedDate[:-1], "%Y-%m-%d %H:%M:%S.%f"
-    doc = dbTM.count.find_one({"userEmail":email, "keyword":keyword, "savedDate": savedDate})
+    doc = dbTM.count.find({"userEmail":email, "keyword":keyword, "savedDate": savedDate}).sort("_id", -1).limit(1)
     if doc is None:
         return None
-    print(doc["_id"]) # 카운트가 없으면 먼저 카운트 하라고 말해줘야함.
+     # 카운트가 없으면 먼저 카운트 하라고 말해줘야함.
 
     try:
-        str(doc['resultJson'])
-        return doc['resultJson'], doc['nTokens']
+        str(doc[0]['resultJson'])
+        return doc[0]['resultJson'], doc[0]['nTokens']
     except:
-        return doc["result_table"], doc['nTokens']
+        return doc[0]["result_table"], doc[0]['nTokens']
 
 #getCount('21800520@handong.edu', '북한', "2021-08-10T10:59:29.974Z", 30)
