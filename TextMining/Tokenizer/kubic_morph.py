@@ -433,6 +433,18 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
     else:
         return success, doc
 
+    try:
+        return_result_list = list()
+        for i in range(len(doc['content'])):
+            if len(doc['content'][i]) < 10:
+                return_result_list.append(doc['content'][i])
+            else:
+                return_result_list.append(doc['content'][i][0:10])
+    except Exception as e:
+        err = traceback.format_exc()
+        logger.info(identification + "return list를 만드는 중에 에러 발생 세부사항: " + str(err))
+        return False, "결과 리스트 생성 도중 오류가 발생하였습니다. 세부사항: "+ str(e)
+
     if success == True:
     # 사용자사전 test code, true일때만
     # 사용자사전: 신조어일 경우, 띄어쓰기로 분리되어 있는 복합어
@@ -464,13 +476,15 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
         logger.info(identification + 'MongoDB에 저장 되었습니다.')
     else:
         return success, doc
+
+
     return_mdoc={
         "userEmail" : email,
         "keyword" : keyword,
         "savedDate": savedDate,
         "processedDate": str(datetime.datetime.now()),
         "nTokens" : nTokens,
-        "tokenList" : list(doc['content'][0][0:100]),
+        "tokenList" : return_result_list,
         "titleList" : list(doc['title']),
         "addTitle" : "Yes"
         }
