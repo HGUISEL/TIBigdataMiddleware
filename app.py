@@ -267,27 +267,30 @@ def textmining():
         
     # for ngrams
     elif analysisName == 'ngrams':
-        ngramNum = 2 # data["ngramNum"]
-        print("고정된 ngramNum으로 ngrams 분석 시작합니다.")
-        result = ngrams(email, keyword, savedDate, optionList, analysisName, ngramNum)
-        print("\n ngrams 분석 결과\n")
-        print(result)
-        
-        resultDic = {#'returnDate' : datetime.datetime.now(), 
-        'activity' : analysisName, 'email' : email,
-        'keyword' : keyword, 'savedDate' : savedDate, 'optionList' : optionList, 'result_graph' : result}
+        ngramNum = data["option2"]
+        linkStrength = data["option3"]
+        success, result_graph = ngrams(email, keyword, savedDate, optionList, analysisName, ngramNum, linkStrength)
+        if success :
+            resultDic = {'returnCode': 200,  #'returnDate' : datetime.datetime.now(), 
+            'activity' : analysisName, 'email' : email,
+            'keyword' : keyword, 'savedDate' : savedDate, 'option1' : optionList, "option2" : ngramNum, 'option3' : linkStrength, 'result_graph': result_graph}
+        else:
+            resultDic = {'returnCode': 400, 'errMsg': "ngram 분석 실패 \n"+ result_graph}
+
     
     # for hcluster
     elif analysisName == 'hcluster':
-        treeLevel = data["option2"]
+        treeLevel = 5#data["option2"]
         print("고정된 treeLevle로 hcluster 분석 시작합니다.")
-        result = hcluster(email, keyword, savedDate, optionList, analysisName, treeLevel)
+        success, result_graph = hcluster(email, keyword, savedDate, optionList, analysisName, treeLevel)
         print("\n hcluster 분석 결과\n")
-        print(result)
-        
-        resultDic = {#'returnDate' : datetime.datetime.now(), 
-        'activity' : analysisName, 'email' : email,
-        'keyword' : keyword, 'savedDate' : savedDate, 'optionList' : optionList, 'result_graph' : result}
+        print(result_graph)
+        if success :
+            resultDic = {'returnCode': 200,  #'returnDate' : datetime.datetime.now(), 
+            'activity' : analysisName, 'email' : email,
+            'keyword' : keyword, 'savedDate' : savedDate, 'option1' : optionList, "option2" : data["option2"], 'result_graph': result_graph}
+        else:
+            resultDic = {'returnCode': 400, 'errMsg': "계층군집분석 실패 \n"+ result_graph}
         
 
     else: return 'result'
