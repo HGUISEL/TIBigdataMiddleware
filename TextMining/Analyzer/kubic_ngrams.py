@@ -60,6 +60,7 @@ def filter_links(edges, matrix, linkStrength, minWeight, maxWeight):
 
 def ngrams(email, keyword, savedDate, optionList, analysisName, n, linkStrength):
     logger.info("ngram start")
+    identification = str(email)+'_'+analysisName+'_'+str(savedDate)+"// "
     try:
         preprocessed = getPreprocessing(email, keyword, savedDate, optionList)[0]
         n = int(n)
@@ -123,10 +124,32 @@ def ngrams(email, keyword, savedDate, optionList, analysisName, n, linkStrength)
 
         logger.debug(jsonDict)
         #print(jsonDict)
+
+        logger.info("MongoDB에 데이터를 저장합니다.")
+        
+        client=MongoClient(host='localhost',port=27017)
+        db=client.textMining
+
+        doc={
+            "userEmail" : email,
+            "keyword" : keyword,
+            "savedDate": savedDate,
+            "analysisDate" : datetime.datetime.now(),
+            #"duration" : ,
+            "result" : jsonDict,
+            #"resultCSV":
+        }
+
+        db.ngrams.insert_one(doc) 
+
+        logger.info("MongoDB에 저장되었습니다.")
+
+
         return True, jsonDict
     except Exception as e :
         import traceback
         err = traceback.format_exc()
+        logger.error(identification+str(err))
         return False, err
     
 

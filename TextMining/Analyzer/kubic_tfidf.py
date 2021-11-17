@@ -82,11 +82,15 @@ def tfidf(email, keyword, savedDate, optionList, analysisName):
         tfidf_dict = dict(sorted(tfidf_dict.items(), reverse=True, key=lambda item: item[1]))
         list_graph = list()
 
+        i = 0
         for key, value in tfidf_dict.items():
+            if i == int(optionList):
+                break
             node_dict = dict()
             node_dict["word"] = key
             node_dict["value"] = float(value)
             list_graph.append(node_dict)
+            i +=1
     except Exception as e:
         err = traceback.format_exc()
         logger.error(identification+"tfidf 분석 결과를 구하는 과정에서 에러가 발생했습니다. \n"+str(err))
@@ -166,6 +170,32 @@ def tfidf(email, keyword, savedDate, optionList, analysisName):
 
     print("MongoDB에 저장되었습니다.")
     '''
+    try:
+        logger.info("MongoDB에 데이터를 저장합니다.")
+        
+        client=MongoClient(host='localhost',port=27017)
+        db=client.textMining
+
+        doc={
+            "userEmail" : email,
+            "keyword" : keyword,
+            "savedDate": savedDate,
+            "analysisDate" : datetime.datetime.now(),
+            #"duration" : ,
+            "nTokens": optionList,
+            "result_table" : tfidf_dict,
+            "result_graph" : list_graph,
+            #"resultCSV":
+        }
+
+        db.tfidf.insert_one(doc) 
+
+        logger.info("MongoDB에 저장되었습니다.") 
+    except Exception as e:
+        import traceback
+        err = traceback.format_exc()
+        logger.error(identification +str(err))
+        return False, err
     return tfidf_dict, list_graph
 
 #tfidf('21800520@handong.edu', '통일', "2021-09-07T06:59:01.626Z", "-100", 'tfidf')
