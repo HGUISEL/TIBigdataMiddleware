@@ -92,7 +92,7 @@ def stop_syn(email, keyword, savedDate, mecab, wordclass, stopwordTF, synonymTF)
         #print("[0,1]", syn_df.iloc[0,1], " [0,2]", syn_df.iloc[0,2], "[1,0]", syn_df.iloc[1,0], " [1,1]", syn_df.iloc[1,1], " [1,2]", syn_df.iloc[1,2])
        
         #result = resultList[0]        
-        print("유의어사전 적용 전:", resultList[0][200:300], len(resultList[0]))
+        #print("유의어사전 적용 전:", resultList[0][200:300], len(resultList[0]))
         for ri in resultList[0:1]: #doc개수
             for i in range(len(syn_df)):
                 for j in range(len(syn_df.columns)):
@@ -100,7 +100,7 @@ def stop_syn(email, keyword, savedDate, mecab, wordclass, stopwordTF, synonymTF)
                         if ri[k] == syn_df.iloc[i,j]:
                             print(k, "번째, ", "**유의어 \"" ,ri[k] , "\"(을)를 찾았습니다. \"", syn_df.columns[i], '\"(으)로 변경합니다.')
                             ri[k] = syn_df.columns[i]   
-        print("\n유의어사전 적용 후:", resultList[0][200:300], len(resultList[0]))
+        #print("\n유의어사전 적용 후:", resultList[0][200:300], len(resultList[0]))
     else:
         return False, "유용어사전 형식 오류"
 

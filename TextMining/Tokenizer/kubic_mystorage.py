@@ -108,8 +108,8 @@ def getCompound(email, keyword, savedDate):
 
 def getPreprocessing(email, keyword, savedDate, optionList):
     docs = dbTM.preprocessing.find({"userEmail":email, "keyword":keyword, "savedDate":savedDate}).sort("_id", -1).limit(1)# saved date issue
-    print(email, keyword, savedDate)
-    print(docs[0]['titleList'])
+    # print(email, keyword, savedDate)
+    # print(docs[0]['titleList'])
     return docs[0]['tokenList'], docs[0]['nTokens']
 
 def getPreprocessingAddTitle(email, keyword, savedDate, optionList):
