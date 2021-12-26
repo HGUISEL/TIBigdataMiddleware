@@ -97,6 +97,7 @@ def ngrams(email, keyword, savedDate, optionList, analysisName, n, linkStrength)
                 c = wordToid[ngram[i]]
                 r = wordToid[ngram[i+1]]
                 adjacent_matrix[c][r] += ngram_count
+        logger.debug(adjacent_matrix)
         network = nx.from_numpy_matrix(adjacent_matrix)
 
 
