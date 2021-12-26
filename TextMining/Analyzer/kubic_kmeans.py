@@ -95,7 +95,7 @@ def kmeans(email, keyword, savedDate, optionList, analysisName):
     except Exception as e:
         err = traceback.format_exc()
         logger.error(identification+"문서 개수보다 군집 수가 많습니다. \n"+str(err))
-        return "failed", "문서 개수보다 군집 수가 많습니다. 군집수를 문서개수보다 적게 해주시기 바랍니다. 세부사항:" + str(e)
+        return "failed", "문서 개수보다 군집 수가 많습니다. \n군집수를 문서개수보다 적게 해주시기 바랍니다. \n 현재 문서 수: " + str(len(preprocessed)) + " 입력한 군집 수: " + optionList
 
     try:
         logger.info(identification + "분할군집분석 실행(군집수 3개)")
