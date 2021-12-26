@@ -28,7 +28,7 @@ logger = logging.getLogger("flask.app.morph")
 def stop_syn(email, keyword, savedDate, mecab, wordclass, stopwordTF, synonymTF):
 #def stop_syn(email, keyword, savedDate, mecab, wordclass): 
     datas = search_in_mydoc2(email, keyword, savedDate)
-    # print("data2: ", datas)
+    #print("data2: ", datas)
     nDocs = len(datas)
     
     if stopwordTF == True:
@@ -70,7 +70,7 @@ def stop_syn(email, keyword, savedDate, mecab, wordclass, stopwordTF, synonymTF)
             if wordclass[2]=='1' and pos == 'VA': # 형용사 
                 tokenToAnalyze.append(token)
         
-        #print("저장된 토큰\n", tokenToAnalyze)
+        # print("저장된 토큰\n", tokenToAnalyze[0:100])
 
     # 불용어처리
         if(stopword_file != False):
@@ -83,7 +83,7 @@ def stop_syn(email, keyword, savedDate, mecab, wordclass, stopwordTF, synonymTF)
         resultList.append(posList)
     
     #print('\n유의어, 복합어사전 적용 전: ', resultList[0][20000:20100]) #16 이메일
-    print('\n유의어, 복합어사전 적용 전: ', resultList[0][1700:1900]) ##### 
+    #print('\n유의어, 복합어사전 적용 전: ', resultList[3][100:500]) ##### 
 
     #유의어를 json형식으로 받고 dict 이용(split필요x)
     if(synonym_file != False):
@@ -92,7 +92,7 @@ def stop_syn(email, keyword, savedDate, mecab, wordclass, stopwordTF, synonymTF)
         #print("[0,1]", syn_df.iloc[0,1], " [0,2]", syn_df.iloc[0,2], "[1,0]", syn_df.iloc[1,0], " [1,1]", syn_df.iloc[1,1], " [1,2]", syn_df.iloc[1,2])
        
         #result = resultList[0]        
-        #print("유의어사전 적용 전:", resultList[0][200:300], len(resultList[0]))
+        print("유의어사전 적용 전:", resultList[0][200:300], len(resultList[0]))
         for ri in resultList[0:1]: #doc개수
             for i in range(len(syn_df)):
                 for j in range(len(syn_df.columns)):
@@ -100,7 +100,7 @@ def stop_syn(email, keyword, savedDate, mecab, wordclass, stopwordTF, synonymTF)
                         if ri[k] == syn_df.iloc[i,j]:
                             print(k, "번째, ", "**유의어 \"" ,ri[k] , "\"(을)를 찾았습니다. \"", syn_df.columns[i], '\"(으)로 변경합니다.')
                             ri[k] = syn_df.columns[i]   
-        #print("\n유의어사전 적용 후:", resultList[0][200:300], len(resultList[0]))
+        print("\n유의어사전 적용 후:", resultList[0][200:300], len(resultList[0]))
     else:
         return False, "유용어사전 형식 오류"
 
@@ -226,7 +226,7 @@ def compound(email, keyword, savedDate, wordclass, stopwordTF, synonymTF, compou
 
     return success, doc[0][:100] #전체 형태소 분석한 단어들의 목록 (kubic 미리보기에 뜨도록)
     
-#compound('21800409@handong.edu', '북한', "2021-08-04T03:48:54.395Z", '010', False, False, False)[1]
+# compound('21800520@handong.edu', '북한', "2021-11-26T02:24:06.283Z", '010', False, False, False)[1]
 
 def stop_syn_add_title(email, keyword, savedDate, mecab, wordclass, stopwordTF, synonymTF):
     
