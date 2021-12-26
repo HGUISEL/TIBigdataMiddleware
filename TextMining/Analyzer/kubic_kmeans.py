@@ -167,4 +167,4 @@ def kmeans(email, keyword, savedDate, optionList, analysisName):
     return True, textPCAList
 
 
-#kmeans('21800520@handong.edu', '북한', "2021-08-10T10:59:29.974Z", 3, 'kmeans')
+#kmeans('21800520@handong.edu', '통일', "2021-09-07T06:59:01.626Z", 3, 'kmeans')
