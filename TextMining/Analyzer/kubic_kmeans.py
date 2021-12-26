@@ -52,19 +52,26 @@ def kmeans(email, keyword, savedDate, optionList, analysisName):
     
     try:
         logger.info(identification + "빈도수분석 정보를 가져옵니다.")
-        top_words = getCount(email, keyword, savedDate, optionList)
-        if top_words is None:
+        try:
+            top_words = getCount(email, keyword, savedDate, optionList)
+            if top_words is None:
+                logger.info(identification+"빈도수 분석 정보가 없습니다. 빈도수 분석을 먼저 실시합니다. ")
+                word_count(email, keyword, savedDate, optionList, "wordcount")
+                top_words = getCount(email, keyword, savedDate, optionList)[0]
+            else:
+                top_words = top_words[0]
+        except Exception as e:
             logger.info(identification+"빈도수 분석 정보가 없습니다. 빈도수 분석을 먼저 실시합니다. ")
             word_count(email, keyword, savedDate, optionList, "wordcount")
             top_words = getCount(email, keyword, savedDate, optionList)[0]
-        else:
-            top_words = top_words[0]
-        top_words = json.loads(top_words)
-    
+            
+        top_words = json.loads(top_words)    
     except Exception as e:
         err = traceback.format_exc()
         logger.error(identification+"빈도수분석정보를 가져오는 중에 오류가 발생했습니다. \n"+str(err))
         return "failed", "빈도수분석정보를 가져오는 중에 오류가 발생했습니다. 세부사항: " + str(e)
+
+
     try:
     # preprocessed = getPreprocessing(email, keyword, savedDate, optionList)[0]
         preprocessed, titleList = getPreprocessingAddTitle(email, keyword, savedDate, optionList)[0:2]
