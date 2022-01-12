@@ -90,7 +90,8 @@ from TextMining.Analyzer.kubic_semanticNetworkAnalysis import *
 from TextMining.Analyzer.kubic_kmeans import *
 from TextMining.Analyzer.kubic_ngrams import *
 from TextMining.Analyzer.kubic_hcluster import *
-
+from TextMining.Analyzer.kubic_topicLDA import *
+from TextMining.Analyzer.kubic_word2vec import *
 
 import kubic_sslFile as kubic_ssl
 from bson import json_util
@@ -292,6 +293,18 @@ def textmining():
         else:
             resultDic = {'returnCode': 400, 'errMsg': "계층군집분석 실패 \n"+ result_graph}
         
+    # for LDA
+    elif analysisName == 'topicLDA':
+        app.logger.error(identification + "topicLDA 요청 확인")
+
+        success, result_graph = hcluster(email, keyword, savedDate, optionList, analysisName, treeLevel)
+
+        if success :
+            resultDic = {'returnCode': 200,  #'returnDate' : datetime.datetime.now(), 
+            'activity' : analysisName, 'email' : email,
+            'keyword' : keyword, 'savedDate' : savedDate, 'option1' : optionList, 'result_graph': result_graph}
+        else:
+            resultDic = {'returnCode': 400, 'errMsg': "토픽모델링 실패 \n"+ result_graph}
 
     else: return 'result'
 
