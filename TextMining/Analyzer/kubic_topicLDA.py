@@ -105,6 +105,9 @@ def topicLDA(email, keyword, savedDate, optionList, analysisName):
         prepared_data = gensimvis.prepare(ldamodel, corpus, dictionary)
         pyLDAvis.save_html(prepared_data, 'LDA_Visualization.html')
         pyLDAvis.save_json(prepared_data, 'LDA_Visualization.json') #to_dict
+
+        # https://github.com/bmabey/pyLDAvis/blob/8e534a6e1852ef4674ef9a45223e8c6a931db2e6/pyLDAvis/_display.py#L114
+        result_dict = prepared_data.to_dict()
         
 
     except Exception as e:
@@ -112,6 +115,6 @@ def topicLDA(email, keyword, savedDate, optionList, analysisName):
         logger.error(identification+"LDA모델 시각화 실패 \n"+str(err))
         return "failed", "LDA모델 시각화 실패 세부사항:" + str(e)
     
-    return None
+    return True, result_dict
 
 #topicLDA('21800520@handong.edu', '북한', "2021-08-10T10:59:29.974Z", "4", 'LDA')

@@ -295,9 +295,22 @@ def textmining():
         
     # for LDA
     elif analysisName == 'topicLDA':
-        app.logger.error(identification + "topicLDA 요청 확인")
+        app.logger.info(identification + "topicLDA 요청 확인")
 
-        success, result_graph = hcluster(email, keyword, savedDate, optionList, analysisName, treeLevel)
+        success, result_graph = topicLDA(email, keyword, savedDate, optionList, analysisName)
+
+        if success :
+            resultDic = {'returnCode': 200,  #'returnDate' : datetime.datetime.now(), 
+            'activity' : analysisName, 'email' : email,
+            'keyword' : keyword, 'savedDate' : savedDate, 'option1' : optionList, 'result_graph': result_graph}
+        else:
+            resultDic = {'returnCode': 400, 'errMsg': "토픽모델링 실패 \n"+ result_graph}
+    
+    # for word embedding (Word2Vec)
+    elif analysisName == 'word2vec':
+        app.logger.info(identification + "topicLDA 요청 확인")
+
+        success, result_graph = word2vec(email, keyword, savedDate, optionList, analysisName)
 
         if success :
             resultDic = {'returnCode': 200,  #'returnDate' : datetime.datetime.now(), 
@@ -306,7 +319,8 @@ def textmining():
         else:
             resultDic = {'returnCode': 400, 'errMsg': "토픽모델링 실패 \n"+ result_graph}
 
-    else: return 'result'
+    else: 
+        return 'result'
 
     return json.dumps(resultDic, default=json_util.default, ensure_ascii=False)
 

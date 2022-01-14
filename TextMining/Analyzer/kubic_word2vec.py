@@ -9,6 +9,7 @@ import gensim  # LDA를 위한 라이브러리
 from TextMining.Tokenizer.kubic_morph import *
 from TextMining.Tokenizer.kubic_data import *
 from TextMining.Tokenizer.kubic_mystorage import *
+from TextMining.Analyzer.kubic_wordCount import *
 
 from gensim.models import Word2Vec
 from sklearn.manifold import TSNE
@@ -18,8 +19,18 @@ from matplotlib import rc
 import logging
 import traceback
 
-logger = logging.getLogger("flask.app.topicLDA")
+logger = logging.getLogger("flask.app.word2vec")
 
+def cut_with_option(list,email, keyword, savedDate, optionList):
+    top_words = word_count(email, keyword, savedDate, optionList, "wordcount")[0]
+    result_lst = []
+    for word in top_words.keys():
+        if word in list:
+            result_lst.append(word)
+        else:
+            logger.info(identification + "단어가 모델에 존재하지 않습니다. 단어:" + word)
+    print(top_words)
+    return result_lst
 
 def word2vec(email, keyword, savedDate, optionList, analysisName):
     identification = str(email)+'_'+analysisName+'_'+str(savedDate)+"// "
@@ -64,31 +75,38 @@ def word2vec(email, keyword, savedDate, optionList, analysisName):
         logger.info(identification + "LDA모델 학습을 시작합니다.")
         
         w2v_tsne = TSNE(n_components=2)
-        w2v_vocab = list(w2v.wv.key_to_index)
+        #w2v_vocab = list(w2v.wv.key_to_index)
+        w2v_vocab = cut_with_option(list(w2v.wv.key_to_index), email, keyword, savedDate, optionList)
         # w2v_vocab = list(w2v.wv.key_to_index.keys())
         #print(w2v_vocab[0:10]) 
         w2v_similarity = w2v.wv[w2v_vocab] # 기존: w2v[word] --> 바뀐 코드: w2v.wv[word]
         transorm_similarity = w2v_tsne.fit_transform(w2v_similarity)
         w2v_df = pd.DataFrame(transorm_similarity, index = w2v_vocab, columns=["x", "y"])
 
-        print(w2v_df[0:10])
+        # print(w2v_df[0:10])
 
+        w2v_df = w2v_df[0:10]
 
-    except Exception as e:
-        err = traceback.format_exc()
-        logger.error(identification+"LDA모델 학습실패 \n"+str(err))
-        return "failed", "LDA모델 학습실패 세부사항:" + str(e)  
+        indexList = [ item for item in w2v_df.index]
+        # https://observablehq.com/@d3/scatterplot-with-shapes
 
-    try: 
-        logger.info(identification + "LDA모델 학습을 시작합니다.")
-
+        jsonDict = dict()
+        textTSNEList = list()
         
+        for i in range(len(indexList)):
+            word = indexList[i]
+            textDict = dict()
+            textDict["word"] = word
+            textDict["x"] = int(w2v_df["x"][word])
+            textDict['y'] = int(w2v_df["y"][word])
+            textTSNEList.append(textDict)
 
+        print(textTSNEList)
     except Exception as e:
         err = traceback.format_exc()
-        logger.error(identification+"LDA모델 시각화 실패 \n"+str(err))
-        return "failed", "LDA모델 시각화 실패 세부사항:" + str(e)
-    
-    return None
+        logger.error(identification+"word2vec 모델 만들기에 실패하였습니다. \n"+str(err))
+        return "failed", "word2vec 모델 만들기에 실패하였습니다. 세부사항:" + str(e) 
 
-word2vec('21800520@handong.edu', '북한', "2021-08-10T10:59:29.974Z", "4", 'word2vec')
+    return True, textTSNEList
+
+#word2vec('21800520@handong.edu', '북한', "2021-08-10T10:59:29.974Z", "3", 'word2vec')
