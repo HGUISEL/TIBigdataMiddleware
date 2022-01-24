@@ -22,8 +22,7 @@ def Pre_date(date):
         [esAcc.host],
         http_auth=(esAcc.id, esAcc.password),
         scheme="https",
-        port= esAcc.port,
-        verify_certs=False
+        port= esAcc.port
     )
         logger.info('Elasticsearch server에 성공적으로 접속하였습니다.')
     except Exception as e:

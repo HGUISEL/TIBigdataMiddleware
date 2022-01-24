@@ -19,8 +19,7 @@ es = Elasticsearch(
         [esAcc.host],
         http_auth=(esAcc.id, esAcc.password),
         scheme="https",
-        port= esAcc.port,
-        verify_certs=False
+        port= esAcc.port
 )
 index = esAcc.index
 
