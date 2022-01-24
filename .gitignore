@@ -36,4 +36,5 @@ tfidfs/
 mecab-python-0.996/
 log_flask/
 whatap/
-common/__pycache__
+TIBigdataMiddleware/common/__pycache__/
+TextMining/userlocallibmecab/usr/local/
