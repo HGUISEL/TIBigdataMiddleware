@@ -10,6 +10,8 @@ from TextMining.Tokenizer.kubic_data import *
 from TextMining.Tokenizer.kubic_mystorage import *
 from TextMining.Analyzer.kubic_wordCount import *
 
+import account.MongoAccount as monAcc
+
 import numpy as np
 import networkx as nx # 새로 추가된 묘듈이다. pip로 추가
 import operator
@@ -236,7 +238,7 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName,
 
     try:
         logger.info(identification + "MongoDB에 데이터를 저장합니다.")
-        client=MongoClient(host='localhost',port=27017)
+        client = MongoClient(monAcc.host, monAcc.port)
         db=client.textMining
 
         doc={

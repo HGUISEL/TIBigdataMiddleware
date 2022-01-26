@@ -10,6 +10,8 @@ from TextMining.Tokenizer.kubic_data import *
 from TextMining.Tokenizer.kubic_mystorage import *
 from TextMining.Analyzer.kubic_wordCount import *
 
+import account.MongoAccount as monAcc
+
 import numpy as np
 
 from bson import json_util
@@ -128,7 +130,7 @@ def ngrams(email, keyword, savedDate, optionList, analysisName, n, linkStrength)
 
         logger.info("MongoDB에 데이터를 저장합니다.")
         
-        client=MongoClient(host='localhost',port=27017)
+        client = MongoClient(monAcc.host, monAcc.port)
         db=client.textMining
 
         doc={

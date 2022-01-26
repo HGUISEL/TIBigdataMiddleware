@@ -13,6 +13,8 @@ from TextMining.Tokenizer.kubic_morph import *
 from TextMining.Tokenizer.kubic_data import *
 from TextMining.Tokenizer.kubic_mystorage import *
 
+import account.MongoAccount as monAcc
+
 from io import StringIO
 import gridfs
 import csv
@@ -133,7 +135,7 @@ def word_count(email, keyword, savedDate, optionList, analysisName):
     # print('File Name: %s \tFile Size: %d' %(WcFile, wc_file_size))
     
     ### Mongo 저장 ###
-    client=MongoClient(host='localhost',port=27017)
+    client = MongoClient(monAcc.host, monAcc.port)
     #print('MongoDB에 연결을 성공했습니다.')
     logger.info(identification+ "MongoDB연결 성공")
     db=client.textMining

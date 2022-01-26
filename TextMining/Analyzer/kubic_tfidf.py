@@ -14,6 +14,8 @@ from TextMining.Tokenizer.kubic_data import *
 from TextMining.Tokenizer.kubic_mystorage import *
 from TextMining.Analyzer.kubic_wordCount import *
 
+import account.MongoAccount as monAcc
+
 from io import StringIO
 import gridfs
 import csv
@@ -128,7 +130,7 @@ def tfidf(email, keyword, savedDate, optionList, analysisName):
 
     
     ### Mongo 저장 ### 
-    client=MongoClient(host='localhost',port=27017)
+    client = MongoClient(monAcc.host, monAcc.port)
     #print('MongoDB에 연결을 성공했습니다.')
     db=client.textMining
     nTokens = optionList
@@ -173,7 +175,7 @@ def tfidf(email, keyword, savedDate, optionList, analysisName):
     try:
         logger.info("MongoDB에 데이터를 저장합니다.")
         
-        client=MongoClient(host='localhost',port=27017)
+        client = MongoClient(monAcc.host, monAcc.port)
         db=client.textMining
 
         doc={
