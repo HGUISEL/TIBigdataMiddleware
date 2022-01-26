@@ -16,7 +16,9 @@ import pandas as pd
 from konlpy.tag import Mecab
 from jamo import h2j, j2hcj
 import re
- 
+
+import account.MongoAccount as monAcc
+
 ## Morphological analysis(형태소 분석)
 from konlpy.tag import Kkma
 
@@ -206,7 +208,7 @@ def compound(email, keyword, savedDate, wordclass, stopwordTF, synonymTF, compou
                 print(user_word, 'is missing')
         
         # Mongodb 저장
-        client=MongoClient(host='localhost',port=27017)
+        client = MongoClient(monAcc.host, monAcc.port)
         # print('MongoDB에 연결을 성공했습니다.')
         db=client.textMining
 
@@ -455,7 +457,7 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
                 logger.error(user_word + 'is missing')
         
         # Mongodb 저장
-        client=MongoClient(host='localhost',port=27017)
+        client = MongoClient(monAcc.host, monAcc.port)
         # print('MongoDB에 연결을 성공했습니다.')
         db=client.textMining
 

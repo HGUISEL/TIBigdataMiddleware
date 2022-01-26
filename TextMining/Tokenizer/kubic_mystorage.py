@@ -4,10 +4,11 @@ from dateutil import parser
 import pandas as pd
 import json
 from konlpy.tag import Mecab
+import account.MongoAccount as monAcc
 
 #from TextMining.Tokenizer.kubic_data import *
 
-client = MongoClient('localhost', 27017)
+client = MongoClient(monAcc.host, monAcc.port)
 db = client.user
 def getMyDocByEmail2(email, keyword, savedDate):
     try:

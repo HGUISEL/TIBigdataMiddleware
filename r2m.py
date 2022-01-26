@@ -2,6 +2,7 @@ import json
 import os
 import pymongo
 from pymongo import MongoClient
+import account.MongoAccount as monAcc
 
 TFIDF_DATA_DIR = "/home/kubic/TIBigdataMiddleware/rcmdHelper/outputs"
 
@@ -12,7 +13,7 @@ for file in files:
         print("open: " + str(file))
         content = fp.read()
         data = json.loads(content)
-        client = MongoClient('localhost',27017)
+        client = MongoClient(monAcc.host, monAcc.port)
         db = client.analysis
         collection = db.rcmds
         collection.insert_many(data)
