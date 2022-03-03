@@ -141,28 +141,30 @@ def hcluster(email, keyword, savedDate, optionList, analysisName, treeLevel):
         
         client = MongoClient(monAcc.host, monAcc.port)
         db=client.textMining
-
+        now = datetime.datetime.now()
         doc={
             "userEmail" : email,
             "keyword" : keyword,
             "savedDate": savedDate,
-            "analysisDate" : datetime.datetime.now(),
+            "analysisDate" : now,
             #"duration" : ,
             "result" : result,
             #"resultCSV":
         }
 
-        db.hcluster.insert_one(doc) 
-
+        insterted_doc = db.hcluster.insert_one(doc) 
+        analysisInfo = { "doc_id" : insterted_doc.inserted_id, "analysis_date": str(doc['analysisDate'])}
+        
         logger.info("MongoDB에 저장되었습니다.")
-        return True, result 
+        return True, result, analysisInfo
     except Exception as e:
         import traceback
         err = traceback.format_exc()
         logger.error(identification +str(err))
-        return False, err
+        return False, err, None
 
 
 
 #hcluster('21800520@handong.edu', '북한', "2021-08-10T10:59:29.974Z", 100, 'hcluster', 3)
-#hcluster('21800520@handong.edu', '통일', "2021-09-07T06:59:01.626Z", 100, 'hcluster', 3)
+# result = hcluster('21800520@handong.edu', '통일', "2021-09-07T06:59:01.626Z", 100, 'hcluster', 3)
+# print(result[2])

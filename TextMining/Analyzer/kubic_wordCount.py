@@ -38,7 +38,7 @@ def word_count(email, keyword, savedDate, optionList, analysisName):
         err = traceback.format_exc()
         logger.info(identification + "분석할 단어수는 양의 정수여야 합니다" +str(err))
         #print(identification + "분석할 단어수는 양의 정수여야 합니다" +str(err))
-        return "failed", "분석할 단어수는 양의 정수이어야 합니다. "
+        return "failed", "분석할 단어수는 양의 정수이어야 합니다. ", None
     try:
         logger.info(identification+ "전처리 내용을 가져옵니다.")
         doc, nTokens = getPreprocessing(email, keyword, savedDate, optionList)
@@ -52,7 +52,7 @@ def word_count(email, keyword, savedDate, optionList, analysisName):
         err = traceback.format_exc()
         logger.info(identification + "전처리 내용을 가져오는데 실패했습니다." +str(err))
         #print(identification + "분석할 단어수는 양의 정수여야 합니다" +str(err))
-        return "failed", "전처리 내용을 가져오는데 실패했습니다. " + str(e)
+        return "failed", "전처리 내용을 가져오는데 실패했습니다. " + str(e), None
 
     
     try:
@@ -68,7 +68,7 @@ def word_count(email, keyword, savedDate, optionList, analysisName):
     except Exception as e:
         err = traceback.format_exc()
         logger.error(identification+"백터화 과정에서 에러가 발생했습니다. \n"+str(err))
-        return "failed", "백터화 과정에서 에러가 발생했습니다. \n 세부사항:" + str(e)
+        return "failed", "백터화 과정에서 에러가 발생했습니다. \n 세부사항:" + str(e), None
 
     try:
         logger.info(identification+ "벡터화 이후 빈도수 분석을 진행합니다.")
@@ -92,7 +92,7 @@ def word_count(email, keyword, savedDate, optionList, analysisName):
     except Exception as e:
         err = traceback.format_exc()
         logger.error(identification+"빈도수 분석 과정에서 에러가 발생했습니다. \n"+str(err))
-        return "failed", "빈도수 분석 과정에서 에러가 발생했습니다. \n 세부사항:" + str(e)
+        return "failed", "빈도수 분석 과정에서 에러가 발생했습니다. \n 세부사항:" + str(e), None
 
     # print("빈도수 분석결과\n", df, '\n', dict_words)
     # print(list_graph)
@@ -163,7 +163,7 @@ def word_count(email, keyword, savedDate, optionList, analysisName):
         "userEmail" : email,
         "keyword" : keyword,
         "savedDate": savedDate,
-        "analysisDate" : datetime.datetime.now(),
+        "analysisDate" : now,
         #"duration" : ,
         "nTokens" : nTokens,
         "result_graph" : json.dumps(list_graph, ensure_ascii=False),
@@ -172,10 +172,11 @@ def word_count(email, keyword, savedDate, optionList, analysisName):
         # "resultWC" : wcBinary,
         #"resultCSV" :,
     }
-    db.count.insert_one(doc)  
-    
+    insterted_doc = db.count.insert_one(doc)  
+    analysisInfo = { "doc_id" : insterted_doc.inserted_id, "analysis_date": str(doc['analysisDate'])}
+
     logger.info(identification+ "MongoDB에 결과 저장")
     
-    return dict_words, list_graph
+    return dict_words, list_graph, analysisInfo
  
-#word_count('21600280@handong.edu', '북한', "2021-07-08T11:46:03.973Z", 100, 'count')
+# result = word_count('21600280@handong.edu', '북한', "2021-07-08T11:46:03.973Z", 100, 'count')

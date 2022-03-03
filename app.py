@@ -209,7 +209,7 @@ def textmining():
 
     if analysisName == 'count':
         app.logger.info(identification + "빈도수 분석 시작")
-        result_table, result_graph = word_count(email, keyword, savedDate, optionList, analysisName)
+        result_table, result_graph, analysisInfo = word_count(email, keyword, savedDate, optionList, analysisName)
         if result_table == 'failed':
             app.logger.error(identification + "빈도수 분석 실패")
             resultDic = {'returnCode': 400, 'errMsg': "빈도수 분석 실패 \n"+ result_graph}
@@ -217,19 +217,23 @@ def textmining():
             app.logger.error(identification + "빈도수 분석 성공")
             resultDic = {'returnCode': 200, #'returnDate' : datetime.datetime.now(), 
             'activity' : analysisName, 'email' : email, 
-            'keyword' : keyword, 'savedDate' : savedDate, 'optionList' : optionList, 'result_table' : result_table, 'result_graph': result_graph}
+            'keyword' : keyword, 'savedDate' : savedDate, 'analysisDate': analysisInfo["analysis_date"], 'optionList' : optionList, 
+            'result_table' : result_table, 'result_graph': result_graph,
+            "jsonDocId": analysisInfo["doc_id"]}
 
     
     elif analysisName == 'tfidf':
         app.logger.info(identification + "tfidf 분석 시작")
-        result_table, result_graph = tfidf(email, keyword, savedDate, optionList, analysisName)
+        result_table, result_graph, analysisInfo = tfidf(email, keyword, savedDate, optionList, analysisName)
         if result_table == 'failed':
             app.logger.error(identification + "tfidf 분석 실패")
             resultDic = {'returnCode': 400, 'errMsg': "tfidf 분석 실패 \n"+ result_graph}
         else:
             resultDic = {'returnCode': 200, #'returnDate' : datetime.datetime.now(), 
             'activity' : analysisName, 'email' : email, 
-            'keyword' : keyword, 'savedDate' : savedDate, 'optionList' : optionList, 'result_table' : result_table, 'result_graph': result_graph}
+            'keyword' : keyword, 'savedDate' : savedDate, 'analysisDate': analysisInfo["analysis_date"], 'optionList' : optionList, 
+            'result_table' : result_table, 'result_graph': result_graph, 
+            "jsonDocId": analysisInfo["doc_id"]}
 
     # for semanticNetworkAnalysis
     elif analysisName == 'network':
@@ -243,7 +247,7 @@ def textmining():
             resultDic = {'returnCode': 400, 'errMsg': "request 키 에러입니다. request에 다음과 같은 키가 존재하지 않습니다. \n:"+str(e)}
 
         app.logger.info(identification + "의미연결망 분석 시작" )
-        result_graph, result_table = semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName, linkStrength)
+        result_graph, result_table, analysisInfo = semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName, linkStrength)
 
         if result_graph == "failed":
             app.logger.error(identification + "의미연결망 분석 실패")
@@ -251,16 +255,21 @@ def textmining():
         else:
             resultDic = {'returnCode': 200,  #'returnDate' : datetime.datetime.now(), 
             'activity' : analysisName, 'email' : email,
-            'keyword' : keyword, 'savedDate' : savedDate, 'option1' : optionList, "option2" : linkStrength, 'result_table' : result_table, 'result_graph': result_graph}
+            'keyword' : keyword, 'savedDate' : savedDate, 'analysisDate': analysisInfo["analysis_date"], 
+            'option1' : optionList, "option2" : linkStrength, 
+            'result_table' : result_table, 'result_graph': result_graph, 
+            "jsonDocId": analysisInfo["doc_id"]}
     
     # for kmeans
     elif analysisName == 'kmeans':
         app.logger.info(identification + "kmeans 분석 시작")
-        result1, result2 = kmeans(email, keyword, savedDate, optionList, analysisName)
+        result1, result2, analysisInfo = kmeans(email, keyword, savedDate, optionList, analysisName)
         if result1 == True:        
             resultDic = {'returnCode': 200,#'returnDate' : datetime.datetime.now(), 
             'activity' : analysisName, 'email' : email,
-            'keyword' : keyword, 'savedDate' : savedDate, 'optionList' : optionList, 'result_graph' : result2}
+            'keyword' : keyword, 'savedDate' : savedDate,'analysisDate': analysisInfo["analysis_date"], 'optionList' : optionList, 
+            'result_graph' : result2,
+            "jsonDocId": analysisInfo["doc_id"]}
         else:
             app.logger.error(identification + "kmeans 분석 실패")
             resultDic = {'returnCode': 400, 'errMsg': "분할군집분석 실패 \n"+ result2}
@@ -269,11 +278,13 @@ def textmining():
     elif analysisName == 'ngrams':
         ngramNum = data["option2"]
         linkStrength = data["option3"]
-        success, result_graph = ngrams(email, keyword, savedDate, optionList, analysisName, ngramNum, linkStrength)
+        success, result_graph, analysisInfo = ngrams(email, keyword, savedDate, optionList, analysisName, ngramNum, linkStrength)
         if success :
             resultDic = {'returnCode': 200,  #'returnDate' : datetime.datetime.now(), 
             'activity' : analysisName, 'email' : email,
-            'keyword' : keyword, 'savedDate' : savedDate, 'option1' : optionList, "option2" : ngramNum, 'option3' : linkStrength, 'result_graph': result_graph}
+            'keyword' : keyword, 'savedDate' : savedDate,'analysisDate': analysisInfo["analysis_date"], 'option1' : optionList, "option2" : ngramNum, 'option3' : linkStrength, 
+            'result_graph': result_graph,
+            "jsonDocId": analysisInfo["doc_id"]}
         else:
             resultDic = {'returnCode': 400, 'errMsg': "ngram 분석 실패 \n"+ result_graph}
 
@@ -282,13 +293,15 @@ def textmining():
     elif analysisName == 'hcluster':
         treeLevel = 5#data["option2"]
         print("고정된 treeLevle로 hcluster 분석 시작합니다.")
-        success, result_graph = hcluster(email, keyword, savedDate, optionList, analysisName, treeLevel)
+        success, result_graph, analysisInfo = hcluster(email, keyword, savedDate, optionList, analysisName, treeLevel)
         print("\n hcluster 분석 결과\n")
         print(result_graph)
         if success :
             resultDic = {'returnCode': 200,  #'returnDate' : datetime.datetime.now(), 
             'activity' : analysisName, 'email' : email,
-            'keyword' : keyword, 'savedDate' : savedDate, 'option1' : optionList, "option2" : data["option2"], 'result_graph': result_graph}
+            'keyword' : keyword, 'savedDate' : savedDate,'analysisDate': analysisInfo["analysis_date"], 'option1' : optionList, "option2" : data["option2"], 
+            'result_graph': result_graph,
+            "jsonDocId": analysisInfo["doc_id"]}
         else:
             resultDic = {'returnCode': 400, 'errMsg': "계층군집분석 실패 \n"+ result_graph}
         
@@ -296,12 +309,14 @@ def textmining():
     elif analysisName == 'topicLDA':
         app.logger.info(identification + "topicLDA 요청 확인")
 
-        success, result_graph = topicLDA(email, keyword, savedDate, optionList, analysisName)
+        success, result_graph, analysisInfo = topicLDA(email, keyword, savedDate, optionList, analysisName)
 
         if success :
             resultDic = {'returnCode': 200,  #'returnDate' : datetime.datetime.now(), 
             'activity' : analysisName, 'email' : email,
-            'keyword' : keyword, 'savedDate' : savedDate, 'option1' : optionList, 'result_graph': result_graph}
+            'keyword' : keyword, 'savedDate' : savedDate,'analysisDate': analysisInfo["analysis_date"], 'option1' : optionList, 
+            'result_graph': result_graph,
+            "jsonDocId": analysisInfo["doc_id"]}
         else:
             resultDic = {'returnCode': 400, 'errMsg': "토픽모델링 실패 \n"+ result_graph}
     
@@ -309,12 +324,14 @@ def textmining():
     elif analysisName == 'word2vec':
         app.logger.info(identification + "topicLDA 요청 확인")
 
-        success, result_graph = word2vec(email, keyword, savedDate, optionList, analysisName)
+        success, result_graph, analysisInfo = word2vec(email, keyword, savedDate, optionList, analysisName)
 
         if success :
             resultDic = {'returnCode': 200,  #'returnDate' : datetime.datetime.now(), 
             'activity' : analysisName, 'email' : email,
-            'keyword' : keyword, 'savedDate' : savedDate, 'option1' : optionList, 'result_graph': result_graph}
+            'keyword' : keyword, 'savedDate' : savedDate,'analysisDate': analysisInfo["analysis_date"], 'option1' : optionList, 
+            'result_graph': result_graph,
+            "jsonDocId": analysisInfo["doc_id"]}
         else:
             resultDic = {'returnCode': 400, 'errMsg': "토픽모델링 실패 \n"+ result_graph}
 

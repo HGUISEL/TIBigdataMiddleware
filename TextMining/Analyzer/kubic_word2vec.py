@@ -16,6 +16,8 @@ from sklearn.manifold import TSNE
 from matplotlib import font_manager as fm
 from matplotlib import rc
 
+import account.MongoAccount as monAcc
+
 import logging
 import traceback
 
@@ -60,7 +62,7 @@ def word2vec(email, keyword, savedDate, optionList, analysisName):
         err = traceback.format_exc()
         logger.info(identification + "군집의 수는 양의 정수여야 합니다 입력된 값:" + str(err))
         #print(identification + "분석할 단어수는 양의 정수여야 합니다" + str(err))
-        return "failed", "군집의 수는 양의 정수이어야 합니다."
+        return "failed", "군집의 수는 양의 정수이어야 합니다.", None
 
     try:
         logger.info(identification + "전처리 정보를 가져옵니다.")
@@ -72,7 +74,7 @@ def word2vec(email, keyword, savedDate, optionList, analysisName):
     except Exception as e:
         err = traceback.format_exc()
         logger.error(identification+"전처리 정보를 가져오는데 실패하였습니다. \n"+str(err))
-        return "failed", "전처리 정보를 가져오는데 실패하였습니다. 세부사항:" + str(e)
+        return "failed", "전처리 정보를 가져오는데 실패하였습니다. 세부사항:" + str(e), None
 
     
     try: # word2vec 모델 만들기
@@ -86,7 +88,7 @@ def word2vec(email, keyword, savedDate, optionList, analysisName):
     except Exception as e:
         err = traceback.format_exc()
         logger.error(identification+"word2vec 모델 만들기에 실패하였습니다. \n"+str(err))
-        return "failed", "word2vec 모델 만들기에 실패하였습니다. 세부사항:" + str(e)        
+        return "failed", "word2vec 모델 만들기에 실패하였습니다. 세부사항:" + str(e), None       
     
     try: # word2vec 시각화를 위한 차원축소
         logger.info(identification + "LDA모델 학습을 시작합니다.")
@@ -125,8 +127,38 @@ def word2vec(email, keyword, savedDate, optionList, analysisName):
     except Exception as e:
         err = traceback.format_exc()
         logger.error(identification+"word2vec 모델 만들기에 실패하였습니다. \n"+str(err))
-        return "failed", "word2vec 모델 만들기에 실패하였습니다. 세부사항:" + str(e) 
+        return "failed", "word2vec 모델 만들기에 실패하였습니다. 세부사항:" + str(e) , None
 
-    return True, textTSNEList
+    try:
+        client = MongoClient(monAcc.host, monAcc.port)
+        #print('MongoDB에 연결을 성공했습니다.')
+        logger.info(identification+ "MongoDB연결 성공")
+        db=client.textMining
+        now = datetime.datetime.now()
+        doc={
+            "userEmail" : email,
+            "keyword" : keyword,
+            "savedDate": savedDate,
+            "analysisDate" : now,
+            #"duration" : ,
+            "nTokens" : nTokens,
+            "result_graph" : json.dumps(textTSNEList, ensure_ascii=False),
+            # "resultBar" : barBinary,
+            # "resultWC" : wcBinary,
+            #"resultCSV" :,
+        }
+        insterted_doc = db.word2vec.insert_one(doc)  
+        analysisInfo = { "doc_id" : insterted_doc.inserted_id, "analysis_date": str(doc['analysisDate'])}
 
-#word2vec('21800520@handong.edu', '북한', "2021-08-10T10:59:29.974Z", "20", 'word2vec')
+        logger.info(identification+ "MongoDB에 결과 저장")
+
+    except Exception as e:
+        err = traceback.format_exc()
+        logger.error(identification+"분석결과 MongoDB저장 중 에러발생. \n"+str(err))
+        return "failed", "결과를 저장하는 과정에서 오류가 발생했습니다. \n 세부사항:" + str(e), None
+
+    return True, textTSNEList, analysisInfo
+
+
+# result = word2vec('21800520@handong.edu', '북한', "2021-08-10T10:59:29.974Z", "20", 'word2vec')
+# print(result[2])

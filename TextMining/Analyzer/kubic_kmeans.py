@@ -50,7 +50,7 @@ def kmeans(email, keyword, savedDate, optionList, analysisName):
         err = traceback.format_exc()
         #logger.info(identification + "분석할 단어수는 양의 정수여야 합니다" +str(err))
         print(identification + "군집수는 양의 정수여야 합니다" +str(err))
-        return "failed", "군집수는 양의 정수여야 합니다. "
+        return "failed", "군집수는 양의 정수여야 합니다. ", None
     
     try:
         logger.info(identification + "빈도수분석 정보를 가져옵니다.")
@@ -71,7 +71,7 @@ def kmeans(email, keyword, savedDate, optionList, analysisName):
     except Exception as e:
         err = traceback.format_exc()
         logger.error(identification+"빈도수분석정보를 가져오는 중에 오류가 발생했습니다. \n"+str(err))
-        return "failed", "빈도수분석정보를 가져오는 중에 오류가 발생했습니다. 세부사항: " + str(e)
+        return "failed", "빈도수분석정보를 가져오는 중에 오류가 발생했습니다. 세부사항: " + str(e), None
 
 
     try:
@@ -84,7 +84,7 @@ def kmeans(email, keyword, savedDate, optionList, analysisName):
     except Exception as e:
         err = traceback.format_exc()
         logger.error(identification+"전처리 정보를 가져오는데 실패하였습니다. \n"+str(err))
-        return "failed", "전처리 정보를 가져오는데 실패하였습니다. 세부사항:" + str(e)
+        return "failed", "전처리 정보를 가져오는데 실패하였습니다. 세부사항:" + str(e), None
 
     try:
         logger.info(identification+"벡터화를 실시합니다.")
@@ -96,7 +96,7 @@ def kmeans(email, keyword, savedDate, optionList, analysisName):
     except Exception as e:
         err = traceback.format_exc()
         logger.error(identification+"벡터화과정에서 에러가 발생했습니다. \n"+str(err))
-        return "failed", "벡터화과정에서 에러가 발생했습니다. 세부사항:" + str(e)
+        return "failed", "벡터화과정에서 에러가 발생했습니다. 세부사항:" + str(e), None
 
     try:
         logger.info(identification + "군집분석을 실시합니다.")
@@ -104,7 +104,7 @@ def kmeans(email, keyword, savedDate, optionList, analysisName):
     except Exception as e:
         err = traceback.format_exc()
         logger.error(identification+"문서 개수보다 군집 수가 많습니다. \n"+str(err))
-        return "failed", "문서 개수보다 군집 수가 많습니다. \n군집수를 문서개수보다 적게 해주시기 바랍니다. \n 현재 문서 수: " + str(len(preprocessed)) + " 입력한 군집 수: " + optionList
+        return "failed", "문서 개수보다 군집 수가 많습니다. \n군집수를 문서개수보다 적게 해주시기 바랍니다. \n 현재 문서 수: " + str(len(preprocessed)) + " 입력한 군집 수: " + optionList, None
 
     try:
         logger.info(identification + "분할군집분석 실행(군집수 3개)")
@@ -116,7 +116,7 @@ def kmeans(email, keyword, savedDate, optionList, analysisName):
     except Exception as e:
         err = traceback.format_exc()
         logger.error(identification+"분할군집분석 실행중 오류가 발생했습니다. \n"+str(err))
-        return "failed", "분할군집분석 실행중 오류가 발생했습니다. 세부사항:" + str(e)
+        return "failed", "분할군집분석 실행중 오류가 발생했습니다. 세부사항:" + str(e), None
 
     try:
         logger.info(identification+"결과를 json파일로 만듭니다.")
@@ -139,7 +139,7 @@ def kmeans(email, keyword, savedDate, optionList, analysisName):
     except Exception as e:
         err = traceback.format_exc()
         logger.error(identification+"분할군집분석 결과를 json파일로 만드는 중에 오류가 발생했습니다. \n"+str(err))
-        return "failed", "분할군집분석 결과를 json파일로 만드는 중에 오류가 발생했습니다. 세부사항:" + str(e)
+        return "failed", "분할군집분석 결과를 json파일로 만드는 중에 오류가 발생했습니다. 세부사항:" + str(e), None
         
     
 
@@ -154,26 +154,28 @@ def kmeans(email, keyword, savedDate, optionList, analysisName):
         
         client = MongoClient(monAcc.host, monAcc.port)
         db=client.textMining
-
+        now = datetime.datetime.now()
         doc={
             "userEmail" : email,
             "keyword" : keyword,
             "savedDate": savedDate,
-            "analysisDate" : datetime.datetime.now(),
+            "analysisDate" : now,
             #"duration" : ,
             "resultPCAList" : textPCAList,
             #"resultCSV":
         }
 
-        db.kmeans.insert_one(doc) 
+        insterted_doc = db.kmeans.insert_one(doc) 
+        analysisInfo = { "doc_id" : insterted_doc.inserted_id, "analysis_date": str(doc['analysisDate'])}
         logger.info(identification + "MongoDB에 저장되었습니다.")
 
     except Exception as e:
         err = traceback.format_exc()
         logger.error(identification + "MongoDB에 결과를 저장하는 중에 오류가 발생했습니다. \n"+str(err))
-        return "failed", "MongoDB에 결과를 저장하는 중에 오류가 발생했습니다. 세부사항:" + str(e)
+        return "failed", "MongoDB에 결과를 저장하는 중에 오류가 발생했습니다. 세부사항:" + str(e), None
 
-    return True, textPCAList
+    return True, textPCAList, analysisInfo
 
 
-#kmeans('21800520@handong.edu', '통일', "2021-09-07T06:59:01.626Z", 3, 'kmeans')
+# result = kmeans('21800520@handong.edu', '통일', "2021-09-07T06:59:01.626Z", 3, 'kmeans')
+# print(result[2])

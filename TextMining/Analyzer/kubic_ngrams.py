@@ -132,28 +132,31 @@ def ngrams(email, keyword, savedDate, optionList, analysisName, n, linkStrength)
         
         client = MongoClient(monAcc.host, monAcc.port)
         db=client.textMining
-
+        now = datetime.datetime.now()
         doc={
             "userEmail" : email,
             "keyword" : keyword,
             "savedDate": savedDate,
-            "analysisDate" : datetime.datetime.now(),
+            "analysisDate" : now,
             #"duration" : ,
             "result" : jsonDict,
             #"resultCSV":
         }
 
-        db.ngrams.insert_one(doc) 
-
+        insterted_doc = db.ngrams.insert_one(doc) 
+        analysisInfo = { "doc_id" : insterted_doc.inserted_id, "analysis_date": str(doc['analysisDate'])}
+        
         logger.info("MongoDB에 저장되었습니다.")
 
 
-        return True, jsonDict
+        return True, jsonDict, analysisInfo
+
     except Exception as e :
         import traceback
         err = traceback.format_exc()
         logger.error(identification+str(err))
-        return False, err
+        return False, err, None
     
 
-#ngrams('21800520@handong.edu', '북한', "2021-08-10T10:59:29.974Z", 10, 'tfidf', 3, 100)
+# result = ngrams('21800520@handong.edu', '북한', "2021-08-10T10:59:29.974Z", 10, 'tfidf', 3, 100)
+# print(result[2])
