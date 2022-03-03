@@ -40,7 +40,7 @@ def tfidf(email, keyword, savedDate, optionList, analysisName):
         err = traceback.format_exc()
         logger.info(identification + "분석할 단어수는 양의 정수여야 합니다" + str(err))
         #print(identification + "분석할 단어수는 양의 정수여야 합니다" + str(err))
-        return "failed", "분석할 단어수는 양의 정수이어야 합니다. "
+        return "failed", "분석할 단어수는 양의 정수이어야 합니다. ", None
     try:
         logger.info(identification + "분석에 필요한 데이터를 가져옵니다.")
         corpus = search_in_mydoc2(email, keyword, savedDate)['all_content'].tolist()    #문장으로 이루어진 doc
@@ -58,7 +58,7 @@ def tfidf(email, keyword, savedDate, optionList, analysisName):
     except Exception as e:
         err = traceback.format_exc()
         logger.error(identification+"분석에 필요한 데이터를 가져올 수 없습니다. \n"+str(err))
-        return "failed", "분석에 필요한 데이터를 가져올 수 없습니다. \n 세부사항:" + str(e)
+        return "failed", "분석에 필요한 데이터를 가져올 수 없습니다. \n 세부사항:" + str(e), None
 
     try:
         logger.info(identification + "데이터를 tfidf 벡터화 합니다.")
@@ -67,7 +67,7 @@ def tfidf(email, keyword, savedDate, optionList, analysisName):
     except Exception as e:
         err = traceback.format_exc()
         logger.error(identification+"tfidf 백터화 과정에서 에러가 발생했습니다. \n"+str(err))
-        return "failed", "tfidf 백터화 과정에서 에러가 발생했습니다. \n 세부사항:" + str(e)
+        return "failed", "tfidf 백터화 과정에서 에러가 발생했습니다. \n 세부사항:" + str(e), None
 
     try:
         df = pd.DataFrame(tfidf_vectorizer.transform(corpus).toarray(), columns=feature_names)
@@ -96,7 +96,7 @@ def tfidf(email, keyword, savedDate, optionList, analysisName):
     except Exception as e:
         err = traceback.format_exc()
         logger.error(identification+"tfidf 분석 결과를 구하는 과정에서 에러가 발생했습니다. \n"+str(err))
-        return "failed", "tfidf 분석 결과를 구하는 과정에서 에러가 발생했습니다. \n 세부사항:" + str(e)
+        return "failed", "tfidf 분석 결과를 구하는 과정에서 에러가 발생했습니다. \n 세부사항:" + str(e), None
 
     # print(tfidf_dict)
     # print(list_graph)
@@ -177,12 +177,13 @@ def tfidf(email, keyword, savedDate, optionList, analysisName):
         
         client = MongoClient(monAcc.host, monAcc.port)
         db=client.textMining
-
+        nTokens = optionList
+        now = datetime.datetime.now()
         doc={
             "userEmail" : email,
             "keyword" : keyword,
             "savedDate": savedDate,
-            "analysisDate" : datetime.datetime.now(),
+            "analysisDate" : now,
             #"duration" : ,
             "nTokens": optionList,
             "result_table" : tfidf_dict,
@@ -190,14 +191,17 @@ def tfidf(email, keyword, savedDate, optionList, analysisName):
             #"resultCSV":
         }
 
-        db.tfidf.insert_one(doc) 
+        insterted_doc = db.tfidf.insert_one(doc)# doc id return
+        analysisInfo = { "doc_id" : insterted_doc.inserted_id, "analysis_date": str(doc['analysisDate'])}
 
         logger.info("MongoDB에 저장되었습니다.") 
     except Exception as e:
         import traceback
         err = traceback.format_exc()
         logger.error(identification +str(err))
-        return False, err
-    return tfidf_dict, list_graph
+        return False, err, None
 
-#tfidf('21800520@handong.edu', '통일', "2021-09-07T06:59:01.626Z", "-100", 'tfidf')
+    return tfidf_dict, list_graph, analysisInfo
+
+# result = tfidf('21800520@handong.edu', '통일', "2021-09-07T06:59:01.626Z", "80", 'tfidf')
+# print(result[2])

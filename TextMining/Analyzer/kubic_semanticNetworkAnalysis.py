@@ -64,7 +64,7 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName,
         err = traceback.format_exc()
         logger.info(identification + "분석할 단어수는 양의 정수여야 합니다" +str(err))
         #print(identification + "분석할 단어수는 양의 정수여야 합니다" +str(err))
-        return "failed", "분석할 단어수는 양의 정수이어야 합니다. "
+        return "failed", "분석할 단어수는 양의 정수이어야 합니다. ", None
     
     try:
         int(linkStrength)
@@ -74,7 +74,7 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName,
         err = traceback.format_exc()
         #print(identification + "연결강도는 0~100 사이의 양의 정수여야 합니다" +str(err))
         logger.info(identification + "연결강도는 0~100 사이의 양의 정수여야 합니다" +str(err))
-        return "failed", "연결강도는 0~100 사이의 양의 정수여야 합니다 "
+        return "failed", "연결강도는 0~100 사이의 양의 정수여야 합니다 ", None
 
 
     try:
@@ -98,7 +98,7 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName,
     except Exception as e:
         err = traceback.format_exc()
         logger.error(identification+"빈도수분석정보를 가져오는 중에 오류가 발생했습니다. \n"+str(err))
-        return "failed", "빈도수분석정보를 가져오는 중에 오류가 발생했습니다. 세부사항: " + str(e)
+        return "failed", "빈도수분석정보를 가져오는 중에 오류가 발생했습니다. 세부사항: " + str(e), None
     
     try:
         logger.info(identification + "전처리 정보를 가져옵니다.")
@@ -107,7 +107,7 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName,
     except Exception as e:
         err = traceback.format_exc()
         logger.error(identification+"전처리 정보를 가져오는데 실패하였습니다. \n"+str(err))
-        return "failed", "전처리 정보를 가져오는데 실패하였습니다. 세부사항:" + str(e)
+        return "failed", "전처리 정보를 가져오는데 실패하였습니다. 세부사항:" + str(e), None
     
 
     try:
@@ -126,7 +126,7 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName,
     except Exception as e:
         err = traceback.format_exc()
         logger.error(identification+"연결망 생성을 위한 사전 생성에 실패하였습니다. \n"+str(err))
-        return "failed", "연결망 생성을 위한 사전 생성에 실패하였습니다. 세부사항:" + str(e)
+        return "failed", "연결망 생성을 위한 사전 생성에 실패하였습니다. 세부사항:" + str(e), None
 
     try:
         logger.info(identification + "연결망 생성")
@@ -143,7 +143,7 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName,
     except Exception as e:
         err = traceback.format_exc()
         logger.error(identification+"연결망 생성에 실패하였습니다. \n"+str(err))
-        return "failed", "연결망 생성에 실패하였습니다. 세부사항:" + str(e)
+        return "failed", "연결망 생성에 실패하였습니다. 세부사항:" + str(e), None
 
     try:
         def id2word(d):
@@ -168,7 +168,7 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName,
     except Exception as e:
         err = traceback.format_exc()
         logger.error(identification+"단어별 중심성 사전 만들기에 실패했습니다. \n"+str(err))
-        return "failed", "단어별 중심성 사전 만들기에 실패했습니다. 세부사항:" + str(e)
+        return "failed", "단어별 중심성 사전 만들기에 실패했습니다. 세부사항:" + str(e), None
 
 
     try:
@@ -234,25 +234,27 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName,
     except Exception as e:
         err = traceback.format_exc()
         logger.error(identification+"결과를 json형식으로 만드는데 실패하였습니다. \n"+str(err))
-        return "failed", "결과를 json형식으로 만드는데 실패하였습니다. 세부사항:" + str(e)
+        return "failed", "결과를 json형식으로 만드는데 실패하였습니다. 세부사항:" + str(e), None
 
     try:
         logger.info(identification + "MongoDB에 데이터를 저장합니다.")
         client = MongoClient(monAcc.host, monAcc.port)
         db=client.textMining
+        now = datetime.datetime.now()
 
         doc={
             "userEmail" : email,
             "keyword" : keyword,
             "savedDate": savedDate,
-            "analysisDate" : datetime.datetime.now(),
+            "analysisDate" : now,
             #"duration" : ,
             "resultGraphJson" : jsonDict,
             "resultCenJson" : cen_dict
             #"resultCSV":
         }
 
-        db.network.insert_one(doc) 
+        insterted_doc = db.network.insert_one(doc) 
+        analysisInfo = { "doc_id" : insterted_doc.inserted_id, "analysis_date": str(doc['analysisDate'])}
         logger.info(identification + "MongoDB에 저장되었습니다.")
         
     except Exception as e:
@@ -260,7 +262,7 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName,
         logger.error(identification + "MongoDB에 결과를 저장하는 중에 오류가 발생했습니다. \n"+str(err))
         return "failed", "MongoDB에 결과를 저장하는 중에 오류가 발생했습니다. 세부사항:" + str(e)
 
-    return jsonDict, cen_dict
+    return jsonDict, cen_dict, analysisInfo
     
 
 
@@ -270,4 +272,5 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName,
 
 
 #semanticNetworkAnalysis('21600280@handong.edu', '북한', "2021-07-08T11:46:03.973Z", 100, 'tfidf')
-#semanticNetworkAnalysis('21800520@handong.edu', '북한', "2021-08-10T10:59:29.974Z", "100", 'network', 10000)
+# result = semanticNetworkAnalysis('21800520@handong.edu', '북한', "2021-08-10T10:59:29.974Z", "100", 'network', 40)
+# print(result[2])
