@@ -1,3 +1,7 @@
+import sys, os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname('TextMining/Tokenizer'))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname('TextMining/Analyzer'))))
+
 from elasticsearch import Elasticsearch
 
 import TextMining.Tokenizer.esAccount as esAcc 
@@ -8,18 +12,19 @@ from TextMining.Tokenizer.kubic_mystorage import *#
 # import esAccount as esAcc
 # from kubic_mystorage import *
 
-import sys, os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname('TextMining/Tokenizer'))))
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname('TextMining/Analyzer'))))
+
 from ssl import create_default_context
 import re
 import pandas as pd
+
+import traceback
 
 es = Elasticsearch(
         [esAcc.host],
         http_auth=(esAcc.id, esAcc.password),
         scheme="https",
-        port= esAcc.port
+        port= esAcc.port,
+        verify_certs=False # 이거 왜 해야하는고야
 )
 index = esAcc.index
 
@@ -93,6 +98,7 @@ def search_in_mydoc_add_title(email, keyword, savedDate):
     #savedDate = datetime.datetime.strptime(savedDate, "%Y-%m-%dT%H:%M:%S.%fZ")
     idList = getMyDocByEmail2(email, keyword, savedDate) # es애서 삭제된 id도 포함
     try:
+        print(idList)
         if idList[0] == 'failed':
             return 'failed', idList[1]
     except Exception as e:
@@ -114,6 +120,8 @@ def search_in_mydoc_add_title(email, keyword, savedDate):
             }
         )
     except Exception as e:
+        err = traceback.format_exc()
+        print(err)
         return 'failed', "search_in_mydoc_add_title: es search에서 문제가 생겼습니다. \n 세부사항: "+str(e)   
     
     try:
@@ -121,7 +129,8 @@ def search_in_mydoc_add_title(email, keyword, savedDate):
     
         # 실제로 받아온 response 에 근거하여, idlist 를 새로 만듦
 
-        hangul = re.compile('[^ ㄱ-ㅣ가-힣]+')
+        # hangul = re.compile('[^ ㄱ-ㅣ가-힣]+') 영어 및 특수문자 추가
+        hangul = re.compile('[^ [\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"a-zA-Z0-9ㄱ-ㅣ가-힣]+')
 
         idList=[]
         dateList=[]
@@ -139,11 +148,15 @@ def search_in_mydoc_add_title(email, keyword, savedDate):
             fileContent = str(fileContent).replace("None",'')
             fileContent = hangul.sub('', fileContent)
 
+            # 문장부호로 문장단위 끊기
+            fileContent = re.split('[.!?]', fileContent)
+
             idList.append(docId)
             dateList.append(postDate)
             bodyList.append(postBody)
             fileList.append(fileContent)
-            titleList.append(postTitle)    
+            titleList.append(postTitle)
+
     except Exception as e:
         return 'failed', "search_in_mydoc_add_title: es search 후 구조화 과정에서 문제가 생겼습니다. \n 세부사항: "+str(e)    
     
@@ -153,10 +166,15 @@ def search_in_mydoc_add_title(email, keyword, savedDate):
     df['post_title'] = titleList
     df['post_body'] = bodyList
     df['file_content'] = fileList
+    df['all_content'] = df['file_content']
+    #df['all_content'] = df['post_body'].str.cat(df['file_content'], sep=' ', na_rep='No data')
 
-    df['all_content'] = df['post_body'].str.cat(df['file_content'], sep=' ', na_rep='No data')
+    return True, df[['idList', 'post_date', 'all_content', 'post_title', 'post_body']]
 
-    return True, df[['idList', 'post_date', 'all_content', 'post_title']]
+# result, df = search_in_mydoc_add_title('21800520@handong.edu', '북한', "2021-09-07T07:01:07.137Z")
+# print(df["all_content"][0])
+
+
 #########################################
 
 # def search_in_mydoc(email):
