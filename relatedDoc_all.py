@@ -4,11 +4,12 @@ import json
 import sys
 import traceback
 import os
-from common import prs
 from elasticsearch import Elasticsearch
 from common import cmm
-import topic_analysis.esAccount as esAcc
+#import topic_analysis.esAccount as esAcc
 
+sys.path.append(os.path.abspath('/home/middleware/TIBigdataMiddleware/topic_analysis'))
+import esAccount as esAcc
 
 es = Elasticsearch(
     [esAcc.host],
@@ -17,6 +18,7 @@ es = Elasticsearch(
     port= esAcc.port,
     verify_certs=False
 )
+index = esAcc.index
 
 TFIDF_DIR = "./rcmdHelper/tfidfValues/"
 DATA_DIR = "./rcmdHelper/data/"
@@ -30,10 +32,12 @@ def create_similiarity(data = None):
 def makeCorpus (resp):
     corpus = []
     for oneDoc in resp['hits']['hits']:
+            print(oneDoc["_source"]["post_title"])    
+            print(oneDoc["_source"]["hash_key"])
             if "file_extracted_content" in oneDoc["_source"].keys():
                 corpus.append(
                     {
-                        "_id" : oneDoc["_id"],
+                        "hashkey" : oneDoc["_source"]["hash_key"],
                         "post_title" : oneDoc["_source"]["post_title"],
                         "content" : oneDoc["_source"]["file_extracted_content"]
                     }
@@ -41,7 +45,7 @@ def makeCorpus (resp):
             else:
                 corpus.append(
                     {
-                        "_id" : oneDoc["_id"],
+                        "hashkey" : oneDoc["_source"]["hash_key"],
                         "post_title" : oneDoc["_source"]["post_title"],
                         "content" : oneDoc["_source"]["post_body"]
                     }
@@ -55,7 +59,7 @@ def filterEmptyDoc (corpus):
 
     for idx, doc in enumerate(corpus):
         if doc["content"] != "":
-            ids.append(doc["_id"])
+            ids.append(doc["hashkey"])
             titles.append(doc["post_title"])
             contents.append(doc["content"])
     
@@ -74,18 +78,21 @@ def createJson(dir, result, count):
     with open("{dir}{num}.json".format(dir=dir, num=count), 'w', -1, "utf-8") as f:
         json.dump(result, f, ensure_ascii=False)
 
-
+print("start")
 analysisResult = []
 count = 0
 # Get first 100 data
 resp = es.search( 
-    index = "monstache_index", 
+    
+    index = index, 
     body = { "size":100, "query": { "match_all" : {} } },    
     scroll='10m'
 )
+print("get first 100 data")
 c = processData(resp)
 createJson(DATA_DIR, filterEmptyDoc(c), count)
 analysisResult = analysisResult + c
+print("analysis data is collected")
 
 scrollId = resp["_scroll_id"]
 while len(resp['hits']['hits']):
@@ -102,6 +109,9 @@ while len(resp['hits']['hits']):
 
 analysisResult = filterEmptyDoc(analysisResult)
 
+print("all data is collected and empty docs are filtered")
+print("test shut down")
+sys.exit(0)
 # global cosine_sim
 global cosine_sim
 
@@ -143,9 +153,9 @@ for index, id in enumerate(analysisResult['id']):
     for i, oneRcmd in enumerate(rcmdTbl):
         if i == 0 :
             continue
-        docIdx = oneRcmd[0]#몇번째 문서인지 알려준다.
+        docIdx = oneRcmd[0]
         rcmdList.append([analysisResult["id"][docIdx], oneRcmd[1]])
-        oneDocRcmd = {"docID" : id, "rcmd" : rcmdList}
+        oneDocRcmd = {"hashkey" : id, "rcmd" : rcmdList}
     createJson(RESULT_DIR, [oneDocRcmd], index)
 
 print("Done")
