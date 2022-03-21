@@ -13,7 +13,7 @@ from numpy.core.fromnumeric import shape
 from TextMining.Tokenizer.kubic_data import *
 from TextMining.Tokenizer.kubic_mystorage import *
 import pandas as pd
-from konlpy.tag import Mecab
+# from konlpy.tag import Mecab
 from jamo import h2j, j2hcj
 import re
 
@@ -420,7 +420,7 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
     
     # usr 권한이 없어 사용 불가능하기 때문에, /home/dapi2/TIBigdataMiddleware/TextMining/userlocallibmecab 을 새로 만들고 사용
     # make install 시에 DESDIR 지정
-    mecab = Mecab('/home/middleware/mecab/usr/local/lib/mecab/dic/mecab-ko-dic') #/usr/local/lib/mecab/dic/mecab-ko-dic을 자동으로 참조
+    mecab = Mecab( dicpath = '/home/middleware/mecab/userlocallibmecab/usr/local/lib/mecab/dic/mecab-ko-dic') #/usr/local/lib/mecab/dic/mecab-ko-dic을 자동으로 참조
    
     #success, doc = stop_syn(email, keyword, savedDate, mecab, wordclass)
     success, doc = stop_syn_add_title(email, keyword, savedDate, mecab, wordclass, stopwordTF, synonymTF)
