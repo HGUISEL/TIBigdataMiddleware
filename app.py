@@ -16,6 +16,9 @@ import json
 import sys
 from rcmdHelper import rcmd as rc
 
+import account.port as mdwPort
+
+
 #error
 #from common.cmm import INDEX
 
@@ -186,6 +189,7 @@ def textmining():
 
     try: 
         # current_app.preprocess_request()
+        print("got request")
         if request.method == 'POST':
             data = request.json 
             identification = str(data['userEmail'])+'_'+'textmining'+'_'+str(data['savedDate'])+"// "
@@ -897,4 +901,4 @@ if __name__ == "__main__": # 다른 코드에 import되어있을 경우에는 �
 #    app.run(host="0.0.0.0", port=5050) 
     
     context=(kubic_ssl.crt,kubic_ssl.key) #gitignore 비밀경로
-    app.run(host='0.0.0.0', port=15050, ssl_context=context, debug=True)   
+    app.run(host='0.0.0.0', port=mdwPort.middlewarePort, ssl_context=context, debug=True)   
