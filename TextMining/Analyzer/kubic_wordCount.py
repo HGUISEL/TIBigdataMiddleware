@@ -187,5 +187,5 @@ def word_count(email, keyword, savedDate, optionList, analysisName):
 
 
 #3차원 리스트
-result = word_count('21800520@handong.edu', '북한', "2021-09-07T07:01:07.137Z", 100, 'count')
-print(result)
+# result = word_count('21800520@handong.edu', '북한', "2021-09-07T07:01:07.137Z", 100, 'count')
+# print(result)
