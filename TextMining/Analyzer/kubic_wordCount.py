@@ -41,11 +41,17 @@ def word_count(email, keyword, savedDate, optionList, analysisName):
         return "failed", "분석할 단어수는 양의 정수이어야 합니다. ", None
     try:
         logger.info(identification+ "전처리 내용을 가져옵니다.")
-        doc, nTokens = getPreprocessing(email, keyword, savedDate, optionList)
-        if doc == "failed":
-            return doc, nTokens
+        docs, nTokens = getPreprocessing(email, keyword, savedDate, optionList)
+        if docs == "failed":
+            return docs, nTokens
         else:
-            doc = sum(doc, []) # 중첩리스트 하나로 합치기
+            sentenceList = []
+            tokenList = []
+            for doc in docs:
+                sentenceList += doc
+            for sentence in sentenceList:
+                tokenList += sentence
+
             logger.info(identification+ "전처리 내용을 성공적으로 가져왔습니다.")
             #print(doc, nTokens)    
     except Exception as e:
@@ -58,8 +64,8 @@ def word_count(email, keyword, savedDate, optionList, analysisName):
     try:
         logger.info(identification+ "전처리 내용을 벡터화 합니다.")
         vectorizer = CountVectorizer(analyzer='word', max_features=int(optionList), tokenizer=None)
-        words=vectorizer.fit(doc)
-        words_fit = vectorizer.fit_transform(doc)
+        words=vectorizer.fit(tokenList)
+        words_fit = vectorizer.fit_transform(tokenList)
     
         word_list=vectorizer.get_feature_names() #=sorted(vectorizer.vocabulary_)
         #print("Vec사전:", word_list, '\n빈도수:', words_fit.toarray().sum(axis=0))
@@ -178,5 +184,8 @@ def word_count(email, keyword, savedDate, optionList, analysisName):
     logger.info(identification+ "MongoDB에 결과 저장")
     
     return dict_words, list_graph, analysisInfo
- 
-# result = word_count('21600280@handong.edu', '북한', "2021-07-08T11:46:03.973Z", 100, 'count')
+
+
+#3차원 리스트
+result = word_count('21800520@handong.edu', '북한', "2021-09-07T07:01:07.137Z", 100, 'count')
+print(result)
