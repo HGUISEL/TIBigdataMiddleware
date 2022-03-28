@@ -273,5 +273,5 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName,
 
 #semanticNetworkAnalysis('21600280@handong.edu', '북한', "2021-07-08T11:46:03.973Z", 100, 'tfidf')
 # 3 차원
-# result = semanticNetworkAnalysis(''21800520@handong.edu', '북한', "2021-09-07T07:01:07.137Z", "100", 'network', 40)
-# print(result[2])
+result = semanticNetworkAnalysis('21800520@handong.edu', '북한', "2021-09-07T07:01:07.137Z", "100", 'network', 40)
+print(result[2])
