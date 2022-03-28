@@ -182,14 +182,18 @@ def word_count(email, keyword, savedDate, optionList, analysisName, save = True)
         }
         insterted_doc = db.count.insert_one(doc) 
         logger.info(identification+ "MongoDB에 결과 저장 완료") 
+
+        analysisInfo = { "doc_id" : insterted_doc.inserted_id, "analysis_date": str(doc['analysisDate'])}
+
+        return dict_words, list_graph, analysisInfo
     else:
         logger.info(identification+ "옵션에 따라, MongoDB에 저장하지 않습니다.")
-
-    analysisInfo = { "doc_id" : insterted_doc.inserted_id, "analysis_date": str(doc['analysisDate'])}
+        return dict_words, list_graph
 
     
     
-    return dict_words, list_graph, analysisInfo
+    
+    
 
 
 # 3차원 리스트 테스트 코드
