@@ -42,6 +42,7 @@ def word_count(email, keyword, savedDate, optionList, analysisName):
     try:
         logger.info(identification+ "전처리 내용을 가져옵니다.")
         docs, nTokens = getPreprocessing(email, keyword, savedDate, optionList)
+        print(docs[0][1:10])
         if docs == "failed":
             return docs, nTokens
         else:
@@ -186,6 +187,6 @@ def word_count(email, keyword, savedDate, optionList, analysisName):
     return dict_words, list_graph, analysisInfo
 
 
-#3차원 리스트
+# 3차원 리스트 테스트 코드
 # result = word_count('21800520@handong.edu', '북한', "2021-09-07T07:01:07.137Z", 100, 'count')
 # print(result)
