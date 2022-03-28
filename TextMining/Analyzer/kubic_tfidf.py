@@ -28,6 +28,22 @@ import operator
 
 logger = logging.getLogger("flask.app.tfidf")
 
+'''
+param: 3 dimension doc-sentence list
+return: 2 dimension doc list
+'''
+def to_docList(corpus):
+    docList = []
+    for doc in corpus:
+        sentenceList = []
+        for sentence in doc:
+            sentenceList += sentence
+        docList.append(sentenceList)
+    return docList
+
+def list_tokenizer(text):
+    return text
+
 
 def tfidf(email, keyword, savedDate, optionList, analysisName):
     identification = str(email)+'_'+analysisName+'_'+str(savedDate)+"// "
@@ -43,18 +59,20 @@ def tfidf(email, keyword, savedDate, optionList, analysisName):
         return "failed", "분석할 단어수는 양의 정수이어야 합니다. ", None
     try:
         logger.info(identification + "분석에 필요한 데이터를 가져옵니다.")
-        corpus = search_in_mydoc2(email, keyword, savedDate)['all_content'].tolist()    #문장으로 이루어진 doc
+        # corpus = search_in_mydoc2(email, keyword, savedDate)['all_content'].tolist()    # 문장으로 이루어진 doc # 왜 이걸 사용하는지..?
+        corpus, tokenNum = getPreprocessing(email, keyword, savedDate, optionList)
+        # print(len(corpus))
+        # print(corpus[0])
+
+        # 문장별 토큰리스트(2차원)로 만들기
+        corpus = to_docList(corpus)
+        # print("***********************")
+        # print(len(corpus))
+        # #print(corpus[0])
+
         nTokens = optionList
         #print("corpus\n", corpus, "\nNumber of Doc: ",len(corpus))
-        top_words = getCount(email, keyword, savedDate, optionList)
-        if top_words is None:
-            logger.info(identification+"빈도수 분석 정보가 없습니다. 빈도수 분석을 먼저 실시합니다. ")
-            word_count(email, keyword, savedDate, optionList, "wordcount")
-            top_words = getCount(email, keyword, savedDate, optionList)[0]
-        else:
-            top_words = top_words[0]
-        top_words = json.loads(top_words)
-    
+
     except Exception as e:
         err = traceback.format_exc()
         logger.error(identification+"분석에 필요한 데이터를 가져올 수 없습니다. \n"+str(err))
@@ -62,8 +80,10 @@ def tfidf(email, keyword, savedDate, optionList, analysisName):
 
     try:
         logger.info(identification + "데이터를 tfidf 벡터화 합니다.")
-        tfidf_vectorizer = TfidfVectorizer().fit(top_words)
+        # tfidf_vectorizer = TfidfVectorizer().fit(top_words) 기존 코드. 왜 top_words를 학습하지..?
+        tfidf_vectorizer = TfidfVectorizer(analyzer = lambda x:x, lowercase=False).fit(corpus)
         feature_names = tfidf_vectorizer.get_feature_names()
+
     except Exception as e:
         err = traceback.format_exc()
         logger.error(identification+"tfidf 백터화 과정에서 에러가 발생했습니다. \n"+str(err))
@@ -203,5 +223,5 @@ def tfidf(email, keyword, savedDate, optionList, analysisName):
 
     return tfidf_dict, list_graph, analysisInfo
 
-# result = tfidf('21800520@handong.edu', '통일', "2021-09-07T06:59:01.626Z", "80", 'tfidf')
-# print(result[2])
+# result = tfidf('21800520@handong.edu', '북한', "2021-09-07T07:01:07.137Z", "5", 'tfidf')
+# print(result[1])
