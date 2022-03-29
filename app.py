@@ -16,8 +16,6 @@ import json
 import sys
 from rcmdHelper import rcmd as rc
 
-import account.port as mdwPort
-
 
 #error
 #from common.cmm import INDEX
