@@ -17,6 +17,14 @@ import traceback
 
 logger = logging.getLogger("flask.app.topicLDA")
 
+def to_docList(corpus):
+    docList = []
+    for doc in corpus:
+        sentenceList = []
+        for sentence in doc:
+            sentenceList += sentence
+        docList.append(sentenceList)
+    return docList
 
 def topicLDA(email, keyword, savedDate, optionList, analysisName):
     identification = str(email)+'_'+analysisName+'_'+str(savedDate)+"// "
@@ -34,6 +42,7 @@ def topicLDA(email, keyword, savedDate, optionList, analysisName):
     try:
         logger.info(identification + "전처리 정보를 가져옵니다.")
         preprocessed = getPreprocessing(email, keyword, savedDate, optionList)[0]
+        preprocessed = to_docList(preprocessed)
         #logger.error(preprocessed)
         # print(len(preprocessed))
         # for i in range(len(preprocessed)):
@@ -147,5 +156,5 @@ def topicLDA(email, keyword, savedDate, optionList, analysisName):
 
     return True, result_dict, analysisInfo
 
-# result = topicLDA('21800520@handong.edu', '북한', "2021-08-10T10:59:29.974Z", "4", 'LDA')
+# result = topicLDA('21800520@handong.edu', '북한', "2021-09-07T07:01:07.137Z", "4", 'LDA')
 # print(result[2])
