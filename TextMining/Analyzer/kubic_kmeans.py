@@ -187,5 +187,5 @@ def kmeans(email, keyword, savedDate, optionList, analysisName):
     return True, textPCAList, analysisInfo
 
 
-result = kmeans('21800520@handong.edu', '북한', "2021-09-07T07:01:07.137Z", 3, 'kmeans')
-print(result[1])
+# result = kmeans('21800520@handong.edu', '북한', "2021-09-07T07:01:07.137Z", 3, 'kmeans')
+# print(result[1])
