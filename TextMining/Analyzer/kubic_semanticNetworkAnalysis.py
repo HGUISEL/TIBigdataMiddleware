@@ -89,7 +89,7 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName,
         # top_words = json.loads(top_words)
 
         logger.info(identification + "빈도수분석을 실시합니다.")
-        top_words = word_count(email, keyword, savedDate, optionList, "wordcount")[0]
+        top_words = word_count(email, keyword, savedDate, optionList, "wordcount", save = False)[0]
 
         # print(optionList)
         # print(top_words)
@@ -97,8 +97,8 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName,
 
     except Exception as e:
         err = traceback.format_exc()
-        logger.error(identification+"빈도수분석정보를 가져오는 중에 오류가 발생했습니다. \n"+str(err))
-        return "failed", "빈도수분석정보를 가져오는 중에 오류가 발생했습니다. 세부사항: " + str(e), None
+        logger.error(identification+"의미연결망 분석을 위해 빈도수분석을 실행하는 도중에 오류가 발생했습니다. \n"+str(err))
+        return "failed", "의미연결망 분석을 위해 빈도수분석을 실행하는 중에 오류가 발생했습니다. 세부사항: " + str(e), None
     
     try:
         logger.info(identification + "전처리 정보를 가져옵니다.")
@@ -132,12 +132,13 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName,
         logger.info(identification + "연결망 생성")
         adjacent_matrix = np.zeros((int(optionList), int(optionList)), int)
 
-        for sentence in preprocessed:
-            for wi, i in wordToId.items():
-                if wi in sentence:
-                    for wj, j in wordToId.items():
-                        if i !=j and wj in sentence:
-                            adjacent_matrix[i][j] +=1
+        for doc in preprocessed:
+            for sentence in doc:
+                for wi, i in wordToId.items():
+                    if wi in sentence:
+                        for wj, j in wordToId.items():
+                            if i !=j and wj in sentence:
+                                adjacent_matrix[i][j] +=1
         network = nx.from_numpy_matrix(adjacent_matrix)
         
     except Exception as e:
@@ -273,5 +274,5 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName,
 
 #semanticNetworkAnalysis('21600280@handong.edu', '북한', "2021-07-08T11:46:03.973Z", 100, 'tfidf')
 # 3 차원
-result = semanticNetworkAnalysis('21800520@handong.edu', '북한', "2021-09-07T07:01:07.137Z", "100", 'network', 40)
-print(result[2])
+# result = semanticNetworkAnalysis('21800520@handong.edu', '북한', "2021-09-07T07:01:07.137Z", "10", 'network', 40)
+# print(result[1])
