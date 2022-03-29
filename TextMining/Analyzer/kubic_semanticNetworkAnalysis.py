@@ -189,6 +189,7 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName,
                 nodeDict["eigenvector_cen"] = eigenvector_cen[wrd]
                 nodeDict["closeness_cen"] = closeness_cen[wrd]
                 nodeDict["between_cen"] = between_cen[wrd]
+                nodeDict["count"] = top_words[wrd]
 
                 nodeList.append(nodeDict)
         else:
