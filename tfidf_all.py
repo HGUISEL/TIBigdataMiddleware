@@ -37,6 +37,9 @@ def makeCorpus (resp):
     for oneDoc in resp['hits']['hits']:
             #print(len(oneDoc["_source"]["hash_key"]))
             #print(oneDoc["_source"]["hash_key"])
+            # file_extracted_content는 글에 있는 첨부파일
+            # post_body는 글의 본문
+
             if "file_extracted_content" in oneDoc["_source"].keys():
                 corpus.append(
                     {
