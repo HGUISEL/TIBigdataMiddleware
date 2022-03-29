@@ -41,6 +41,14 @@ logger = logging.getLogger("flask.app.hcluster")
 #logging.basicConfig(level=logging.INFO, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
 #logging.basicConfig(level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
 
+def to_doc_list(corpus):
+    docList = []
+    for doc in corpus:
+        sentenceList = []
+        for sentence in doc:
+            sentenceList += sentence
+        docList.append(sentenceList)
+    return docList
 
 def plot_dendrogram(model, **kwargs):
     # Create linkage matrix and then plot the dendrogram
@@ -114,6 +122,8 @@ def hcluster(email, keyword, savedDate, optionList, analysisName, treeLevel):
         logger.debug("문서개수: " + str(len(preprocessed)))
         logger.debug("문서제목: " + str(title))
 
+        preprocessed = to_doc_list(preprocessed)
+
         vec = CountVectorizer(analyzer = lambda x:x) # list형태를 input받을 수 있도록 함
 
         x = vec.fit_transform(preprocessed)
@@ -165,6 +175,6 @@ def hcluster(email, keyword, savedDate, optionList, analysisName, treeLevel):
 
 
 
-#hcluster('21800520@handong.edu', '북한', "2021-08-10T10:59:29.974Z", 100, 'hcluster', 3)
-# result = hcluster('21800520@handong.edu', '통일', "2021-09-07T06:59:01.626Z", 100, 'hcluster', 3)
-# print(result[2])
+# hcluster('21800520@handong.edu', '북한', "2021-08-10T10:59:29.974Z", 100, 'hcluster', 3)
+# result = hcluster('21800520@handong.edu', '북한', "2021-09-07T07:01:07.137Z", 100, 'hcluster', 3)
+# print(result[1])

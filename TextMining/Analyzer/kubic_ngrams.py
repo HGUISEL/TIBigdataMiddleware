@@ -68,8 +68,9 @@ def ngrams(email, keyword, savedDate, optionList, analysisName, n, linkStrength)
         n = int(n)
         optionList = int(optionList)
         bglist = []
-        for sentence in preprocessed:
-            bglist += list(nltk.ngrams(sentence, n))
+        for doc in preprocessed:
+            for sentence in doc:
+                bglist += list(nltk.ngrams(sentence, n))
 
         bgCountDict = Counter(bglist)
 
@@ -158,5 +159,5 @@ def ngrams(email, keyword, savedDate, optionList, analysisName, n, linkStrength)
         return False, err, None
     
 
-# result = ngrams('21800520@handong.edu', '북한', "2021-08-10T10:59:29.974Z", 10, 'tfidf', 3, 100)
-# print(result[2])
+# result = ngrams('21800520@handong.edu', '북한', "2021-09-07T07:01:07.137Z", 10, 'tfidf', 3, 100)
+# print(result[1])

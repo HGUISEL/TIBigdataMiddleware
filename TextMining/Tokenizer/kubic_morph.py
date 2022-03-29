@@ -13,7 +13,7 @@ from numpy.core.fromnumeric import shape
 from TextMining.Tokenizer.kubic_data import *
 from TextMining.Tokenizer.kubic_mystorage import *
 import pandas as pd
-from konlpy.tag import Mecab
+# from konlpy.tag import Mecab
 from jamo import h2j, j2hcj
 import re
 
@@ -149,7 +149,7 @@ def compound(email, keyword, savedDate, wordclass, stopwordTF, synonymTF, compou
     else:
         return False, "복합어사전 형식 오류"
  
-    with open("/home/dapi2/TIBigdataMiddleware/TextMining/mecab-ko-dic-2.1.1-20180720/user-dic/my-dic.csv", 'w', encoding='utf-8') as f: 
+    with open("/home/middleware/mecab/mecab-ko-dic-2.1.1-20180720/user-dic/my-dic.csv", 'w', encoding='utf-8') as f: 
         for line in file_data: 
             f.write(line)
  
@@ -181,7 +181,7 @@ def compound(email, keyword, savedDate, wordclass, stopwordTF, synonymTF, compou
     
     # usr 권한이 없어 사용 불가능하기 때문에, /home/dapi2/TIBigdataMiddleware/TextMining/userlocallibmecab 을 새로 만들고 사용
     # make install 시에 DESDIR 지정
-    mecab = Mecab('/home/dapi2/TIBigdataMiddleware/TextMining/userlocallibmecab/usr/local/lib/mecab/dic/mecab-ko-dic') #/usr/local/lib/mecab/dic/mecab-ko-dic을 자동으로 참조
+    mecab = Mecab('/home/middleware/mecab/usr/local/lib/mecab/dic/mecab-ko-dic') #/usr/local/lib/mecab/dic/mecab-ko-dic을 자동으로 참조
    
     #success, doc = stop_syn(email, keyword, savedDate, mecab, wordclass)
     success, doc = stop_syn(email, keyword, savedDate, mecab, wordclass, stopwordTF, synonymTF)
@@ -287,29 +287,32 @@ def stop_syn_add_title(email, keyword, savedDate, mecab, wordclass, stopwordTF, 
         #datas = datas[0:1]
         for i in range(len(datas['all_content'])):
             posList=[]
-            tokenToAnalyze=[]
-            poss = mecab.pos(datas['all_content'][i])
-            # datas['result'] = posList
-            # print(poss[:100])
+            for j in range(len(datas['all_content'][i])):
+                sentencePosList = []
+                tokenToAnalyze=[]
+                poss = mecab.pos(datas['all_content'][i][j])
+                # datas['result'] = posList
+                # print(poss[:100])
 
-            for token, pos in poss:
-                if wordclass[0]=='1' and pos == 'VV': # 동사만
-                    tokenToAnalyze.append(token)
-                if wordclass[1]=='1' and pos.startswith('N'): # 명사
-                    tokenToAnalyze.append(token)
-                if wordclass[2]=='1' and pos == 'VA': # 형용사 
-                    tokenToAnalyze.append(token)
-            
-            #print("저장된 토큰\n", tokenToAnalyze)
-            # 불용어처리
-            if(stopword_file != False):
-                for j in range(len(tokenToAnalyze)):
-                    if tokenToAnalyze[j] not in stopword_file:
-                        posList.append(tokenToAnalyze[j]) ############
-            else:
-                logger.error(identification +"불용어 처리에서 오류가 발생했습니다.")
-                return False, "불용어사전 형식 오류"   
-                #print("전처리 결과\n", posList[:100])
+                for token, pos in poss:
+                    if wordclass[0]=='1' and pos == 'VV': # 동사만
+                        tokenToAnalyze.append(token)
+                    if wordclass[1]=='1' and pos.startswith('N'): # 명사
+                        tokenToAnalyze.append(token)
+                    if wordclass[2]=='1' and pos == 'VA': # 형용사 
+                        tokenToAnalyze.append(token)
+                
+                #print("저장된 토큰\n", tokenToAnalyze)
+                # 불용어처리
+                if(stopword_file != False):
+                    for k in range(len(tokenToAnalyze)):
+                        if tokenToAnalyze[k] not in stopword_file:
+                            sentencePosList.append(tokenToAnalyze[k]) ############
+                else:
+                    logger.error(identification +"불용어 처리에서 오류가 발생했습니다.")
+                    return False, "불용어사전 형식 오류"   
+                    #print("전처리 결과\n", posList[:100])
+                posList.append(sentencePosList)
             resultList.append(posList)
         logger.info(identification +"형태소 추출 및 불용어사전 처리를 완료하였습니다.")
 
@@ -319,8 +322,9 @@ def stop_syn_add_title(email, keyword, savedDate, mecab, wordclass, stopwordTF, 
         return False, "형태소 추출 오류, 세부사항: "+ str(e)
     
     #print('\n유의어, 복합어사전 적용 전: ', resultList[0][20000:20100]) #16 이메일
-    # print('\n유의어, 복합어사전 적용 전: ', resultList[0][1700:1900]) ##### 
+    print('\n유의어, 복합어사전 적용 전: ', resultList[0][1700:1900]) ##### 
 
+    ''' 3차원 리스트형식으로 바꾸는 과정중. 잠깐 우의어 복합어 사전 적용 정지
     #유의어를 json형식으로 받고 dict 이용(split필요x)
     if(synonym_file != False):
         syn_df = pd.DataFrame(synonym_file)
@@ -339,7 +343,7 @@ def stop_syn_add_title(email, keyword, savedDate, mecab, wordclass, stopwordTF, 
         #print("\n유의어사전 적용 후:", resultList[0][200:300], len(resultList[0]))
     else:
         return False, "유용어사전 형식 오류"
-    
+    '''
     if len(resultList) == len(datas['post_title']):
         textDict = dict()
         textDict["title"] = datas['post_title']
@@ -380,7 +384,7 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
         return False, "복합어사전 형식 오류"
     
     try:
-        with open("/home/dapi2/TIBigdataMiddleware/TextMining/mecab-ko-dic-2.1.1-20180720/user-dic/my-dic.csv", 'w', encoding='utf-8') as f: 
+        with open("/home/middleware/mecab/mecab-ko-dic-2.1.1-20180720/user-dic/my-dic.csv", 'w', encoding='utf-8') as f: 
             for line in file_data: 
                 f.write(line)
     except Exception as e:
@@ -399,7 +403,7 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
         def __exit__(self, etype, value, traceback):
             os.chdir(self.savedPath)
     
-    with cd("~/TIBigdataMiddleware/TextMining/mecab-ko-dic-2.1.1-20180720"):
+    with cd("/home/middleware/mecab/mecab-ko-dic-2.1.1-20180720"):
         
         #subprocess.call("ls")
         logger.info(identification + "\n<<add-userdic.sh>>")
@@ -416,7 +420,7 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
     
     # usr 권한이 없어 사용 불가능하기 때문에, /home/dapi2/TIBigdataMiddleware/TextMining/userlocallibmecab 을 새로 만들고 사용
     # make install 시에 DESDIR 지정
-    mecab = Mecab('/home/dapi2/TIBigdataMiddleware/TextMining/userlocallibmecab/usr/local/lib/mecab/dic/mecab-ko-dic') #/usr/local/lib/mecab/dic/mecab-ko-dic을 자동으로 참조
+    mecab = Mecab( dicpath = '/home/middleware/mecab/userlocallibmecab/usr/local/lib/mecab/dic/mecab-ko-dic') #/usr/local/lib/mecab/dic/mecab-ko-dic을 자동으로 참조
    
     #success, doc = stop_syn(email, keyword, savedDate, mecab, wordclass)
     success, doc = stop_syn_add_title(email, keyword, savedDate, mecab, wordclass, stopwordTF, synonymTF)
@@ -492,5 +496,6 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
         }
     return success, return_mdoc #전체 형태소 분석한 단어들의 목록 (kubic 미리보기에 뜨도록) --> 출력 형태 변경
 
-#compound_add_text("21800409@handong.edu", "통일", "2021-08-06T11:52:05.706Z", "010", False, False, False)
+# result, doc = compound_add_text('21800520@handong.edu', '북한', "2021-09-07T07:01:07.137Z", "010", False, False, False)
 
+# print(doc)

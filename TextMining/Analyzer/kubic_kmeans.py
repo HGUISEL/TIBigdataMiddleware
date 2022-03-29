@@ -39,6 +39,15 @@ logger = logging.getLogger("flask.app.kmeans")
 #logging.basicConfig(level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
 #logging.basicConfig(filename = "kmeans_debug.log", level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
 
+def to_docList(corpus):
+    docList = []
+    for doc in corpus:
+        sentenceList = []
+        for sentence in doc:
+            sentenceList += sentence
+        docList.append(sentenceList)
+    return docList
+
 def kmeans(email, keyword, savedDate, optionList, analysisName):
     identification = str(email)+'_'+analysisName+'_'+str(savedDate)+"// "
     try:
@@ -80,6 +89,7 @@ def kmeans(email, keyword, savedDate, optionList, analysisName):
         logger.info(identification+"mongodb에서 전처리 내용을 가져왔습니다.")
         logger.debug(len(preprocessed))
         logger.debug(preprocessed[0][0:10])
+        preprocessed = to_docList(preprocessed)
 
     except Exception as e:
         err = traceback.format_exc()
@@ -177,5 +187,5 @@ def kmeans(email, keyword, savedDate, optionList, analysisName):
     return True, textPCAList, analysisInfo
 
 
-# result = kmeans('21800520@handong.edu', '통일', "2021-09-07T06:59:01.626Z", 3, 'kmeans')
-# print(result[2])
+# result = kmeans('21800520@handong.edu', '북한', "2021-09-07T07:01:07.137Z", 3, 'kmeans')
+# print(result[1])

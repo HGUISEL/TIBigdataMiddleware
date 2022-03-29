@@ -25,7 +25,7 @@ import traceback
 logger = logging.getLogger("flask.app.wordCount")
 
 ## CountVectorizer 빈도수 계산
-def word_count(email, keyword, savedDate, optionList, analysisName):    
+def word_count(email, keyword, savedDate, optionList, analysisName, save = True):    
     # mongo에서 전처리 결과 가져오기
     identification = str(email)+'_'+analysisName+'_'+str(savedDate)+"// "
 
@@ -41,11 +41,18 @@ def word_count(email, keyword, savedDate, optionList, analysisName):
         return "failed", "분석할 단어수는 양의 정수이어야 합니다. ", None
     try:
         logger.info(identification+ "전처리 내용을 가져옵니다.")
-        doc, nTokens = getPreprocessing(email, keyword, savedDate, optionList)
-        if doc == "failed":
-            return doc, nTokens
+        docs, nTokens = getPreprocessing(email, keyword, savedDate, optionList)
+        print(docs[0][1:10])
+        if docs == "failed":
+            return docs, nTokens
         else:
-            doc = sum(doc, []) # 중첩리스트 하나로 합치기
+            sentenceList = []
+            tokenList = []
+            for doc in docs:
+                sentenceList += doc
+            for sentence in sentenceList:
+                tokenList += sentence
+
             logger.info(identification+ "전처리 내용을 성공적으로 가져왔습니다.")
             #print(doc, nTokens)    
     except Exception as e:
@@ -58,8 +65,8 @@ def word_count(email, keyword, savedDate, optionList, analysisName):
     try:
         logger.info(identification+ "전처리 내용을 벡터화 합니다.")
         vectorizer = CountVectorizer(analyzer='word', max_features=int(optionList), tokenizer=None)
-        words=vectorizer.fit(doc)
-        words_fit = vectorizer.fit_transform(doc)
+        words=vectorizer.fit(tokenList)
+        words_fit = vectorizer.fit_transform(tokenList)
     
         word_list=vectorizer.get_feature_names() #=sorted(vectorizer.vocabulary_)
         #print("Vec사전:", word_list, '\n빈도수:', words_fit.toarray().sum(axis=0))
@@ -134,49 +141,61 @@ def word_count(email, keyword, savedDate, optionList, analysisName):
     # print('File Name: %s \tFile Size: %d' %(BarFile, bar_file_size))
     # print('File Name: %s \tFile Size: %d' %(WcFile, wc_file_size))
     
-    ### Mongo 저장 ###
-    client = MongoClient(monAcc.host, monAcc.port)
-    #print('MongoDB에 연결을 성공했습니다.')
-    logger.info(identification+ "MongoDB연결 성공")
-    db=client.textMining
-    nTokens = optionList
-    now = datetime.datetime.now()
-    #print("time: ", now,'\n', now.strftime("%Y-%m-%dT%H:%M:%S.%fZ")) #형식
+    if save:
+        ### Mongo 저장 ###
+        client = MongoClient(monAcc.host, monAcc.port)
+        #print('MongoDB에 연결을 성공했습니다.')
+        logger.info(identification+ "MongoDB연결 성공")
+        db=client.textMining
+        nTokens = optionList
+        now = datetime.datetime.now()
+        #print("time: ", now,'\n', now.strftime("%Y-%m-%dT%H:%M:%S.%fZ")) #형식
+        
+        # ## 몽고에 Barchart 이미지 binary로 저장
+        # print("\nMongoDB에 빈도수 분석 결과를 바차트로 저장합니다.")
+        # fs = gridfs.GridFS(db, 'count') #count.files, count.chunks로 생성됨
+        # with open(BarFile, 'rb') as f:
+        #     contents = f.read()
+        # fs.put(contents, filename='wc_bar')
+
+        # ## 몽고의 count.files & count.chunks collection에 WordCloud 이미지 binary로 저장
+        # print("MongoDB에 빈도수 분석 결과를 wordcloud로 저장합니다.\n")
+        # with open(WcFile, 'rb') as f:
+        #     contents = f.read()
+        # fs.put(contents, filename='wc_wordcloud')
+
+        # barBinary = getBinaryImage(bar_file_size, analysisName)
+        # wcBinary = getBinaryImage(wc_file_size, analysisName)
+
+        doc={
+            "userEmail" : email,
+            "keyword" : keyword,
+            "savedDate": savedDate,
+            "analysisDate" : now,
+            #"duration" : ,
+            "nTokens" : nTokens,
+            "result_graph" : json.dumps(list_graph, ensure_ascii=False),
+            "result_table" : json.dumps(dict_words, ensure_ascii=False),
+            # "resultBar" : barBinary,
+            # "resultWC" : wcBinary,
+            #"resultCSV" :,
+        }
+        insterted_doc = db.count.insert_one(doc) 
+        logger.info(identification+ "MongoDB에 결과 저장 완료") 
+
+        analysisInfo = { "doc_id" : insterted_doc.inserted_id, "analysis_date": str(doc['analysisDate'])}
+
+        return dict_words, list_graph, analysisInfo
+    else:
+        logger.info(identification+ "옵션에 따라, MongoDB에 저장하지 않습니다.")
+        return dict_words, list_graph
+
     
-    # ## 몽고에 Barchart 이미지 binary로 저장
-    # print("\nMongoDB에 빈도수 분석 결과를 바차트로 저장합니다.")
-    # fs = gridfs.GridFS(db, 'count') #count.files, count.chunks로 생성됨
-    # with open(BarFile, 'rb') as f:
-    #     contents = f.read()
-    # fs.put(contents, filename='wc_bar')
-
-    # ## 몽고의 count.files & count.chunks collection에 WordCloud 이미지 binary로 저장
-    # print("MongoDB에 빈도수 분석 결과를 wordcloud로 저장합니다.\n")
-    # with open(WcFile, 'rb') as f:
-    #     contents = f.read()
-    # fs.put(contents, filename='wc_wordcloud')
-
-    # barBinary = getBinaryImage(bar_file_size, analysisName)
-    # wcBinary = getBinaryImage(wc_file_size, analysisName)
-
-    doc={
-        "userEmail" : email,
-        "keyword" : keyword,
-        "savedDate": savedDate,
-        "analysisDate" : now,
-        #"duration" : ,
-        "nTokens" : nTokens,
-        "result_graph" : json.dumps(list_graph, ensure_ascii=False),
-        "result_table" : json.dumps(dict_words, ensure_ascii=False),
-        # "resultBar" : barBinary,
-        # "resultWC" : wcBinary,
-        #"resultCSV" :,
-    }
-    insterted_doc = db.count.insert_one(doc)  
-    analysisInfo = { "doc_id" : insterted_doc.inserted_id, "analysis_date": str(doc['analysisDate'])}
-
-    logger.info(identification+ "MongoDB에 결과 저장")
     
-    return dict_words, list_graph, analysisInfo
- 
-# result = word_count('21600280@handong.edu', '북한', "2021-07-08T11:46:03.973Z", 100, 'count')
+    
+    
+
+
+# 3차원 리스트 테스트 코드
+# result = word_count('21800520@handong.edu', '북한', "2021-09-07T07:01:07.137Z", 100, 'count')
+# print(result)

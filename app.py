@@ -60,11 +60,10 @@ es = Elasticsearch(
         [esAcc.host],
         http_auth=(esAcc.id, esAcc.password),
         scheme="https",
-        port= esAcc.port,
-        verify_certs=False
+        port= esAcc.port
     )
 
-app = Flask(__name__) 
+# app = Flask(__name__) 
 api = Api(app)
 
 CORS(app, support_credentials=True)
@@ -894,11 +893,12 @@ def handle_exception(e):
     response.content_type = "application/json"
     return response
 
+import account.BEMiddleware as BEMW
+
 if __name__ == "__main__": # 다른 코드에 import되어있을 경우에는 실행되지 않도록 함
 
-    # flask run(실행하면 port를 정해줄수 있는데 default는 5000): 5000 , python app.py는 5050
-    # 앞으로 Angular에서 5050으로 보내줄 것임
-#    app.run(host="0.0.0.0", port=5050) 
-    
+    # flask run(실행하면 port를 정해줄수 있다.
+    # 가릴 수 있도록 변수 형식으로 불러오기.
+ 
     context=(kubic_ssl.crt,kubic_ssl.key) #gitignore 비밀경로
-    app.run(host='0.0.0.0', port=mdwPort.middlewarePort, ssl_context=context, debug=True)   
+    app.run(host=BEMW.hostIP, port=BEMW.port, ssl_context=context, debug=True)   

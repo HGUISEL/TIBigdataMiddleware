@@ -23,6 +23,15 @@ import traceback
 
 logger = logging.getLogger("flask.app.word2vec")
 
+def to_docList(corpus):
+    docList = []
+    for doc in corpus:
+        sentenceList = []
+        for sentence in doc:
+            sentenceList += sentence
+        docList.append(sentenceList)
+    return docList
+
 # 리스트 받아서 0~1값으로 min-maz normalize
 def normalization(x):
     min_value = min(x)
@@ -37,10 +46,8 @@ def make_normalization_model(un_norm_list):
         model_dict[un_norm_list[i]] = norm_list[i]
     return model_dict
 
-
-
 def cut_with_option(list,email, keyword, savedDate, optionList):
-    top_words = word_count(email, keyword, savedDate, optionList, "wordcount")[0]
+    top_words = word_count(email, keyword, savedDate, optionList, "wordcount", save = False)[0]
     result_lst = []
     for word in top_words.keys():
         if word in list:
@@ -67,7 +74,9 @@ def word2vec(email, keyword, savedDate, optionList, analysisName):
     try:
         logger.info(identification + "전처리 정보를 가져옵니다.")
         preprocessed = getPreprocessing(email, keyword, savedDate, optionList)[0]
+        preprocessed = to_docList(preprocessed)
         #logger.error(preprocessed)
+
         print("문서의 개수:",len(preprocessed))
         for i in range(len(preprocessed)):
             print(i,"번째 문서의 단어 수:",len(preprocessed[i]))
@@ -141,7 +150,6 @@ def word2vec(email, keyword, savedDate, optionList, analysisName):
             "savedDate": savedDate,
             "analysisDate" : now,
             #"duration" : ,
-            "nTokens" : nTokens,
             "result_graph" : json.dumps(textTSNEList, ensure_ascii=False),
             # "resultBar" : barBinary,
             # "resultWC" : wcBinary,

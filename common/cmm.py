@@ -1,3 +1,4 @@
+# This Python file uses the following encoding: utf-8
 """
 cmm.py
 purpose : common features for all algorithm usage
