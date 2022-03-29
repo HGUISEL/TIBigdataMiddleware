@@ -150,7 +150,6 @@ def word2vec(email, keyword, savedDate, optionList, analysisName):
             "savedDate": savedDate,
             "analysisDate" : now,
             #"duration" : ,
-            "nTokens" : nTokens,  
             "result_graph" : json.dumps(textTSNEList, ensure_ascii=False),
             # "resultBar" : barBinary,
             # "resultWC" : wcBinary,
