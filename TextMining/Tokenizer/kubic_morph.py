@@ -508,6 +508,6 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
         }
     return success, return_mdoc #전체 형태소 분석한 단어들의 목록 (kubic 미리보기에 뜨도록) --> 출력 형태 변경
 
-result, doc = compound_add_text('21800520@handong.edu', '북한', "2021-09-07T07:01:07.137Z", "010", False, False, False)
+# result, doc = compound_add_text('21800520@handong.edu', '북한', "2021-09-07T07:01:07.137Z", "010", False, False, False)
 
-print(doc["tokenList"])
+# print(doc["tokenList"])
