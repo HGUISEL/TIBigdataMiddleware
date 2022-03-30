@@ -353,6 +353,14 @@ def stop_syn_add_title(email, keyword, savedDate, mecab, wordclass, stopwordTF, 
         
     return True, textDict
 
+def make_return_result_list(docList):
+    result = list()
+    for doc in docList:
+        for sentence in doc:
+            for corpus in sentence:
+                result.append(corpus)
+                if len(result) == 10:
+                    return result
 
 def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymTF, compoundTF):
 #def compound(email, keyword, savedDate, wordclass): 
@@ -440,12 +448,8 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
         return success, doc
 
     try:
-        return_result_list = list()
-        for i in range(len(doc['content'])):
-            if len(doc['content'][i]) < 10:
-                return_result_list.append(doc['content'][i])
-            else:
-                return_result_list.append(doc['content'][i][0:10])
+        return_result_list = make_return_result_list(doc['content'])
+
     except Exception as e:
         err = traceback.format_exc()
         logger.info(identification + "return list를 만드는 중에 에러 발생 세부사항: " + str(err))
