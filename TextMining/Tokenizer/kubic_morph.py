@@ -322,7 +322,7 @@ def stop_syn_add_title(email, keyword, savedDate, mecab, wordclass, stopwordTF, 
         return False, "형태소 추출 오류, 세부사항: "+ str(e)
     
     #print('\n유의어, 복합어사전 적용 전: ', resultList[0][20000:20100]) #16 이메일
-    print('\n유의어, 복합어사전 적용 전: ', resultList[0][1700:1900]) ##### 
+    # print('\n유의어, 복합어사전 적용 전: ', resultList[0][1700:1900]) ##### 
 
     ''' 3차원 리스트형식으로 바꾸는 과정중. 잠깐 우의어 복합어 사전 적용 정지
     #유의어를 json형식으로 받고 dict 이용(split필요x)
