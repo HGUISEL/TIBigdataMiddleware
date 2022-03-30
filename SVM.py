@@ -67,7 +67,8 @@ def SVMTrain():
     ### train_data 불러오기 ###
     try:
         logger.info("훈련할 데이터를 불러옵니다.")
-        data=pd.read_csv("./train_data/single_20110224-20210224.csv")
+        data=pd.read_csv("/home/middleware/train_data/single_20110224-20210224.csv", engine='python', error_bad_lines=False)
+        logger.info("훈련할 csv파일을 가져왔습니다.")
         data.columns.to_list()
         data = data.drop_duplicates()
         del data['Unnamed: 0']
@@ -185,7 +186,7 @@ def MoEs(date):
     ### db상황에 따라 SVM 실행하기 ###
     try:
         db=client.topic_analysis
-        collection_num=db.svm.count()
+        collection_num=db.topics.count()
         if collection_num==0:#최초 시작
             logger.info('svmDB에 ',collection_num,'개의 데이터가 있습니다. ')
             (hash_key, doc_title, tokenized_doc, contents, times)=Pre_date(date)
@@ -212,7 +213,7 @@ def MoEs(date):
                 "topic" : result[i],
                 "timestamp": times[i]
             }
-            db.svm.insert_one(doc)
+            db.topics.insert_one(doc)
         logger.info('MongoDB의 svm collection에 분석한 데이터를 저장을 완료했습니다.')
     except Exception as e:
         trace_back=traceback.format_exc()
