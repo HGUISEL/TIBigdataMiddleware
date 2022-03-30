@@ -899,4 +899,5 @@ if __name__ == "__main__": # 다른 코드에 import되어있을 경우에는 �
     # 가릴 수 있도록 변수 형식으로 불러오기.
  
     context=(kubic_ssl.crt,kubic_ssl.key) #gitignore 비밀경로
-    app.run(host=BEMW.hostIP, port=BEMW.port, ssl_context=context, debug=True)   
+    app.run(host=BEMW.hostIP, port=BEMW.port, ssl_context=context)   
+    # app.run(host=BEMW.hostIP, port=BEMW.port, ssl_context=context, debug=True)   
