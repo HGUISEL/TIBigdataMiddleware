@@ -1,0 +1,19 @@
+2021-08-16 11:21:02,330 INFO: 훈련할 데이터를 불러옵니다. in SVM.py:69
+2021-08-16 11:21:05,286 INFO: train data를 불러오는데 성공하였습니다. in SVM.py:74
+2021-08-16 11:21:05,286 INFO: 키워드 데이터의 가중치를 구합니다. in SVM.py:83
+2021-08-16 11:21:21,604 INFO: 키워드 데이터의 가중치를 구하는데 성공하였습니다. in SVM.py:86
+2021-08-16 11:21:21,604 INFO: SVM 모델학습을 시작합니다. in SVM.py:95
+2021-08-16 11:21:26,976 INFO: SVM 모델학습을 완료하였습니다. in SVM.py:98
+2021-08-16 11:21:27,339 INFO: 훈련한 모델을 저장하였습니다. in SVM.py:115
+2022-01-08 13:44:45,647 INFO: MongoDB에 연결을 시도합니다. in SVM.py:174
+2022-01-08 13:44:45,658 INFO: 훈련할 데이터를 불러옵니다. in SVM.py:69
+2022-01-08 13:44:45,724 INFO: MongoDB에 연결을 성공했습니다. in SVM.py:178
+2022-01-08 13:44:45,740 ERROR: SVM을 통해 주제예측한 데이터 저장에 실패하였습니다. name 'logger' is not defined in SVM.py:202
+2022-01-08 13:44:45,741 INFO: MongoDB의 svm collection에 분석한 데이터의 주제를 저장을 시작합니다. in SVM.py:207
+2022-01-08 13:44:45,741 ERROR: MongoDB의 svm collection에 분석한 데이터를 저장하는데 실패했습니다. local variable 'hash_key' referenced before assignment in SVM.py:220
+2022-01-08 13:44:49,049 INFO: train data를 불러오는데 성공하였습니다. in SVM.py:74
+2022-01-08 13:44:49,049 INFO: 키워드 데이터의 가중치를 구합니다. in SVM.py:83
+2022-01-08 13:45:05,570 INFO: 키워드 데이터의 가중치를 구하는데 성공하였습니다. in SVM.py:86
+2022-01-08 13:45:05,570 INFO: SVM 모델학습을 시작합니다. in SVM.py:95
+2022-01-08 13:45:11,002 INFO: SVM 모델학습을 완료하였습니다. in SVM.py:98
+2022-01-08 13:45:11,390 INFO: 훈련한 모델을 저장하였습니다. in SVM.py:115

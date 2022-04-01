@@ -1,0 +1,191 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname('TextMining/Tokenizer'))))
+
+from numpy.core.records import array
+
+
+from TextMining.Tokenizer.kubic_morph import *
+from TextMining.Tokenizer.kubic_data import *
+from TextMining.Tokenizer.kubic_mystorage import *
+from TextMining.Analyzer.kubic_wordCount import *
+
+import account.MongoAccount as monAcc
+
+import numpy as np
+import operator
+
+from bson import json_util
+
+from io import StringIO
+import gridfs
+import csv
+from collections import defaultdict
+
+import pandas as pd
+from gensim.models import Word2Vec
+from sklearn.manifold import TSNE
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
+from sklearn.cluster import AgglomerativeClustering
+import scipy.cluster.hierarchy as shc
+
+import logging
+import traceback
+
+logger = logging.getLogger("flask.app.kmeans")
+#logging.basicConfig(level=logging.INFO, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
+#logging.basicConfig(level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
+#logging.basicConfig(filename = "kmeans_debug.log", level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
+
+def to_docList(corpus):
+    docList = []
+    for doc in corpus:
+        sentenceList = []
+        for sentence in doc:
+            sentenceList += sentence
+        docList.append(sentenceList)
+    return docList
+
+def kmeans(email, keyword, savedDate, optionList, analysisName):
+    identification = str(email)+'_'+analysisName+'_'+str(savedDate)+"// "
+    try:
+        int(optionList)
+        if not(0 <= int(optionList)):
+            raise Exception("군집수는 양의 정수여야 합니다. 입력된 값: "+ str(optionList))
+
+    except Exception as e:
+        err = traceback.format_exc()
+        #logger.info(identification + "분석할 단어수는 양의 정수여야 합니다" +str(err))
+        print(identification + "군집수는 양의 정수여야 합니다" +str(err))
+        return "failed", "군집수는 양의 정수여야 합니다. ", None
+    
+    try:
+        logger.info(identification + "빈도수분석 정보를 가져옵니다.")
+        try:
+            top_words = getCount(email, keyword, savedDate, optionList)
+            if top_words is None:
+                logger.info(identification+"빈도수 분석 정보가 없습니다. 빈도수 분석을 먼저 실시합니다. ")
+                word_count(email, keyword, savedDate, optionList, "wordcount")
+                top_words = getCount(email, keyword, savedDate, optionList)[0]
+            else:
+                top_words = top_words[0]
+        except Exception as e:
+            logger.info(identification+"빈도수 분석 정보가 없습니다. 빈도수 분석을 먼저 실시합니다. ")
+            word_count(email, keyword, savedDate, optionList, "wordcount")
+            top_words = getCount(email, keyword, savedDate, optionList)[0]
+            
+        top_words = json.loads(top_words)    
+    except Exception as e:
+        err = traceback.format_exc()
+        logger.error(identification+"빈도수분석정보를 가져오는 중에 오류가 발생했습니다. \n"+str(err))
+        return "failed", "빈도수분석정보를 가져오는 중에 오류가 발생했습니다. 세부사항: " + str(e), None
+
+
+    try:
+    # preprocessed = getPreprocessing(email, keyword, savedDate, optionList)[0]
+        preprocessed, titleList = getPreprocessingAddTitle(email, keyword, savedDate, optionList)[0:2]
+        logger.info(identification+"mongodb에서 전처리 내용을 가져왔습니다.")
+        logger.debug(len(preprocessed))
+        logger.debug(preprocessed[0][0:10])
+        preprocessed = to_docList(preprocessed)
+
+    except Exception as e:
+        err = traceback.format_exc()
+        logger.error(identification+"전처리 정보를 가져오는데 실패하였습니다. \n"+str(err))
+        return "failed", "전처리 정보를 가져오는데 실패하였습니다. 세부사항:" + str(e), None
+
+    try:
+        logger.info(identification+"벡터화를 실시합니다.")
+        vec = CountVectorizer(analyzer = lambda x:x) # list형태를 input받을 수 있도록 함
+
+        x = vec.fit_transform(preprocessed)
+        df = pd.DataFrame(x.toarray(), columns=vec.get_feature_names(), index = titleList)
+        logger.info("벡터화 완료")  
+    except Exception as e:
+        err = traceback.format_exc()
+        logger.error(identification+"벡터화과정에서 에러가 발생했습니다. \n"+str(err))
+        return "failed", "벡터화과정에서 에러가 발생했습니다. 세부사항:" + str(e), None
+
+    try:
+        logger.info(identification + "군집분석을 실시합니다.")
+        kmeans = KMeans(n_clusters=int(optionList)).fit(df)    
+    except Exception as e:
+        err = traceback.format_exc()
+        logger.error(identification+"문서 개수보다 군집 수가 많습니다. \n"+str(err))
+        return "failed", "문서 개수보다 군집 수가 많습니다. \n군집수를 문서개수보다 적게 해주시기 바랍니다. \n 현재 문서 수: " + str(len(preprocessed)) + " 입력한 군집 수: " + optionList, None
+
+    try:
+        logger.info(identification + "분할군집분석 실행(군집수 3개)")
+        logger.debug(kmeans.labels_)
+
+        pca = PCA(n_components=2)
+        principalComponents=pca.fit_transform(df)
+        principalDF = pd.DataFrame(data = principalComponents, columns = ['principal_component_1', 'principal_component_2'])
+    except Exception as e:
+        err = traceback.format_exc()
+        logger.error(identification+"분할군집분석 실행중 오류가 발생했습니다. \n"+str(err))
+        return "failed", "분할군집분석 실행중 오류가 발생했습니다. 세부사항:" + str(e), None
+
+    try:
+        logger.info(identification+"결과를 json파일로 만듭니다.")
+        indexList = [ item for item in principalDF.index]
+        # https://observablehq.com/@d3/scatterplot-with-shapes
+
+        jsonDict = dict()
+        textPCAList = list()
+        
+        for i in range(len(indexList)):
+            textNum = indexList[i]
+            textDict = dict()
+            textDict["category"] = int(kmeans.labels_[textNum])
+            textDict["x"] = int(principalDF["principal_component_1"][textNum])
+            textDict['y'] = int(principalDF["principal_component_2"][textNum])
+            textDict['title'] = titleList[i]
+            textPCAList.append(textDict)
+        logger.debug(textPCAList)
+
+    except Exception as e:
+        err = traceback.format_exc()
+        logger.error(identification+"분할군집분석 결과를 json파일로 만드는 중에 오류가 발생했습니다. \n"+str(err))
+        return "failed", "분할군집분석 결과를 json파일로 만드는 중에 오류가 발생했습니다. 세부사항:" + str(e), None
+        
+    
+
+    # cluster=AgglomerativeClustering(n_clusters= clusterNum, linkage='ward')
+    # logger.debug(cluster.fit_predict(df))
+
+    # clusterDict = dict()
+
+
+    try:
+        logger.info(identification + "MongoDB에 데이터를 저장합니다.")
+        
+        client = MongoClient(monAcc.host, monAcc.port)
+        db=client.textMining
+        now = datetime.datetime.now()
+        doc={
+            "userEmail" : email,
+            "keyword" : keyword,
+            "savedDate": savedDate,
+            "analysisDate" : now,
+            #"duration" : ,
+            "resultPCAList" : textPCAList,
+            #"resultCSV":
+        }
+
+        insterted_doc = db.kmeans.insert_one(doc) 
+        analysisInfo = { "doc_id" : insterted_doc.inserted_id, "analysis_date": str(doc['analysisDate'])}
+        logger.info(identification + "MongoDB에 저장되었습니다.")
+
+    except Exception as e:
+        err = traceback.format_exc()
+        logger.error(identification + "MongoDB에 결과를 저장하는 중에 오류가 발생했습니다. \n"+str(err))
+        return "failed", "MongoDB에 결과를 저장하는 중에 오류가 발생했습니다. 세부사항:" + str(e), None
+
+    return True, textPCAList, analysisInfo
+
+
+# result = kmeans('21800520@handong.edu', '북한', "2021-09-07T07:01:07.137Z", 3, 'kmeans')
+# print(result[1])
