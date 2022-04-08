@@ -95,6 +95,7 @@ def SVMTrain():
     try:
         logger.info('SVM 모델학습을 시작합니다.')
         svm_model=SGDClassifier(loss='hinge', penalty='l2', alpha=0.00001, random_state=42,n_iter_no_change=5)
+        logger.info(set(data['주제']), "의 주제로 학습을 진행합니다" )
         model= svm_model.fit(tvc_data, data['주제'])
         logger.info('SVM 모델학습을 완료하였습니다.')
     except Exception as e:
@@ -186,6 +187,7 @@ def MoEs(date):
     ### db상황에 따라 SVM 실행하기 ###
     try:
         db=client.topic_analysis
+        db.topics.delete_many({})# 전체 초기화
         collection_num=db.topics.count()
         if collection_num==0:#최초 시작
             logger.info('svmDB에 ',collection_num,'개의 데이터가 있습니다. ')
@@ -199,7 +201,7 @@ def MoEs(date):
             result=SVMTest(tokenized_doc)#갱신  
     except Exception as e:
         trace_back=traceback.format_exc()
-        message=str(e)#+"\n"+ str(trace_back)
+        message=str(e)+"\n"+ str(trace_back)
         logger.error('SVM을 통해 주제예측한 데이터 저장에 실패하였습니다. %s',message)
         #sys.exit()
     

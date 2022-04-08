@@ -23,7 +23,8 @@ es = Elasticsearch(
         [esAcc.host],
         http_auth=(esAcc.id, esAcc.password),
         scheme="https",
-        port= esAcc.port
+        port= esAcc.port,
+        verify_certs=False
 )
 index = esAcc.index
     
@@ -40,15 +41,24 @@ def makeCorpus (resp):
             # file_extracted_content는 글에 있는 첨부파일
             # post_body는 글의 본문
 
-            if "file_extracted_content" in oneDoc["_source"].keys():
+            if "file_extracted_content" in oneDoc["_source"].keys() and "post_body" in oneDoc["_source"].keys():
+                corpus.append(
+                    {
+                        "hash_key" : oneDoc["_source"]["hash_key"],
+                        "post_title" : oneDoc["_source"]["post_title"],
+                        "content" : oneDoc["_source"]["post_body"] + oneDoc["_source"]["file_extracted_content"]
+                    }
+                )
+            elif "file_extracted_content" in oneDoc["_source"].keys():
                 corpus.append(
                     {
                         "hash_key" : oneDoc["_source"]["hash_key"],
                         "post_title" : oneDoc["_source"]["post_title"],
                         "content" : oneDoc["_source"]["file_extracted_content"]
-                    }
-                )
-            elif "hash_key" in oneDoc["_source"].keys():
+                        }
+                    )
+
+            elif "post_body" in oneDoc["_source"].keys():
                 corpus.append(
                     {
                         "hash_key" : oneDoc["_source"]["hash_key"],
@@ -158,12 +168,26 @@ def createJson(result, count):
     with open("{dir}{num}.json".format(dir=DIR_EntireTfidf, num=count), 'w', -1, "utf-8") as f:
         json.dump(result, f, ensure_ascii=False)
 
+import account.MongoAccount as monAcc
+from pymongo import MongoClient
+
+def saveDataMongodb(result, reset = False):
+    client = MongoClient(monAcc.host, monAcc.port)
+    db=client.analysis
+        #전체삭제
+    if reset:
+        db.tfidfs.delete_many({})
+    #저장
+    db.tfidfs.insert_many(result)
+
+
+
 # 2021.01.07 YHJ
 def getAllTfidfTable():
     count = 0
     # Get first 100 data
     resp = es.search( 
-        index = ESindex, 
+        index = index, 
         body = { "size":100, "query": { "match_all" : {} } },    
         scroll='10m'
     )
@@ -172,10 +196,15 @@ def getAllTfidfTable():
     scrollId = resp["_scroll_id"]
 
     analysisResult = runAnalysis(resp)
-    createJson(analysisResult, count)
+    # json 형식으로 저장하기
+    # createJson(analysisResult, count)
+    
+    # mongodb에 저장하기.
+    saveDataMongodb(analysisResult, reset = True)
 
     print("Done with the first set")
     cmm.showTime()
+
     
     while len(resp['hits']['hits']):
         count = count + 1
@@ -185,7 +214,13 @@ def getAllTfidfTable():
             scroll='10m'
             )        
         analysisResult = runAnalysis(resp)
-        createJson(analysisResult, count)
+        # json 형식으로 저장하기
+        # createJson(analysisResult, count)
+
+        # mongodb에 저장하기
+        saveDataMongodb(analysisResult)
+        
+
         print("done with #{}".format(count))
         cmm.showTime()
 

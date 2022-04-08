@@ -32,13 +32,13 @@ def dataPrePrcs(contents):
         #sys.exit()
 
     try:
-        logger.info('한글 외의 글자를 삭제합니다.')
+        logger.info('한글 외의 글자를 삭제합니다.', "\n 문서 수:" + str(len(contents)))
         hangul = re.compile('[^ ㄱ-ㅣ가-힣]+')
         for j in range(len(contents)):
             if re.match('[^ ㄱ-ㅣ가-힣]+',str(contents[j])):
                 no_kor_num+=1
         contents = [hangul.sub('',str(contents[cn])) for cn in range(len(contents))]
-        logger.info('한글 외의 글자를 가진',no_kor_num,'개의 문서 삭제를 완료했습니다.')
+        logger.info('한글 외의 글자를 가진',no_kor_num,'개의 문서의 한글 제외 글자를 삭제하였습니다.', "\n 문서 수:" + str(len(contents)))
     except Exception as e:
         trace_back=traceback.format_exc()
         message=str(e)#+"\n"+ str(trace_back)
@@ -67,7 +67,7 @@ def dataPrePrcs(contents):
         for i in range(num_doc):
             tokenized_doc[i] = [word for word in tokenized_doc[i] if len(word) > 1]
 
-        logger.info("한 글자 단어를 삭제를 완료했습니다.")
+        logger.info("한 글자 단어를 삭제를 완료했습니다.", "\n 문서 수:" + str(len(contents)))
     except Exception as e:
         trace_back=traceback.format_exc()
         message=str(e)#+"\n"+ str(trace_back)

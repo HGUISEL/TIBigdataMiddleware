@@ -16,13 +16,15 @@ import re
 import logging
 
 def Pre_date(date):
+    logger = __get_logger()
     try:
         logger.info('Elasticsearch server에 접속을 시도합니다.')
         es = Elasticsearch(
         [esAcc.host],
         http_auth=(esAcc.id, esAcc.password),
         scheme="https",
-        port= esAcc.port
+        port= esAcc.port,
+        verify_certs=False
     )
         logger.info('Elasticsearch server에 성공적으로 접속하였습니다.')
     except Exception as e:
@@ -68,10 +70,20 @@ def Pre_date(date):
         print('0번부터 99번까지 100개의 데이터를 처리합니다.')
         #f.write('0번부터 99번까지 100개의 데이터를 처리합니다.')
         for i in range(fetched):
-            if "file_extracted_content" in resp['hits']['hits'][i]["_source"].keys():    
+            if "file_extracted_content"in resp['hits']['hits'][i]["_source"].keys() and "post_body" in resp['hits']['hits'][i]["_source"].keys():
                 hash_key.append((resp['hits']['hits'][i]["_source"]["hash_key"])) 
                 titles.append((resp['hits']['hits'][i]["_source"]["post_title"]))
                 times.append((resp['hits']['hits'][i]["_source"]["timestamp"]))
+                contents.append((resp['hits']['hits'][i]["_source"]["post_body"]+resp['hits']['hits'][i]["_source"]["file_extracted_content"]))
+            elif "post_body" in resp['hits']['hits'][i]["_source"].keys():
+                hash_key.append((resp['hits']['hits'][i]["_source"]["hash_key"])) 
+                titles.append((resp['hits']['hits'][i]["_source"]["post_title"]))
+                times.append((resp['hits']['hits'][i]["_source"]["timestamp"]))
+                contents.append((resp['hits']['hits'][i]["_source"]["post_body"]))
+            elif "file_extracted_content" in resp['hits']['hits'][i]["_source"].keys():  
+                hash_key.append((resp['hits']['hits'][i]["_source"]["hash_key"])) 
+                titles.append((resp['hits']['hits'][i]["_source"]["post_title"]))
+                times.append((resp['hits']['hits'][i]["_source"]["timestamp"]))  
                 contents.append((resp['hits']['hits'][i]["_source"]["file_extracted_content"]))
     
         from os import path
@@ -82,12 +94,23 @@ def Pre_date(date):
             #f.write(resp_count*100,'번부터', resp_count*100+99, '번까지 100개의 데이터를 처리합니다.')
             resp=es.scroll(scroll_id=sid, scroll='1s')
             fetched=len(resp['hits']['hits'])
-            for doc in resp['hits']['hits']:
-                if "file_extracted_content" in doc["_source"].keys():
+            for doc in resp['hits']['hits']: 
+                if "post_body" in doc["_source"].keys() and "file_extracted_content" in doc["_source"].keys():
                     hash_key.append((doc["_source"]["hash_key"])) 
                     titles.append((doc["_source"]["post_title"]))
-                    times.append((doc["_source"]["timestamp"]))    
+                    times.append((doc["_source"]["timestamp"])) 
+                    contents.append(doc["_source"]["post_body"] + doc["_source"]["file_extracted_content"])
+                elif "post_body" in doc["_source"].keys():
+                    hash_key.append((doc["_source"]["hash_key"])) 
+                    titles.append((doc["_source"]["post_title"]))
+                    times.append((doc["_source"]["timestamp"]))
+                    contents.append(doc["_source"]["post_body"])
+                elif "file_extracted_content" in doc["_source"].keys(): 
+                    hash_key.append((doc["_source"]["hash_key"])) 
+                    titles.append((doc["_source"]["post_title"]))
+                    times.append((doc["_source"]["timestamp"])) 
                     contents.append(doc["_source"]["file_extracted_content"])
+
         logger.info("Elasticsearch로부터 데이터를 불러왔습니다.")
     except Exception as e:
         trace_back=traceback.format_exc()

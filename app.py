@@ -357,7 +357,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.jobstores.base import JobLookupError
 from topic_analysis.__get_logger import __get_logger
 
-#@app.route('/svm', methods=['GET'])#app객체로 라우팅 경로 설정
+@app.route('/svm', methods=['GET'])#app객체로 라우팅 경로 설정
 def svm():
     #app=Flask(__name__)
     #app.config['JSONIFY_PRETTYPRINT_REGULAR']=True
@@ -374,7 +374,7 @@ def svm():
     result=SVM.MoEs(date)
 
     return json.dumps(result, ensure_ascii=False)
-#@app.route('/train', methods=['GET'])#app객체로 라우팅 경로 설정
+@app.route('/train', methods=['GET'])#app객체로 라우팅 경로 설정
 def svm_train():
     #app = Flask(__name__)
     #app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
@@ -392,18 +392,18 @@ def svm_train():
     print("SVM 모델 학습을 완료하였습니다.")
     return "SVM 모델 학습 완료"
 
-#SVM 모델을 훈련시키는 scheduler
-sched_train = BackgroundScheduler(daemon=True)
-sched_train.add_job(svm_train,'interval',days=30)
-#sched_train.add_job(svm_train)
-sched_train.start()
+# #SVM 모델을 훈련시키는 scheduler
+# sched_train = BackgroundScheduler(daemon=True)
+# sched_train.add_job(svm_train,'interval',days=30)
+# #sched_train.add_job(svm_train)
+# sched_train.start()
 
 
-#SVM_모델을 실행하는 scheduler
-sched = BackgroundScheduler(daemon=True)
-#sched.add_job(svm)
-sched.add_job(svm,'interval',days=30)
-sched.start()
+# #SVM_모델을 실행하는 scheduler
+# sched = BackgroundScheduler(daemon=True)
+# #sched.add_job(svm)
+# sched.add_job(svm,'interval',days=30)
+# sched.start()
 
 #################################################
 #"""

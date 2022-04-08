@@ -39,6 +39,7 @@ whatap/
 __pycache__/
 TextMining/userlocallibmecab/
 account/
+log/
 
 ### relatedDoc ###
 test_cpu_result.txt
