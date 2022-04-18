@@ -291,3 +291,39 @@ UnboundLocalError: local variable 'hash_key' referenced before assignment
 2022-04-05 10:12:38,144 INFO: 주제예측을 시작합니다. in SVM.py:151
 2022-04-05 10:17:55,105 INFO: MongoDB의 svm collection에 분석한 데이터의 주제를 저장을 시작합니다. in SVM.py:210
 2022-04-05 10:18:07,366 INFO: MongoDB의 svm collection에 분석한 데이터를 저장을 완료했습니다. in SVM.py:219
+2022-04-12 09:34:33,333 INFO: MongoDB에 연결을 시도합니다. in SVM.py:177
+2022-04-12 09:34:33,341 INFO: MongoDB에 연결을 성공했습니다. in SVM.py:181
+2022-04-12 09:34:33,469 INFO: Elasticsearch server에 접속을 시도합니다. in Pre_date.py:21
+2022-04-12 09:34:33,470 INFO: Elasticsearch server에 성공적으로 접속하였습니다. in Pre_date.py:29
+2022-04-12 09:34:33,470 INFO: Elasticsearch server에 데이터를 요청합니다. in Pre_date.py:38
+2022-04-12 09:34:58,145 INFO: Elasticsearch로부터 데이터를 불러왔습니다. in Pre_date.py:114
+2022-04-12 09:34:58,145 INFO: 형태소 분석기를 실행합니다.  in Pre_date.py:123
+2022-04-12 09:34:58,145 INFO: mecab 형태소 분석기를 실행합니다. in dataPrePrcs.py:26
+2022-04-12 09:35:20,720 INFO: 각 문서의 명사를 추출합니다. in dataPrePrcs.py:49
+2022-04-12 09:51:24,267 INFO: 훈련할 데이터를 불러옵니다. in SVM.py:69
+2022-04-12 09:51:26,403 INFO: 훈련할 csv파일을 가져왔습니다. in SVM.py:71
+2022-04-12 09:51:27,221 INFO: train data를 불러오는데 성공하였습니다. in SVM.py:75
+2022-04-12 09:51:27,221 INFO: 키워드 데이터의 가중치를 구합니다. in SVM.py:84
+2022-04-12 09:51:43,731 INFO: 키워드 데이터의 가중치를 구하는데 성공하였습니다. in SVM.py:87
+2022-04-12 09:51:43,731 INFO: SVM 모델학습을 시작합니다. in SVM.py:96
+2022-04-12 09:51:49,415 INFO: SVM 모델학습을 완료하였습니다. in SVM.py:100
+2022-04-12 09:51:49,701 INFO: 훈련한 모델을 저장하였습니다. in SVM.py:117
+2022-04-12 09:55:03,970 INFO: MongoDB에 연결을 시도합니다. in SVM.py:177
+2022-04-12 09:55:03,974 INFO: MongoDB에 연결을 성공했습니다. in SVM.py:181
+2022-04-12 09:55:03,981 INFO: Elasticsearch server에 접속을 시도합니다. in Pre_date.py:21
+2022-04-12 09:55:03,983 INFO: Elasticsearch server에 성공적으로 접속하였습니다. in Pre_date.py:29
+2022-04-12 09:55:03,984 INFO: Elasticsearch server에 데이터를 요청합니다. in Pre_date.py:38
+2022-04-12 09:55:27,403 INFO: Elasticsearch로부터 데이터를 불러왔습니다. in Pre_date.py:114
+2022-04-12 09:55:27,403 INFO: 형태소 분석기를 실행합니다.  in Pre_date.py:123
+2022-04-12 09:55:27,404 INFO: mecab 형태소 분석기를 실행합니다. in dataPrePrcs.py:26
+2022-04-12 09:55:49,688 INFO: 각 문서의 명사를 추출합니다. in dataPrePrcs.py:49
+2022-04-12 10:11:15,057 INFO: 각 문서의 명사추출을 완료했습니다. in dataPrePrcs.py:54
+2022-04-12 10:11:15,057 INFO: 한 글자 단어를 삭제합니다. in dataPrePrcs.py:63
+2022-04-12 10:11:28,516 INFO: 형태소 분석기를 실행을 완료하였습니다.  in Pre_date.py:125
+2022-04-12 10:11:28,518 INFO: 저장된 모델을 불러옵니다.  in SVM.py:132
+2022-04-12 10:11:28,541 INFO: SGDClassifier(alpha=1e-05, random_state=42) in SVM.py:138
+2022-04-12 10:11:28,741 INFO: TfidfVectorizer() in SVM.py:141
+2022-04-12 10:11:28,741 INFO: 저장된 모델을 불러오는 데 성공했습니다.  in SVM.py:142
+2022-04-12 10:11:28,742 INFO: 주제예측을 시작합니다. in SVM.py:152
+2022-04-12 10:17:42,293 INFO: MongoDB의 svm collection에 분석한 데이터의 주제를 저장을 시작합니다. in SVM.py:211
+2022-04-12 10:17:55,342 INFO: MongoDB의 svm collection에 분석한 데이터를 저장을 완료했습니다. in SVM.py:220
