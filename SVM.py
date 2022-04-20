@@ -186,7 +186,7 @@ def MoEs(date):
 
     ### db상황에 따라 SVM 실행하기 ###
     try:
-        db=client.topic_analysis
+        db=client.analysis
         db.topics.delete_many({})# 전체 초기화
         collection_num=db.topics.count()
         if collection_num==0:#최초 시작
