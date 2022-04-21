@@ -57,7 +57,7 @@ def getBinaryImage(leng, analysisName):
 
 #사용자사전 get 함수(json 읽어서 dict로 return)
 def getStopword(email, keyword, savedDate): # ,json_file):
-    doc = dbTM.usersDic.find({"userEmail": email, "keyword": keyword, 'savedDate': savedDate})
+    doc = dbTM.usersDic.find({"userEmail": email})
     json_stopfile = json.dumps(doc[0]['stopword'], ensure_ascii=False)
     dict_stopfile = json.loads(json_stopfile)
     print("DB에 저장된 stopword파일입니다.\n", dict_stopfile)  
@@ -70,7 +70,7 @@ def getStopword(email, keyword, savedDate): # ,json_file):
 #getStopword("21600280@handong.edu", '북한', "2021-07-08T11:46:03.973Z")
    
 def getSynonym(email, keyword, savedDate): # ,json_file):
-    doc = dbTM.usersDic.find({"userEmail": email, "keyword": keyword, 'savedDate': savedDate})
+    doc = dbTM.usersDic.find({"userEmail": email})
     json_synfile = json.dumps(doc[0]['synonym'], ensure_ascii=False)
     dict_synfile = json.loads(json_synfile)
     print("DB에 저장된 synonym파일입니다.\n", dict_synfile)  
@@ -84,25 +84,39 @@ def getSynonym(email, keyword, savedDate): # ,json_file):
 #getSynonym("21600280@handong.edu", '북한', "2021-07-08T11:46:03.973Z")
 
 def getCompound(email, keyword, savedDate):
-    doc = dbTM.usersDic.find({"userEmail": email, "keyword": keyword}) #, 'savedDate': savedDate})
-    json_compfile = json.dumps(doc[0]['compound'], ensure_ascii=False)
-    dict_compfile = json.loads(json_compfile)
-    #return dict_compfile
-    
-    mecabPosList = ['NNG', 'NNP', 'NNB', 'NNBC', 'NR', 'NP', 'VV', 'VA', 'VX', 'VCP', 'VCN', 'MM', 'MAG', 'MAJ', 
-    'IC', 'JKS', 'JKC', 'JKG', 'JKO', 'JKB', 'JKV', 'JKQ', 'JX', 'JC', 'EP', 'EF', 'EC', 'ETN', 'XPN', 'XSN',
-    'XSV', 'XSA', 'XR', 'SF', 'SE', 'SSO', 'SSC', 'SC', 'SY', 'SL', 'SH', 'SN']
-    
-    # 복합어사전 형식오류시 False반환
-    # for key, value in dict_compfile.items():
-    #     #print(key, value)
-    #     if key == '' or value == '' or value not in mecabPosList:
-    #         return False
-    #     else:
-    #         return dict_compfile
-    
-    print("DB에 저장된 compound파일입니다.\n", dict_compfile) 
-    return dict_compfile  
+    try:
+        doc = dbTM.usersDic.find({"userEmail": email}) #, 'savedDate': savedDate})
+        json_compfile = json.dumps(doc[0]['compound'], ensure_ascii=False)
+        dict_compfile = json.loads(json_compfile)
+        #return dict_compfile
+    except Exception as e:
+        print("불용어 불러오기 실패",e)
+        return False
+    try:
+        mecabPosList = ['NNG', 'NNP', 'NNB', 'NNBC', 'NR', 'NP', 'VV', 'VA', 'VX', 'VCP', 'VCN', 'MM', 'MAG', 'MAJ', 
+        'IC', 'JKS', 'JKC', 'JKG', 'JKO', 'JKB', 'JKV', 'JKQ', 'JX', 'JC', 'EP', 'EF', 'EC', 'ETN', 'XPN', 'XSN',
+        'XSV', 'XSA', 'XR', 'SF', 'SE', 'SSO', 'SSC', 'SC', 'SY', 'SL', 'SH', 'SN']
+        # 프론트엔드 오류로 인한 수정코드
+        print(dict_compfile)
+        if email != "default":
+            newdict = dict()
+            for key, value in dict_compfile.items():
+                newdict[key] = value[0]
+            dict_compfile = newdict
+
+        #복합어사전 형식오류시 False반환
+        for key, value in dict_compfile.items():
+            print(key, value)
+            if key == '' or value == '' or value not in mecabPosList:
+                return False
+            else:
+                return dict_compfile
+        
+        print("DB에 저장된 compound파일입니다.\n", dict_compfile) 
+        return dict_compfile  
+    except Exception as e:
+        print(e)
+        return False
 
 #getCompound("21600280@handong.edu", '북한', "2021-07-08T11:46:03.973Z")
 #getCompound("default","", "")
