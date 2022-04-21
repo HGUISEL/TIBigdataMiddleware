@@ -321,29 +321,36 @@ def stop_syn_add_title(email, keyword, savedDate, mecab, wordclass, stopwordTF, 
         logger.error(identification + '형태소 추출 오류: '+ str(err))
         return False, "형태소 추출 오류, 세부사항: "+ str(e)
     
-    #print('\n유의어, 복합어사전 적용 전: ', resultList[0][20000:20100]) #16 이메일
+    # print('\n유의어, 복합어사전 적용 전: ', resultList[0][20000:20100]) #16 이메일
     # print('\n유의어, 복합어사전 적용 전: ', resultList[0][1700:1900]) ##### 
 
-    ''' 3차원 리스트형식으로 바꾸는 과정중. 잠깐 우의어 복합어 사전 적용 정지
+
     #유의어를 json형식으로 받고 dict 이용(split필요x)
     if(synonym_file != False):
-        syn_df = pd.DataFrame(synonym_file)
+        syn_dict = dict(synonym_file)
+        syn_temp_dict = dict()
+
+        for key, item in syn_dict.items():
+            for word in item:
+                syn_temp_dict[word] = key
+        print(syn_dict)
+        print(syn_temp_dict)
+        
         #print("유의어사전\n", syn_df, len(syn_df), len(syn_df.columns), syn_df.columns[0])
         #print("[0,1]", syn_df.iloc[0,1], " [0,2]", syn_df.iloc[0,2], "[1,0]", syn_df.iloc[1,0], " [1,1]", syn_df.iloc[1,1], " [1,2]", syn_df.iloc[1,2])
        
         #result = resultList[0]        
-        #print("유의어사전 적용 전:", resultList[0][200:300], len(resultList[0]))
-        for ri in resultList[0:1]: #doc개수
-            for i in range(len(syn_df)):
-                for j in range(len(syn_df.columns)):
-                    for k in range(len(ri)): 
-                        if ri[k] == syn_df.iloc[i,j]:
-                            # print(k, "번째, ", "**유의어 \"" ,ri[k] , "\"(을)를 찾았습니다. \"", syn_df.columns[i], '\"(으)로 변경합니다.')
-                            ri[k] = syn_df.columns[i]   
-        #print("\n유의어사전 적용 후:", resultList[0][200:300], len(resultList[0]))
+        print("유의어사전 적용 전:", resultList[0][200:210], len(resultList[0]))
+        for doc in resultList: #doc개수
+            for sentence_list in doc:
+                for k in range(len(sentence_list)): 
+                    if sentence_list[k] in syn_temp_dict.keys():
+                        # print(k, "번째, ", "**유의어 \"" ,sentence_list[k] , "\"(을)를 찾았습니다. \"", syn_temp_dict[sentence_list[k]], '\"(으)로 변경합니다.')
+                        sentence_list[k] = syn_temp_dict[sentence_list[k]]   
+        print("\n유의어사전 적용 후:", resultList[0][200:210], len(resultList[0]))
     else:
         return False, "유용어사전 형식 오류"
-    '''
+
     if len(resultList) == len(datas['post_title']):
         textDict = dict()
         textDict["title"] = datas['post_title']
