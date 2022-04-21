@@ -174,94 +174,108 @@ def search_in_mydoc_add_title(email, keyword, savedDate):
 # result, df = search_in_mydoc_add_title('21800520@handong.edu', '북한', "2021-09-07T07:01:07.137Z")
 # print(df["all_content"][0])
 
+##############################################################################################################
+def search_in_mydoc_for_research(email, keyword, savedDate, kkma = False):
+    idList = getMyDocByEmail2(email, keyword, savedDate) # es애서 삭제된 id도 포함
+    try:
+        print(idList)
+        if idList[0] == 'failed':
+            return 'failed', idList[1]
+    except Exception as e:
+        return 'failed', "getMyDocByEmail2의 리턴형식이 맞지 않습니다. "
 
-#########################################
-
-# def search_in_mydoc(email):
-#     df = pd.DataFrame()
-#     idList = getMyDocByEmail(email)
-
-#     #df['idList'] = idList
-#     dateList=[]
-#     bodyList=[]
-#     fileList=[]    
-
-#     ids= ['60840bc62cc126532ac77dee', '60844bc83a7fb186389bdbf6', '60844bc83a7fb186389bdbf8']
-#     df['idList'] = ids
-
-#     #hash_code로 doc_id 변경
-
-#     #es에 있는 모든 doc 
-#     res = es.search(
-#         index=index,
-#         body={
-#             "_source":['_id', 'post_date', 'post_title'],
-#             "query":{
-#                 "match_all":{}
-#             }
-#         }
-#     )
-
-#     response=es.search( 
-#         index=index, 
-#         body={
-#             "_source":['_id', 'post_date','post_body', 'file_extracted_content'],
-#             "size":100,
-#             "query":{
-#                 "bool":{
-#                     "filter":{
-#                         'terms':{'_id':ids}
-#                     }
-#                 }
-#             }
-#         }
-#     )
-#     countDoc =len(response['hits']['hits'])
+    try:
+        response=es.search( 
+            index=index, 
+            body={
+                "_source":['hash_key', 'post_title', 'post_date','post_body', 'file_extracted_content'],
+                "size":2000
+            }
+        )
+    except Exception as e:
+        err = traceback.format_exc()
+        print(err)
+        return 'failed', "search_in_mydoc_add_title: es search에서 문제가 생겼습니다. \n 세부사항: "+str(e)   
     
-#     hangul = re.compile('[^ ㄱ-ㅣ가-힣]+')
 
-#     for i in range(countDoc):
-#         postDate = response["hits"]["hits"][i]["_source"].get("post_date")
-#         postBody= response["hits"]["hits"][i]["_source"].get("post_body")
-#         fileContent = response["hits"]["hits"][i]["_source"].get("file_extracted_content")
-        
-#         fileContent = str(fileContent).replace("None",'')
-#         fileContent = hangul.sub('', fileContent)
+    countDoc =len(response['hits']['hits'])
+    print(countDoc)
 
-#         dateList.append(postDate)
-#         bodyList.append(postBody)
-#         fileList.append(fileContent)    
-    
-#     df['post_date'] = dateList
-#     df['post_body'] = bodyList
-#     df['file_content'] = fileList
+    # 실제로 받아온 response 에 근거하여, idlist 를 새로 만듦
 
-#     df['all_content'] = df['post_body'].str.cat(df['file_content'], sep=' ', na_rep='No data')
+    hangul = re.compile('[^ ,;:?.!ㄱ-ㅣ가-힣]+') 
+    # hangul = re.compile('[^ [\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"a-zA-Z0-9ㄱ-ㅣ가-힣]+') 영어 및 특수문자 추가
 
-#     '''
-#         #한글 추출        
-#         hangul = re.compile('[^ ㄱ-ㅣ가-힣]+')
-        
-#         #데이터 전처리
-#         postDate = str(postDate)
-#         postYearDate = re.sub('[No date|None|^ |^-|^\n]+','None',postDate)[0:4]
-#         postBody = str(postBody).replace("None",'')
-#         postBody = hangul.sub('', postBody)
-#         fileContent = str(fileContent).replace("None",'')
-#         fileContent = hangul.sub('', fileContent)
-    
-#         dateList.append(postYearDate)
-#         bodyList.append(postBody)
-#         fileList.append(fileContent)
-        
-#     df['post_date'] = dateList
-#     df['post_body'] = bodyList
-#     df['file_content'] = fileList
- 
-#     #html_df = df.to_html() #flask 돌리기 위해서 
-#     #csv_df = df.to_csv('es_rawdata.csv')
-#     '''
-#     return df[['idList', 'post_date', 'all_content']]
+    idList=[]
+    dateList=[]
+    bodyList=[]
+    fileList=[]    
+    titleList=[]
 
+    def isKorean(input_s):
+        k_count = 0
+        e_count = 0
+        else_count = 0
+        for c in input_s:
+            if ord('가') <= ord(c) <= ord('힣'):
+                k_count+=1
+            elif ord('a') <= ord(c.lower()) <= ord('z'):
+                e_count+=1
+            else:
+                else_count +=1
+        if  k_count>e_count and k_count>else_count:
+            return True
+        else:
+            return False
 
-# #search_in_mydoc('sujinyang@handong.edu')
+    for i in range(countDoc):
+        docId = response["hits"]["hits"][i]["_source"].get("hash_key")
+        postDate = response["hits"]["hits"][i]["_source"].get("post_date")
+        postTitle = response["hits"]["hits"][i]["_source"].get("post_title")
+        postBody= response["hits"]["hits"][i]["_source"].get("post_body")
+        fileContent = response["hits"]["hits"][i]["_source"].get("file_extracted_content")
+        # myText = open('/home/middleware/TIBigdataMiddleware/TextMining/Tokenizer/test.txt','w')
+        # myString = str(response["hits"]["hits"][i])
+        # myText.write(myString)
+        # myText.close()
+        # return True, True
+
+        if postTitle == None or fileContent == None:
+            continue
+        if len(fileContent) < 100 :
+            continue
+        if not isKorean(postTitle):
+            continue
+
+        fileContent = str(fileContent).replace("None",'')
+        fileContent = hangul.sub('', fileContent)
+
+        # 문장부호로 문장단위 끊기
+        fileContent = re.split('[.!?]', fileContent)
+        idList.append(docId)
+        dateList.append(postDate)
+        bodyList.append(postBody)
+        fileList.append(fileContent)
+        titleList.append(postTitle)
+
+        if len(idList) > 100:
+            break
+
+    df = pd.DataFrame()
+    df['idList'] = idList
+    df['post_date'] = dateList
+    df['post_title'] = titleList
+    df['post_body'] = bodyList
+    df['file_content'] = fileList
+    df['all_content'] = df['file_content']
+    #df['all_content'] = df['post_body'].str.cat(df['file_content'], sep=' ', na_rep='No data')
+
+    # df.to_csv('/home/middleware/TIBigdataMiddleware/TextMining/Tokenizer/datas.csv', sep=',', na_rep='NaN')
+
+    return True, df[['idList', 'post_date', 'all_content', 'post_title', 'post_body']]
+
+# result, df = search_in_mydoc_for_research('21800520@handong.edu', '북한', "2021-09-07T07:01:07.137Z")
+# try:
+#     print(df["all_content"])
+# except:
+#     print(df)
