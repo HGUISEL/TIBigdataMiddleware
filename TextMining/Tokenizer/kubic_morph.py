@@ -338,8 +338,7 @@ def stop_syn_add_title(email, keyword, savedDate, mecab, wordclass, stopwordTF, 
         
         #print("유의어사전\n", syn_df, len(syn_df), len(syn_df.columns), syn_df.columns[0])
         #print("[0,1]", syn_df.iloc[0,1], " [0,2]", syn_df.iloc[0,2], "[1,0]", syn_df.iloc[1,0], " [1,1]", syn_df.iloc[1,1], " [1,2]", syn_df.iloc[1,2])
-       
-        #result = resultList[0]        
+             
         print("유의어사전 적용 전:", resultList[0][200:210], len(resultList[0]))
         for doc in resultList: #doc개수
             for sentence_list in doc:
