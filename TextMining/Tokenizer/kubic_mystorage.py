@@ -1,3 +1,5 @@
+import sys, os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname('TextMining/Analyzer'))))
 from pymongo import MongoClient
 import datetime
 from dateutil import parser
@@ -6,10 +8,15 @@ import json
 from konlpy.tag import Mecab
 import account.MongoAccount as monAcc
 
+import logging
+import traceback
+
 #from TextMining.Tokenizer.kubic_data import *
 
 client = MongoClient(monAcc.host, monAcc.port)
 db = client.user
+logger = logging.getLogger("flask.app.mystorage")
+
 def getMyDocByEmail2(email, keyword, savedDate):
     try:
         savedDate = datetime.datetime.strptime(savedDate, "%Y-%m-%dT%H:%M:%S.%fZ") 
@@ -77,7 +84,15 @@ def getSynonym(email, keyword, savedDate): # ,json_file):
 
     # 유의어사전 형식오류시 False반환
     for key, value in dict_synfile.items():
-        #print(key, value)
+        if str(type(key)) !="<class 'str'>" or str(type(value)) != "<class 'list'>":
+            return False
+
+        key = key.strip()
+        valList = []
+        for val in value:
+            valList.append(val.strip())
+        value = valList
+
         if key == '' or value == '':
             return False
     return dict_synfile
@@ -85,40 +100,60 @@ def getSynonym(email, keyword, savedDate): # ,json_file):
 
 def getCompound(email, keyword, savedDate):
     try:
+        identification = str(email)+'_'+'preprocessing(stop_syn)'+'_'+str(savedDate)+"// "
+    except Exception as e:
+        err = traceback.format_exc()
+        logger.error(identification + '로깅 설정오류: '+ str(err))
+        return False
+    try:
         doc = dbTM.usersDic.find({"userEmail": email}) #, 'savedDate': savedDate})
         json_compfile = json.dumps(doc[0]['compound'], ensure_ascii=False)
         dict_compfile = json.loads(json_compfile)
         #return dict_compfile
     except Exception as e:
-        print("불용어 불러오기 실패",e)
+        err = traceback.format_exc()
+        logger.error(identification + '사전 파일 읽기 오류: '+ str(err))
         return False
     try:
         mecabPosList = ['NNG', 'NNP', 'NNB', 'NNBC', 'NR', 'NP', 'VV', 'VA', 'VX', 'VCP', 'VCN', 'MM', 'MAG', 'MAJ', 
         'IC', 'JKS', 'JKC', 'JKG', 'JKO', 'JKB', 'JKV', 'JKQ', 'JX', 'JC', 'EP', 'EF', 'EC', 'ETN', 'XPN', 'XSN',
         'XSV', 'XSA', 'XR', 'SF', 'SE', 'SSO', 'SSC', 'SC', 'SY', 'SL', 'SH', 'SN']
         # 프론트엔드 오류로 인한 수정코드
-        print(dict_compfile)
+        # print(dict_compfile) # db에서 찾은 사전 확인
         if email != "default":
             newdict = dict()
             for key, value in dict_compfile.items():
-                newdict[key] = value[0]
+                key = key.strip()
+                print(type(value))
+                # FE에서 csv를 저장할 떄 태그 이름을 리스트 안에 저장하는 오류 방지용
+                if str(type(value)) == "<class 'list'>" and len(value) > 0:
+                    value = value[0]
+                if str(type(value)) == "<class 'str'>":
+                    value = value.strip()
+                else:
+                    print(key,value,"이(가) 복합어 형식에 맞지 않아 제거되었습니다.")
+                    continue
+                # 파일에 공백이 있는 경우 저장안하고 넘김(패스). 프론트엔드 차원에서 한번 더 확인 해야할 필요 있음.
+                # 파일에 공백이 아닌경우 공백제거 후 사전에 저장
+                if key == '' or value == '':
+                    pass
+                else:
+                    newdict[key] = value.strip()
             dict_compfile = newdict
 
         #복합어사전 형식오류시 False반환
         for key, value in dict_compfile.items():
             print(key, value)
-            if key == '' or value == '' or value not in mecabPosList:
+            if value not in mecabPosList:
                 return False
-            else:
-                return dict_compfile
-        
-        print("DB에 저장된 compound파일입니다.\n", dict_compfile) 
-        return dict_compfile  
+        logger.info("최종 적용될 복합어사전: \n", newdict)
+        return dict_compfile
     except Exception as e:
-        print(e)
+        err = traceback.format_exc()
+        logger.error(identification + '불러온 파일을 형식에 맞게 저장하는 중 오류발생: '+ str(err))
         return False
 
-#getCompound("21600280@handong.edu", '북한', "2021-07-08T11:46:03.973Z")
+#getCompound("21800520@handong.ac.kr", '북한', "2021-07-08T11:46:03.973Z")
 #getCompound("default","", "")
 
 def getPreprocessing(email, keyword, savedDate, optionList):
