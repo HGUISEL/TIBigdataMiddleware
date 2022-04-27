@@ -405,142 +405,23 @@ def svm_train():
 # sched.add_job(svm,'interval',days=30)
 # sched.start()
 
-#################################################
-#"""
-#CNN
-#2021.02.
-#"""
-#################################################
-import CNN
-import schedule
-import time
-from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.jobstores.base import JobLookupError
-
-#@app.route('/svm', methods=['GET'])#app객체로 라우팅 경로 설정
-def cnn():
-    #app = Flask(__name__)
-    #app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
-
-    now = datetime.datetime.now()
-    date = now.strftime('%Y-%m-%d')
-
-
-    filename = './log/cnn.log'
-    with open(filename,"a") as f:
-        f.write(date)
-        f.write("\n")
-    print("날짜를 기록하였습니다")
-    result=CNN.MoEs(date)
-    return json.dumps(result, ensure_ascii=False)
-
-#@app.route('/train', methods=['GET'])#app객체로 라우팅 경로 설정
-def cnn_train():
-    #app = Flask(__name__)
-    #app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
-    
-    now=datetime.datetime.now()
-    date=now.strftime('%Y-%m-%d')
-
-    filename='./log/cnn_train.log'
-    with open(filename, "a") as f:
-        f.write(date)
-        f.write("\n")
-    print("cnn_train.log에 모델학습 실행 날짜를 기록하였습니다.")
-    result=CNN. cnn_train()
-    print("CNN 모델 학습을 완료하였습니다.")
-    return "CNN 모델 학습 완료"   
-
-#sched_train = BackgroundScheduler(daemon=True)
-#sched_train.add_job(cnn_train,'interval',hours=24)
-#sched_train.add_job(cnn_train)
-#sched_train.start()
-
-#sched = BackgroundScheduler(daemon=True)
-#sched.add_job(cnn)
-#sched.start()
-
-#################################################
-#"""
-#Multi-SVM
-#2021.02
-#"""
-#################################################
-import Multi_SVM
-import schedule
-import time
-from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.jobstores.base import JobLookupError
-
-#@app.route('/svm', methods=['GET'])#app객체로 라우팅 경로 설정
-def multi_SVM():
-    #app = Flask(__name__)
-    #app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
-
-    now = datetime.datetime.now()
-    date = now.strftime('%Y-%m-%d')
-
-    filename = './log/multi_svm.log'
-    with open(filename,"a") as f:
-        f.write(date)
-        f.write("\n")
-    print("날짜를 기록하였습니다")
-    result=multi_SVM.MoEs(date)
-    return json.dumps(multi_SVM, ensure_ascii=False)
-
-#@app.route('/train', methods=['GET'])#app객체로 라우팅 경로 설정
-def multi_SVM_train():
-    #app = Flask(__name__)
-    #app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
-    now=datetime.datetime.now()
-    date=now.strftime('%Y-%m-%d')
-
-    filename='./log/multi_svm_train.log'
-    with open(filename, "a") as f:
-        f.write(date)
-        f.write("\n")
-    print("multi_svm_train.log에 모델학습 실행 날짜를 기록하였습니다.")
-    result=Multi_SVM.SVMTrain()
-    print("MULTI_SVM 모델 학습을 완료하였습니다.")
-    return "MULTI_SVM 모델 학습 완료"
-
-#sched_train = BackgroundScheduler(daemon=True)
-#sched_train.add_job(multi_SVM_train)
-#sched_train.add_job(multi_SVM_train,'interval',hours=24)
-#sched_train.start()
-
-#sched = BackgroundScheduler(daemon=True)
-#sched.add_job(multi_SVM)
-#sched.start()
-
-################################################################
-
-#@app.route("/tfidfRaw",methods=['GET'])
-def tfidfRaw():
-    #app = Flask(__name__)
-    #app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
-
-    Numdoc = 600
-
-    contents = tfidf.getTfidfRaw(Numdoc)
-    #return json.dumps(contents, ensure_ascii=False)
-    return json.dumps(contents, ensure_ascii=False)
-
-@app.route("/tfidfTable",methods=['GET'])
+@app.route("/tfidfTable",methods=['POST'])
 def tfidfTable():
+    # app.logger.info("******/tfidfTable 라우터에서 요청 확인")
+    print("******/tfidfTable 라우터에서 요청 확인")
     #app = Flask(__name__)
     #app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
-
-    Numdoc = 600
-    contents = tfidf.getTfidfTable(Numdoc)
-    return json.dumps(contents, ensure_ascii=False)
-
-#@app.route("/allTfidfTable",methods=['GET'])
-def allTfidfTable():
-    #app = Flask(__name__)
-    #app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
-    print("get request")
-    tfidf_all.getAllTfidfTable()
+    if request.method == 'POST':
+            data = request.json 
+            get_all = data["get_all"]
+    else: 
+        return 'GET result'
+    if get_all:
+        tfidf_all.getAllTfidfTable()
+    else:
+        hash_key = data["hash_key"]
+        result = tfidf_all.getAllTfidfTable(hash_key)
+        return json.dumps(result, default=json_util.default, ensure_ascii=False)
 
 
 ###################################################################################################################
@@ -565,23 +446,6 @@ def esTest():
 def testRead():
     result = esFunc.dataLoad()
 
-    return json.dumps(result, ensure_ascii=False)
-
-################################################
-"""
-LDA 잠재 디리클레 할당 모듈화
-2019.12.27.
-"""
-################################################
-# With LDA gensim library
-import LDA
-@app.route('/lda', methods=['GET'])
-def lda():
-    #app = Flask(__name__)
-    #app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
-    
-    result = LDA.LDA(10) ##문서 10개 돌림 
-    # print
     return json.dumps(result, ensure_ascii=False)
 
 #recomandation function

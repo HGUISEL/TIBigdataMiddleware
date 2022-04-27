@@ -7,6 +7,10 @@ import os
 import gensim
 from gensim import corpora
 from gensim.models import TfidfModel
+
+from sklearn.feature_extraction.text import CountVectorizer
+import pandas as pd
+
 from common import prs
 from common import cmm
 import numpy as np 
@@ -36,11 +40,12 @@ DIR_EntireTfidf = "./tfidfs/tfidfTotaldata"
 def makeCorpus (resp):
     corpus = []
     for oneDoc in resp['hits']['hits']:
-            #print(len(oneDoc["_source"]["hash_key"]))
-            #print(oneDoc["_source"]["hash_key"])
+            # print(len(oneDoc["_source"]["hash_key"]))
+            # print(oneDoc["_source"]["hash_key"])
+            # print(oneDoc["_source"].keys())
+
             # file_extracted_content는 글에 있는 첨부파일
             # post_body는 글의 본문
-
             if "file_extracted_content" in oneDoc["_source"].keys() and "post_body" in oneDoc["_source"].keys():
                 corpus.append(
                     {
@@ -66,6 +71,7 @@ def makeCorpus (resp):
                         "content" : oneDoc["_source"]["post_body"]
                         }
                     )
+    # print(len(corpus[0]["content"]))
     return corpus
 
 def filterEmptyDoc (corpus):
@@ -130,37 +136,59 @@ def runAnalysis(resp):
     # Take only non-empty data
     print("Filter Empty Data")
     corpus = filterEmptyDoc(corpus) 
+    # print(len(corpus["contents"][0])) # 첫번째 문서의 단어개수 확인
 
     # Tokenize documents
     print("Tokenize Data")
     (hash_key, titles, tokenized_doc, contents) = dataPrePrcs(corpus)
+    # print(len(tokenized_doc[0])) # 전처리 끝난 단어들 확인
 
-    # Dictionarize documents
-    print("Dictionarize Data")
-    dictionarizedDoc = corpora.Dictionary(tokenized_doc)
+    # Vectorize documents
+    print("Vectorize Data")
+    vectorizer = CountVectorizer(analyzer='word', max_features=int(100), tokenizer=None)
 
-    # Tfidif Modeling
-    print("Modeling Data")
-    corpus = corpus = [dictionarizedDoc.doc2bow(line) for line in tokenized_doc]
-    tfidfModel = TfidfModel(corpus)
+    # Analyze documents
+    count_result = []
+    for tokenList in tokenized_doc:
+        if len(tokenList) > 0 :
+            
+            words=vectorizer.fit(tokenList)
+ 
+            words_fit = vectorizer.fit_transform(tokenList)
 
-    sortedWords = []
-    # Sort by tfidf value
-    for id, word_list in enumerate(tfidfModel[corpus]):
-        word_list = sorted(word_list, key=itemgetter(1), reverse = True) 
-        sortedWords.append((id, word_list))
-    print("Sort Data: ")
+            word_list=vectorizer.get_feature_names() 
+            count_list = words_fit.toarray().sum(axis=0)
 
-    # Create Object of tfidf
+
+            df=pd.DataFrame()
+            df["words"] = word_list
+            df["count"] = count_list
+
+            count_list = list([int(x) for x in count_list])
+            df = df.sort_values(by=['count'], axis=0, ascending=False)
+            #dict_words = dict(zip(word_list,count_list))
+            dict_words = df.set_index('words').T.to_dict('records') #type: list
+            dict_words = dict_words[0]
+
+            list_count = list()
+
+            for key, value in dict_words.items():
+                wordCountList = [key,value]
+                list_count.append(wordCountList)
+        else:
+            list_count = []
+        count_result.append(list_count)
+    
+    # Create result 
     print("Create Result Object")
     result = []
-    for i, wordValuePair in sortedWords:
-        wordValuePair = sortedWords[i]
-        tfidfWord = []
-        for idx, (wordId, tfidfValue) in enumerate(wordValuePair[1]):
-            tfidfWord.append((dictionarizedDoc[wordId], tfidfValue))
-        result.append({"hash_key": hash_key[i], "docTitle": titles[i], "tfidf": tfidfWord})
-
+    if len(hash_key) == len(titles) == len(count_result):
+        print("analysis succesfully completed")
+        print("hash길이:",len(hash_key), " title길이:", len(titles), " result길이:", len(count_result))
+    else:
+        raise Exception("분석에 빠진 문서가 있습니다. \n" + "hash길이" +len(hash_key)+ "title길이" + len(titles) + "result길이" + len(count_result) )
+    for i in range(len(count_result)):
+        result.append({"hash_key": hash_key[i], "docTitle": titles[i], "count": count_result[i]})
     return result
 
 def createJson(result, count):
@@ -174,55 +202,89 @@ from pymongo import MongoClient
 def saveDataMongodb(result, reset = False):
     client = MongoClient(monAcc.host, monAcc.port)
     db=client.analysis
-        #전체삭제
+    #전체삭제
     if reset:
-        db.tfidfs.delete_many({})
+        db.counts.delete_many({})
     #저장
-    db.tfidfs.insert_many(result)
+    db.counts.insert_many(result)
 
 
 
 # 2021.01.07 YHJ
-def getAllTfidfTable():
-    count = 0
-    # Get first 100 data
-    resp = es.search( 
-        index = index, 
-        body = { "size":100, "query": { "match_all" : {} } },    
-        scroll='10m'
-    )
+def getAllTfidfTable(hash_key = False):
+    # if there's target hashkey, don't reset mongodb and search the target data from es
+    # if want to get all, reset mongodb and search all data from es
+    if hash_key:
+        resetMongo = False
+        getAll = False
+    else:
+        resetMongo = True
+        getAll = True
 
-    # Save Scroll id for next search
-    scrollId = resp["_scroll_id"]
-
-    analysisResult = runAnalysis(resp)
-    # json 형식으로 저장하기
-    # createJson(analysisResult, count)
-    
-    # mongodb에 저장하기.
-    saveDataMongodb(analysisResult, reset = True)
-
-    print("Done with the first set")
-    cmm.showTime()
-
-    
-    while len(resp['hits']['hits']):
-        count = count + 1
-        print("start set #{}".format(count))
-        resp = es.scroll( 
-            scroll_id = scrollId, 
+    if getAll:
+        count = 0
+        # Get first 100 data
+        resp = es.search( 
+            index = index, 
+            body = { "size":100, "query": { "match_all" : {} } },    
             scroll='10m'
-            )        
+        )
+        # Save Scroll id for next search
+        scrollId = resp["_scroll_id"]
+
         analysisResult = runAnalysis(resp)
         # json 형식으로 저장하기
         # createJson(analysisResult, count)
-
-        # mongodb에 저장하기
-        saveDataMongodb(analysisResult)
         
+        # mongodb에 저장하기.
+        saveDataMongodb(analysisResult, reset = resetMongo)
 
-        print("done with #{}".format(count))
+        print("Done with the first set")
         cmm.showTime()
 
+        
+        while len(resp['hits']['hits']):
+            count = count + 1
+            print("start set #{}".format(count))
+            resp = es.scroll( 
+                scroll_id = scrollId, 
+                scroll='10m'
+                )        
+            analysisResult = runAnalysis(resp)
+            # json 형식으로 저장하기
+            # createJson(analysisResult, count)
+
+            # mongodb에 저장하기
+            saveDataMongodb(analysisResult)
+            
+
+            print("done with #{}".format(count))
+            cmm.showTime()
+
+    else:
+        hash_key_list = []
+        hash_key_list.append(hash_key)
+        resp = es.search( 
+            index = index, 
+            body = { "size":100,
+                "query":{
+                    "bool":{
+                        "filter":{
+                            'terms':{'hash_key':hash_key_list}
+                        }
+                    }
+                }
+            }
+        )
+        analysisResult = runAnalysis(resp)
+        print("Analysis complete")
+        # json 형식으로 저장하기
+        # createJson(analysisResult, count)
+        
+        # mongodb에 저장하기.
+        saveDataMongodb(analysisResult, reset = resetMongo)
+        return analysisResult
+
 if __name__ == "__main__":
-    getAllTfidfTable()    
+    # print(getAllTfidfTable("10134412237507850583"))
+    getAllTfidfTable()
