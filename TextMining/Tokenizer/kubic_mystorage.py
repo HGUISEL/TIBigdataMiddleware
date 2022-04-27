@@ -118,28 +118,28 @@ def getCompound(email, keyword, savedDate):
         mecabPosList = ['NNG', 'NNP', 'NNB', 'NNBC', 'NR', 'NP', 'VV', 'VA', 'VX', 'VCP', 'VCN', 'MM', 'MAG', 'MAJ', 
         'IC', 'JKS', 'JKC', 'JKG', 'JKO', 'JKB', 'JKV', 'JKQ', 'JX', 'JC', 'EP', 'EF', 'EC', 'ETN', 'XPN', 'XSN',
         'XSV', 'XSA', 'XR', 'SF', 'SE', 'SSO', 'SSC', 'SC', 'SY', 'SL', 'SH', 'SN']
+
         # 프론트엔드 오류로 인한 수정코드
         # print(dict_compfile) # db에서 찾은 사전 확인
-        if email != "default":
-            newdict = dict()
-            for key, value in dict_compfile.items():
-                key = key.strip()
-                print(type(value))
-                # FE에서 csv를 저장할 떄 태그 이름을 리스트 안에 저장하는 오류 방지용
-                if str(type(value)) == "<class 'list'>" and len(value) > 0:
-                    value = value[0]
-                if str(type(value)) == "<class 'str'>":
-                    value = value.strip()
-                else:
-                    print(key,value,"이(가) 복합어 형식에 맞지 않아 제거되었습니다.")
-                    continue
-                # 파일에 공백이 있는 경우 저장안하고 넘김(패스). 프론트엔드 차원에서 한번 더 확인 해야할 필요 있음.
-                # 파일에 공백이 아닌경우 공백제거 후 사전에 저장
-                if key == '' or value == '':
-                    pass
-                else:
-                    newdict[key] = value.strip()
-            dict_compfile = newdict
+        newdict = dict()
+        for key, value in dict_compfile.items():
+            key = key.strip()
+            print(type(value))
+            # FE에서 csv를 저장할 떄 태그 이름을 리스트 안에 저장하는 오류 방지용
+            if str(type(value)) == "<class 'list'>" and len(value) > 0:
+                value = value[0]
+            if str(type(value)) == "<class 'str'>":
+                value = value.strip()
+            else:
+                print(key,value,"이(가) 복합어 형식에 맞지 않아 제거되었습니다.")
+                continue
+            # 파일에 공백이 있는 경우 저장안하고 넘김(패스). 프론트엔드 차원에서 한번 더 확인 해야할 필요 있음.
+            # 파일에 공백이 아닌경우 공백제거 후 사전에 저장
+            if key == '' or value == '':
+                pass
+            else:
+                newdict[key] = value.strip()
+        dict_compfile = newdict
 
         #복합어사전 형식오류시 False반환
         for key, value in dict_compfile.items():
