@@ -211,7 +211,7 @@ def saveDataMongodb(result, reset = False):
 
 
 # 2021.01.07 YHJ
-def getAllTfidfTable(hash_key = False):
+def getAllCountTable(hash_key = False):
     # if there's target hashkey, don't reset mongodb and search the target data from es
     # if want to get all, reset mongodb and search all data from es
     if hash_key:
@@ -287,4 +287,4 @@ def getAllTfidfTable(hash_key = False):
 
 if __name__ == "__main__":
     # print(getAllTfidfTable("10134412237507850583"))
-    getAllTfidfTable()
+    getAllCountTable()

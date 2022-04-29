@@ -36,8 +36,8 @@ import tfidf
 from krwordrank.hangle import normalize
 from krwordrank.word import KRWordRank
 
-#import tfidf
-import tfidf_all
+#import wordCount For all datas
+import wordCount_all
 import datetime
 import time
 
@@ -405,10 +405,10 @@ def svm_train():
 # sched.add_job(svm,'interval',days=30)
 # sched.start()
 
-@app.route("/tfidfTable",methods=['POST'])
-def tfidfTable():
+@app.route("/countTable",methods=['POST'])
+def countTable():
     # app.logger.info("******/tfidfTable 라우터에서 요청 확인")
-    print("******/tfidfTable 라우터에서 요청 확인")
+    print("******/countTable 라우터에서 요청 확인")
     #app = Flask(__name__)
     #app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
     if request.method == 'POST':
@@ -417,10 +417,10 @@ def tfidfTable():
     else: 
         return 'GET result'
     if get_all:
-        tfidf_all.getAllTfidfTable()
+        wordCount_all.getAllCountTable()
     else:
         hash_key = data["hash_key"]
-        result = tfidf_all.getAllTfidfTable(hash_key)
+        result = wordCount_all.getAllCountTable(hash_key)
         return json.dumps(result, default=json_util.default, ensure_ascii=False)
 
 
