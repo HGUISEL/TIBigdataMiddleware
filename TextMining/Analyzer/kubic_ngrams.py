@@ -59,7 +59,7 @@ def filter_links(edges, matrix, linkStrength, minWeight, maxWeight):
 
         logger.debug(str(minWeight)+" "+str(maxWeight)+" "+str(strengthVal)+" "+str(len(edgeList)))
         return edgeList
-
+# optionList: 분석할 ngram의 수
 def ngrams(email, keyword, savedDate, optionList, analysisName, n, linkStrength):
     logger.info("ngram start")
     identification = str(email)+'_'+analysisName+'_'+str(savedDate)+"// "
@@ -67,6 +67,7 @@ def ngrams(email, keyword, savedDate, optionList, analysisName, n, linkStrength)
         preprocessed = getPreprocessing(email, keyword, savedDate, optionList)[0]
         n = int(n)
         optionList = int(optionList)
+        linkStrength = int(linkStrength)
         bglist = []
         for doc in preprocessed:
             for sentence in doc:
@@ -76,10 +77,10 @@ def ngrams(email, keyword, savedDate, optionList, analysisName, n, linkStrength)
 
         sortedBgCountDict = dict(sorted(bgCountDict.items(), key=operator.itemgetter(1), reverse=True))
         sortedBgCountList = list(sortedBgCountDict.items())
-        #logger.debug(sortedBgCountList[0:optionList])
+        logger.info(sortedBgCountList[0:optionList])
         
         top_words = dict(sortedBgCountList[0:optionList])
-        #logger.debug(enumerate(top_words.keys()))
+        logger.info(str(top_words.keys()))
         
         wordList = list()
 
@@ -157,7 +158,6 @@ def ngrams(email, keyword, savedDate, optionList, analysisName, n, linkStrength)
         err = traceback.format_exc()
         logger.error(identification+str(err))
         return False, err, None
-    
 
-# result = ngrams('21800520@handong.edu', '북한', "2021-09-07T07:01:07.137Z", 10, 'tfidf', 3, 100)
-# print(result[1])
+# result = ngrams('21800520@handong.ac.kr', '사드', '2022-04-24T06:51:40.934Z', 10, 'ngrams', 3, 100)
+# print(result)

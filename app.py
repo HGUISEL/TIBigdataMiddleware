@@ -278,7 +278,8 @@ def textmining():
         
     # for ngrams
     elif analysisName == 'ngrams':
-        ngramNum = data["option2"]
+        # ngram bigram으로 고정
+        ngramNum = 2 # data["option2"]
         linkStrength = data["option3"]
         success, result_graph, analysisInfo = ngrams(email, keyword, savedDate, optionList, analysisName, ngramNum, linkStrength)
         if success :
