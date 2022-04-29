@@ -77,10 +77,10 @@ def ngrams(email, keyword, savedDate, optionList, analysisName, n, linkStrength)
 
         sortedBgCountDict = dict(sorted(bgCountDict.items(), key=operator.itemgetter(1), reverse=True))
         sortedBgCountList = list(sortedBgCountDict.items())
-        logger.info(sortedBgCountList[0:optionList])
+        logger.debug(sortedBgCountList[0:optionList])
         
         top_words = dict(sortedBgCountList[0:optionList])
-        logger.info(str(top_words.keys()))
+        logger.debug(str(top_words.keys()))
         
         wordList = list()
 
