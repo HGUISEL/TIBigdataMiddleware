@@ -392,18 +392,18 @@ def svm_train():
     print("SVM 모델 학습을 완료하였습니다.")
     return "SVM 모델 학습 완료"
 
-# #SVM 모델을 훈련시키는 scheduler
-# sched_train = BackgroundScheduler(daemon=True)
-# sched_train.add_job(svm_train,'interval',days=30)
-# #sched_train.add_job(svm_train)
-# sched_train.start()
+#SVM 모델을 훈련시키는 scheduler
+sched_train = BackgroundScheduler(daemon=True)
+sched_train.add_job(svm_train,'cron',day=1)
+#sched_train.add_job(svm_train)
+sched_train.start()
 
 
-# #SVM_모델을 실행하는 scheduler
-# sched = BackgroundScheduler(daemon=True)
-# #sched.add_job(svm)
-# sched.add_job(svm,'interval',days=30)
-# sched.start()
+#SVM_모델을 실행하는 scheduler
+sched = BackgroundScheduler(daemon=True)
+#sched.add_job(svm)
+sched.add_job(svm,'cron',day=1)
+sched.start()
 
 @app.route("/countTable",methods=['POST'])
 def countTable():
