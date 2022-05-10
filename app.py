@@ -394,10 +394,10 @@ def svm_train():
     return "SVM 모델 학습 완료"
 
 #SVM 모델을 훈련시키는 scheduler
-sched_train = BackgroundScheduler(daemon=True)
-sched_train.add_job(svm_train,'cron',day=1)
-#sched_train.add_job(svm_train)
-sched_train.start()
+# sched_train = BackgroundScheduler(daemon=True)
+# sched_train.add_job(svm_train,'cron',day=1)
+# #sched_train.add_job(svm_train)
+# sched_train.start()
 
 
 #SVM_모델을 실행하는 scheduler
