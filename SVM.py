@@ -12,7 +12,7 @@ import os
 import h5py
 import csv
 import schedule
-import time
+import time, datetime
 import os.path
 import traceback
 import pickle
@@ -187,7 +187,7 @@ def MoEs(date):
     ### db상황에 따라 SVM 실행하기 ###
     try:
         db=client.analysis
-        db.topics.delete_many({})# 전체 초기화
+        # db.topics.delete_many({})# 전체 초기화
         collection_num=db.topics.count()
         if collection_num==0:#최초 시작
             logger.info('svmDB에 ',collection_num,'개의 데이터가 있습니다. ')
@@ -224,3 +224,14 @@ def MoEs(date):
         #sys.exit()
     return result
 
+# if __name__ == "__main__":
+#     now=datetime.datetime.now()
+#     date=now.strftime('%Y-%m-%d')
+
+#     filename='./log/svm.log'
+#     with open(filename, "a") as f:
+#         f.write(date)
+#         f.write("\n")
+#     print("svm.log에 모델예측 실행 날짜를 기록하였습니다.")
+    
+#     MoEs(date)
