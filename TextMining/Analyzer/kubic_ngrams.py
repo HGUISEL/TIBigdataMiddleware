@@ -33,7 +33,17 @@ logger = logging.getLogger("flask.app.ngrams")
 #logger = logging.getLogger()
 #logging.basicConfig(level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
 
+def cal_percentile(edges, matrix, linkStrength):
+    weightList = list()
+    for s,t in edges:
+        weightList.append(int(matrix[s][t]))
+    weightArr = np.array(weightList)
+    percentile = np.percentile(weightArr, linkStrength)
+    return percentile
+
+
 def filter_links(edges, matrix, linkStrength, minWeight, maxWeight):
+    print("최소, 최대값:",minWeight, maxWeight)
     if linkStrength == 100 or minWeight == maxWeight:
         edgeList = list()
         for s,t in edges:
@@ -47,18 +57,30 @@ def filter_links(edges, matrix, linkStrength, minWeight, maxWeight):
     elif linkStrength == 0:
         return None
     else:
+        # 최대값에서 최소값을 뺴서 값으 범위값을 구하고, 그 범위에서 사용자가 원하는 퍼센트만큼의 임계치를 구한다.
         strengthVal = ( maxWeight - minWeight ) * (int(linkStrength) / 100) 
         edgeList = list()
+        linkedEdgeIDList = list()
+        percentile = cal_percentile(edges, matrix,linkStrength)
+        # 임계치보다 높은 weight값의 link만 append한다.
         for s,t in edges:
             edgeDict = dict()
             edgeDict["source"] = int(s)
             edgeDict["target"] = int(t) 
-            if int(matrix[s][t]) > strengthVal + minWeight:
+            if int(matrix[s][t]) > percentile:
+                # print("카운트", int(matrix[s][t]))
                 edgeDict["weight"] = int(matrix[s][t])
                 edgeList.append(edgeDict)
+                linkedEdgeIDList.append(int(s))
+                linkedEdgeIDList.append(int(t))
+            # else:
+            #     print("노카운트", int(matrix[s][t]))
+        
+        linkedEdgeIDList = list(set(linkedEdgeIDList))
 
-        logger.debug(str(minWeight)+" "+str(maxWeight)+" "+str(strengthVal)+" "+str(len(edgeList)))
-        return edgeList
+        print(minWeight, maxWeight, percentile, strengthVal+minWeight)
+        return edgeList, linkedEdgeIDList
+
 # optionList: 분석할 ngram의 수
 def ngrams(email, keyword, savedDate, optionList, analysisName, n, linkStrength):
     logger.info("ngram start")
@@ -107,17 +129,9 @@ def ngrams(email, keyword, savedDate, optionList, analysisName, n, linkStrength)
 
         jsonDict = dict()
         nodeList = list()
-        for n in network.nodes:
-            nodeDict = dict()
-            wrd = idToWord[n]
-            nodeDict["id"] = int(n)
-            nodeDict["name"] = wrd
-
-            nodeList.append(nodeDict)
-        
-        jsonDict["nodes"] = nodeList
-
         edgeList = list()
+        linkedEdgeIDList = list()
+        
         for s,t in network.edges:
             edgeDict = dict()
             edgeDict["source"] = int(s)
@@ -125,7 +139,18 @@ def ngrams(email, keyword, savedDate, optionList, analysisName, n, linkStrength)
             edgeDict["weight"] = int(adjacent_matrix[s][t])
             edgeList.append(edgeDict)
         
-        jsonDict["links"] = filter_links(network.edges, adjacent_matrix, linkStrength, np.min(adjacent_matrix[adjacent_matrix>0]), np.max(adjacent_matrix))
+        jsonDict["links"], linkedEdgeIDList = filter_links(network.edges, adjacent_matrix, linkStrength, np.min(adjacent_matrix[adjacent_matrix>0]), np.max(adjacent_matrix))
+
+        for n in network.nodes:
+            if int(n) in linkedEdgeIDList:
+                nodeDict = dict()
+                wrd = idToWord[n]
+                nodeDict["id"] = int(n)
+                nodeDict["name"] = wrd
+
+                nodeList.append(nodeDict)
+        
+        jsonDict["nodes"] = nodeList
 
         logger.debug(jsonDict)
         #print(jsonDict)

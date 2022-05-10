@@ -28,25 +28,52 @@ import traceback
 
 logger = logging.getLogger("flask.app.network")
 
+def cal_percentile(edges, matrix, linkStrength):
+    weightList = list()
+    for s,t in edges:
+        weightList.append(int(matrix[s][t]))
+    weightArr = np.array(weightList)
+    percentile = np.percentile(weightArr, linkStrength)
+    return percentile
 
 def filter_links(edges, matrix, linkStrength, minWeight, maxWeight):
+    print("최소, 최대값:",minWeight, maxWeight)
     if linkStrength == 100 or minWeight == maxWeight:
-        return edgeList
-    elif linkStrength == 0:
-        return None
-    else:
-        strengthVal = ( maxWeight - minWeight ) * (int(linkStrength) / 100) 
         edgeList = list()
         for s,t in edges:
             edgeDict = dict()
             edgeDict["source"] = int(s)
             edgeDict["target"] = int(t) 
-            if int(matrix[s][t]) > strengthVal + minWeight:
+            edgeDict["weight"] = int(matrix[s][t])
+            edgeList.append(edgeDict)
+        logger.debug(str(len(edgeList)))
+        return edgeList
+    elif linkStrength == 0:
+        return None
+    else:
+        # 최대값에서 최소값을 뺴서 값으 범위값을 구하고, 그 범위에서 사용자가 원하는 퍼센트만큼의 임계치를 구한다.
+        strengthVal = ( maxWeight - minWeight ) * (int(linkStrength) / 100) 
+        edgeList = list()
+        linkedEdgeIDList = list()
+        percentile = cal_percentile(edges, matrix,linkStrength)
+        # 임계치보다 높은 weight값의 link만 append한다.
+        for s,t in edges:
+            edgeDict = dict()
+            edgeDict["source"] = int(s)
+            edgeDict["target"] = int(t) 
+            if int(matrix[s][t]) > percentile:
+                # print("카운트", int(matrix[s][t]))
                 edgeDict["weight"] = int(matrix[s][t])
                 edgeList.append(edgeDict)
+                linkedEdgeIDList.append(int(s))
+                linkedEdgeIDList.append(int(t))
+            # else:
+            #     print("노카운트", int(matrix[s][t]))
+        
+        linkedEdgeIDList = list(set(linkedEdgeIDList))
 
-        # print(minWeight, maxWeight, strengthVal)
-        return edgeList
+        print(minWeight, maxWeight, percentile, strengthVal+minWeight)
+        return edgeList, linkedEdgeIDList
     
         
 
@@ -177,10 +204,15 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName,
         logger.info(identification+"네트워크 그래프용 json 만들기")
         jsonDict = dict()
         nodeList = list()
+        linkedEdgeIDList = list()
+        # print(nodeList)
+        jsonDict["links"],linkedEdgeIDList  = filter_links(network.edges, adjacent_matrix, int(linkStrength), np.min(adjacent_matrix[adjacent_matrix>0]), np.max(adjacent_matrix))
+        
         print(idToWord)
         print(network.nodes)
         if nx.is_connected(network):
             for n in network.nodes:
+                # if int(n) in linkedEdgeIDList:
                 nodeDict = dict()
                 wrd = idToWord[n]
                 nodeDict["id"] = int(n)
@@ -192,20 +224,16 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName,
                 nodeDict["count"] = top_words[wrd]
 
                 nodeList.append(nodeDict)
-        else:
-            for n in network.nodes:
-                nodeDict = dict()
-                wrd = idToWord[n]
-                nodeDict["id"] = int(n)
-                nodeDict["name"] = wrd
+        # else:
+        #     for n in network.nodes:
+        #         nodeDict = dict()
+        #         wrd = idToWord[n]
+        #         nodeDict["id"] = int(n)
+        #         nodeDict["name"] = wrd
 
-                nodeList.append(nodeDict)
+        #         nodeList.append(nodeDict)
         
         jsonDict["nodes"] = nodeList
-        # print(nodeList)
-
-        jsonDict["links"] = filter_links(network.edges, adjacent_matrix, linkStrength, np.min(adjacent_matrix[adjacent_matrix>0]), np.max(adjacent_matrix))
-
         # 큰 순서대로 sort
         if nx.is_connected(network):
             sorted_degree_cen = dict(sorted(degree_cen.items(), key=lambda item: item[1], reverse = True))
@@ -272,8 +300,6 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName,
 
 
 
-
-#semanticNetworkAnalysis('21600280@handong.edu', '북한', "2021-07-08T11:46:03.973Z", 100, 'tfidf')
-# 3 차원
-# result = semanticNetworkAnalysis('21800520@handong.edu', '북한', "2021-09-07T07:01:07.137Z", "10", 'network', 40)
-# print(result[1])
+# # 3 차원
+result = semanticNetworkAnalysis('21800520@handong.ac.kr', '사드', '2022-04-24T06:51:40.934Z', "10", 'network', "50")
+print(result[0])
