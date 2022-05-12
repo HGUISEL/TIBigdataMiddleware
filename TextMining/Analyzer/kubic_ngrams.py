@@ -142,7 +142,15 @@ def ngrams(email, keyword, savedDate, optionList, analysisName, n, linkStrength)
         jsonDict["links"], linkedEdgeIDList = filter_links(network.edges, adjacent_matrix, linkStrength, np.min(adjacent_matrix[adjacent_matrix>0]), np.max(adjacent_matrix))
 
         for n in network.nodes:
-            if int(n) in linkedEdgeIDList:
+            if linkedEdgeIDList == None:
+                nodeDict = dict()
+                wrd = idToWord[n]
+                nodeDict["id"] = int(n)
+                nodeDict["name"] = wrd
+
+                nodeList.append(nodeDict)
+                
+            elif int(n) in linkedEdgeIDList:
                 nodeDict = dict()
                 wrd = idToWord[n]
                 nodeDict["id"] = int(n)
