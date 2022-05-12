@@ -105,12 +105,19 @@ def stop_syn_add_title(email, keyword, savedDate, mecab, wordclass, stopwordTF, 
                 # datas['result'] = posList
                 # print(poss[:100])
 
+                # 대상토큰 저장 리스트
+                targetPosTagLst = []
+                # 경우에 따라 대상토큰 추가
+                if wordclass[0]=='1': # 동사만
+                    targetPosTagLst.append("VV")
+                if wordclass[1]=='1': # 명사
+                    for tag in ["NNG", "NNP", "NNB", "NNBC", "NR"]
+                        targetPosTagLst.append(tag)
+                if wordclass[2]=='1': # 형용사 
+                    targetPosTagLst.append("VA")
+
                 for token, pos in poss:
-                    if wordclass[0]=='1' and pos == 'VV': # 동사만
-                        tokenToAnalyze.append(token)
-                    if wordclass[1]=='1' and pos.startswith('N'): # 명사
-                        tokenToAnalyze.append(token)
-                    if wordclass[2]=='1' and pos == 'VA': # 형용사 
+                    if  pos in targetPosTagLst: # 대상 토큰인 경우
                         tokenToAnalyze.append(token)
                 
                 #print("저장된 토큰\n", tokenToAnalyze)
