@@ -5,6 +5,7 @@ contact: yhchoi@handong.ac.kr
 """
 import random
 import pandas as pd
+import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import time
@@ -24,8 +25,8 @@ def get_cosine_similarity(count):
     files = []
     hash_key = []
     for i in range(0, count+1):
-        files.append("./tokenizer/tokenized/td_"+str(i)+".csv")
-        df = pd.read_csv("./tokenizer/tokenized/td_"+str(i)+".csv",encoding='utf-8', dtype=str, low_memory=False)
+        files.append("./tokenized/td_"+str(i)+".csv")
+        df = pd.read_csv("./tokenized/td_"+str(i)+".csv",encoding='utf-8', dtype=str, low_memory=False)
         if df.isnull().values.any():
             df = df.dropna(how='any')
         hash_key.extend(df['hashkey'].values.tolist())
@@ -37,6 +38,8 @@ def get_cosine_similarity(count):
     tfidf = TfidfVectorizer()
     print('Start TF-IDF vectorizing...')
     tfidf_matrix = tfidf.fit_transform(corpus)
+    # 용량이 너무 커서 int64 타입을 int32타입으로 바꿔준다.
+    tfidf_matrix = tfidf_matrix.astype(np.int32)
     print('hashkey list:', len(hash_key))
     print('The shape of TF-IDF matrix is ', tfidf_matrix.shape)
     print('it took', time.time() - start_tfidf,' sec.')
