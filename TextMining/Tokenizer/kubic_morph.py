@@ -111,7 +111,7 @@ def stop_syn_add_title(email, keyword, savedDate, mecab, wordclass, stopwordTF, 
                 if wordclass[0]=='1': # 동사만
                     targetPosTagLst.append("VV")
                 if wordclass[1]=='1': # 명사
-                    for tag in ["NNG", "NNP", "NNB", "NNBC", "NR"]
+                    for tag in ["NNG", "NNP", "NNB", "NNBC", "NR"]:
                         targetPosTagLst.append(tag)
                 if wordclass[2]=='1': # 형용사 
                     targetPosTagLst.append("VA")
