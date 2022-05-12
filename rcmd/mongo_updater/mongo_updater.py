@@ -15,7 +15,7 @@ def update_mongo():
     client = MongoClient(host=mAcc.host, port=mAcc.port)
     db = client['analysis']
     collection = db['rcmds']
-    data = pd.read_csv('../cosine_similarity/rcmdsFinal.csv')
+    data = pd.read_csv('rcmdsFinal.csv')
     rcmd_data = []
 
     for i in range(len(data)):
