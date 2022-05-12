@@ -14,7 +14,6 @@ from operator import itemgetter
 import time
 import json
 import sys
-from rcmdHelper import rcmd as rc
 
 
 #error
@@ -449,21 +448,22 @@ def testRead():
 
     return json.dumps(result, ensure_ascii=False)
 
-#recomandation function
-@app.route('/rcmd', methods=['GET', 'POST'])
-def rcmd():
-    print("recomandation function init.")
+# from rcmdHelper import rcmd as rc
+# #recomandation function
+# @app.route('/rcmd', methods=['GET', 'POST'])
+# def rcmd():
+#     print("recomandation function init.")
 
-    if request.method == 'POST':
-        req = request.json
-        idList = req["idList"]
+#     if request.method == 'POST':
+#         req = request.json
+#         idList = req["idList"]
 
-    # print("Get id list from Front-End: ",idList)
+#     # print("Get id list from Front-End: ",idList)
 
-    rcmdList = rc.getRcmd(idList)
-    print("rcmd function done!")
+#     rcmdList = rc.getRcmd(idList)
+#     print("rcmd function done!")
     
-    return json.dumps(rcmdList, ensure_ascii=False)
+#     return json.dumps(rcmdList, ensure_ascii=False)
 
 
 def textRank():
