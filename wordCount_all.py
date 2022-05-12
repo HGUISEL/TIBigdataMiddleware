@@ -92,8 +92,9 @@ def dataPrePrcs(corpus):
     hashList = corpus["hash_key"]
     titles = corpus["titles"]
     contents = corpus["contents"]
-    import re
-    rex1 = re.compile('[^가-힣0-9*.?,!]')#한글 숫자 자주 쓰는 문자만 취급
+    # import re
+    # rex1 = re.compile('[^가-힣0-9*.?,!]')#한글 숫자 자주 쓰는 문자만 취급
+    # 영어나 한문일 경우 Mecab을 생략하고 countvectorizer에 analyze = 'word'옵션으로 돌려서 분석하기.
     
     tagger = Mecab()
     for i,c in enumerate(contents):
@@ -108,11 +109,22 @@ def dataPrePrcs(corpus):
     tokenized_doc = []
     failIdxList = []
     
+    #tag가 startswith("n")이거나 태그가 숫자, 영어, 한문 일 경우 살리도록.
+    tagList = ["NNG", "NNP", "NNB", "NR", "NP", "SL", "SH", "SN"]
+
     for i, c in enumerate(contents):
         num_co = num_co + 1
         try:
-            t = tagger.nouns(c)
-            tokenized_doc.append(t)
+            t = tagger.pos(c)
+            token_list = []
+            # [(word,tag),(word,tag)] 
+            # 반복문 이욯아여 tag가 startswith("n")이거나 태그가 숫자, 영어, 한문 일 경우 살리도록.
+            # data분석 전처리에서도 동일하게 적용시키기.
+            for word, tag in t:
+                if tag in tagList:
+                    token_list.append(word)
+            tokenized_doc.append(token_list)
+
         except:
             failIdxList.append(i)
     for idx in reversed(failIdxList):
@@ -126,7 +138,6 @@ def dataPrePrcs(corpus):
         tokenized_doc[i] = [word for word in tokenized_doc[i] if len(word) > 1]
     
     return hashList, titles, tokenized_doc, contents
-
 
 def runAnalysis(resp):
     # Create corpus object
@@ -145,15 +156,17 @@ def runAnalysis(resp):
 
     # Vectorize documents
     print("Vectorize Data")
-    vectorizer = CountVectorizer(analyzer='word', max_features=int(100), tokenizer=None)
+    vectorizer = CountVectorizer(analyzer='word', max_features=int(100), tokenizer=None, ngram_range = (1,2))
+    # vectorizer = CountVectorizer(analyzer='word', max_features=int(100), tokenizer=None)
+    # vectorizer = CountVectorizer(analyzer=lambda x:x, max_features=int(100), tokenizer=None)
 
     # Analyze documents
     count_result = []
     for tokenList in tokenized_doc:
         if len(tokenList) > 0 :
-            
+            # print(tokenList[0:10])
             words=vectorizer.fit(tokenList)
- 
+    
             words_fit = vectorizer.fit_transform(tokenList)
 
             word_list=vectorizer.get_feature_names() 
@@ -186,7 +199,7 @@ def runAnalysis(resp):
         print("analysis succesfully completed")
         print("hash길이:",len(hash_key), " title길이:", len(titles), " result길이:", len(count_result))
     else:
-        raise Exception("분석에 빠진 문서가 있습니다. \n" + "hash길이" +len(hash_key)+ "title길이" + len(titles) + "result길이" + len(count_result) )
+        raise Exception("분석에 빠진 문서가 있습니다. \n" + "hash길이", len(hash_key), "title길이", len(titles), "result길이", len(count_result) )
     for i in range(len(count_result)):
         result.append({"hash_key": hash_key[i], "docTitle": titles[i], "count": count_result[i]})
     return result
@@ -199,19 +212,28 @@ def createJson(result, count):
 import account.MongoAccount as monAcc
 from pymongo import MongoClient
 
-def saveDataMongodb(result, reset = False):
+def saveDataMongodb(result, reset = False, test = False):
     client = MongoClient(monAcc.host, monAcc.port)
-    db=client.analysis
+    if test:
+        # 테스트용
+        db=client.topic_analysis
+    else:
+        # 서버
+        db=client.analysis
+
     #전체삭제
     if reset:
         db.counts.delete_many({})
     #저장
-    db.counts.insert_many(result)
+    id = db.counts.insert_many(result)
+    print(id.acknowledged)
 
 
 
 # 2021.01.07 YHJ
-def getAllCountTable(hash_key = False):
+# hash_key 있으면 Mongo reset안함
+# isTest 가 True면 테스트에 저장함.
+def getAllCountTable(hash_key = False, isTest = False):
     # if there's target hashkey, don't reset mongodb and search the target data from es
     # if want to get all, reset mongodb and search all data from es
     if hash_key:
@@ -237,7 +259,7 @@ def getAllCountTable(hash_key = False):
         # createJson(analysisResult, count)
         
         # mongodb에 저장하기.
-        saveDataMongodb(analysisResult, reset = resetMongo)
+        saveDataMongodb(analysisResult, reset = resetMongo, test = isTest)
 
         print("Done with the first set")
         cmm.showTime()
@@ -255,7 +277,7 @@ def getAllCountTable(hash_key = False):
             # createJson(analysisResult, count)
 
             # mongodb에 저장하기
-            saveDataMongodb(analysisResult)
+            saveDataMongodb(analysisResult, test = isTest)
             
 
             print("done with #{}".format(count))
@@ -282,9 +304,9 @@ def getAllCountTable(hash_key = False):
         # createJson(analysisResult, count)
         
         # mongodb에 저장하기.
-        saveDataMongodb(analysisResult, reset = resetMongo)
+        saveDataMongodb(analysisResult, reset = resetMongo, test = isTest)
         return analysisResult
 
 if __name__ == "__main__":
-    # print(getAllTfidfTable("10134412237507850583"))
-    getAllCountTable()
+    print(getAllCountTable("10134412237507850583", True))
+    # getAllCountTable()
