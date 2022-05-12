@@ -110,7 +110,7 @@ def dataPrePrcs(corpus):
     failIdxList = []
     
     #tag가 startswith("n")이거나 태그가 숫자, 영어, 한문 일 경우 살리도록.
-    tagList = ["NNG", "NNP", "NNB", "NR", "NP", "SL", "SH", "SN"]
+    tagList = ["NNG", "NNP", "NNB", "NNBC", "NR", "NP", "SL", "SH", "SN"]
 
     for i, c in enumerate(contents):
         num_co = num_co + 1
