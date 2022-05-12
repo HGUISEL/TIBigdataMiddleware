@@ -46,3 +46,4 @@ Labs/
 ### relatedDoc ###
 test_cpu_result.txt
 test_rcmd_cpu.sh
+rcmd/log/
