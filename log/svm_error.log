@@ -391,3 +391,5 @@ UnboundLocalError: local variable 'hash_key' referenced before assignment
 2022-05-10 10:54:09,304 INFO: TfidfVectorizer() in SVM.py:141
 2022-05-10 10:54:09,305 INFO: 저장된 모델을 불러오는 데 성공했습니다.  in SVM.py:142
 2022-05-10 10:54:09,305 INFO: 주제예측을 시작합니다. in SVM.py:151
+2022-05-10 11:00:10,222 INFO: MongoDB의 svm collection에 분석한 데이터의 주제를 저장을 시작합니다. in SVM.py:210
+2022-05-10 11:00:28,460 ERROR: MongoDB의 svm collection에 분석한 데이터를 저장하는데 실패했습니다. list index out of range in SVM.py:223

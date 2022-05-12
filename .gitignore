@@ -40,6 +40,8 @@ __pycache__/
 TextMining/userlocallibmecab/
 account/
 log/
+common/
+Labs/
 
 ### relatedDoc ###
 test_cpu_result.txt
