@@ -156,6 +156,8 @@ def runAnalysis(resp):
 
     # Vectorize documents
     print("Vectorize Data")
+    # analyzer: 분석단위, max_features: 최대 개수(output단어 개수), 
+    # tokenizer: 토큰화할 함수, ngram_range: 분석할 ngram 범위(1,2) --> unigram 이랑 bigram둘다 셈!
     vectorizer = CountVectorizer(analyzer='word', max_features=int(100), tokenizer=None, ngram_range = (1,2))
     # vectorizer = CountVectorizer(analyzer='word', max_features=int(100), tokenizer=None)
     # vectorizer = CountVectorizer(analyzer=lambda x:x, max_features=int(100), tokenizer=None)
