@@ -1,13 +1,31 @@
 import pandas as pd
+import numpy as np
+
 from konlpy.tag import Mecab
 import re
 import warnings
 import os 
 import time
 
+import logging
+import logging.handlers
+
+LOG_MAX_SIZE = 1024*1024*10
+LOG_FILE_CNT = 10
+LOG_LEVEL = logging.INFO
+
 warnings.filterwarnings("ignore")
 
 def lexical_analyze(count):
+    try:
+        logger = logging.getLogger("rcmd")
+        logfile_H = logging.handlers.RotatingFileHandler("/home/middleware/TIBigdataMiddleware/rcmd/log/rcmd.log")
+        formatter = logging.Formatter('[%(asctime)s|%(levelname)s|%(funcName)s|%(lineno)d] %(message)s')
+        logfile_H.setFormatter(formatter)
+        logger.addHandler(logfile_H)
+        logger.setLevel(LOG_LEVEL)
+    except Exception as err:
+        print(err)
     start = time.time()
     for i in range(0, count+1):
         df = pd.read_csv("./data/d_"+str(i)+".csv", encoding='utf-8', dtype=str)
@@ -21,6 +39,15 @@ def lexical_analyze(count):
         tokens = []
         tokenized_word = []
         count = 0
+        
+        # if df['content'].isna():
+        # NaN 값 있으면 오류나서 확인 후 제거
+        # 제거한 값 로그에 남기기
+        if df.isnull().sum().sum() > 0:
+            logger.info("remove Nan rows")
+            logger.info(df[df.post_title.isnull()|df.content.isnull()])
+            df = df.dropna()
+
         for body in df['content']:
             count = count + 1
             print(count)
