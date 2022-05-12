@@ -53,9 +53,9 @@ def filter_links(edges, matrix, linkStrength, minWeight, maxWeight):
             edgeDict["weight"] = int(matrix[s][t])
             edgeList.append(edgeDict)
         logger.debug(str(len(edgeList)))
-        return edgeList
+        return edgeList, None
     elif linkStrength == 0:
-        return None
+        return None, None
     else:
         # 최대값에서 최소값을 뺴서 값으 범위값을 구하고, 그 범위에서 사용자가 원하는 퍼센트만큼의 임계치를 구한다.
         strengthVal = ( maxWeight - minWeight ) * (int(linkStrength) / 100) 
