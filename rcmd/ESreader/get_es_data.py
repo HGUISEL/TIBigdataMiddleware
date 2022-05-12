@@ -11,7 +11,7 @@ from elasticsearch_dsl import Search
 import warnings
 import sys
 import os 
-sys.path.append(os.path.abspath('/home/frontend/rcmd/ESreader'))
+sys.path.append(os.path.abspath('/home/middleware/TIBigdataMiddleware/account'))
 import esAccount as esAcc
 
 warnings.filterwarnings("ignore")
