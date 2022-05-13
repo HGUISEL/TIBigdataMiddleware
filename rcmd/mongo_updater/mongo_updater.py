@@ -24,7 +24,7 @@ def update_mongo():
         rcmd_score = ast.literal_eval(rcmd_score)
         for r_s in rcmd_score:
             tmp_rcmd.append((str(r_s[0]), float(r_s[1])))
-        rcmd_data.append({'docID':str(data['docID'][i]), 'rcmd':tmp_rcmd})
+        rcmd_data.append({'hashKey':str(data['hashKey'][i]), 'rcmd':tmp_rcmd})
 
     collection.delete_many({})
     collection.insert_many(rcmd_data)

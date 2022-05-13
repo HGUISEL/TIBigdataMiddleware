@@ -38,8 +38,6 @@ def get_cosine_similarity(count):
     tfidf = TfidfVectorizer()
     print('Start TF-IDF vectorizing...')
     tfidf_matrix = tfidf.fit_transform(corpus)
-    # 용량이 너무 커서 int64 타입을 int32타입으로 바꿔준다.
-    tfidf_matrix = tfidf_matrix.astype(np.int32)
     print('hashkey list:', len(hash_key))
     print('The shape of TF-IDF matrix is ', tfidf_matrix.shape)
     print('it took', time.time() - start_tfidf,' sec.')
@@ -83,7 +81,7 @@ def get_cosine_similarity(count):
     print("cos2doc_time: ", time.time() - start_cos, "sec.")
     print(len(key_sim_pair))
 
-    result = pd.DataFrame(key_sim_pair, columns=['docID', 'rcmdDocID,Score'])
+    result = pd.DataFrame(key_sim_pair, columns=['hashKey', 'rcmdDocID,Score'])
     result.to_csv("rcmdsFinal.csv", index=True)
 
 #get_cosine_similarity(1)
