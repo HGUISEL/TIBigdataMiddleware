@@ -35,7 +35,7 @@ def get_es_data():
             port= esAcc.port,
             verify_certs=False
         )
-    index = esAcc.index
+    index = esAcc.indexNews
     print("Selected index contains ",es.count(index=index), "documents.")
     
     """

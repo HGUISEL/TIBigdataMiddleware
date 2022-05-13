@@ -12,4 +12,4 @@ import mongo_updater.mongo_updater as mu
 c = get_es.get_es_data()
 tk.lexical_analyze(c)
 cossim.get_cosine_similarity(c)
-mu.update_mongo()
+mu.update_mongo(c)
