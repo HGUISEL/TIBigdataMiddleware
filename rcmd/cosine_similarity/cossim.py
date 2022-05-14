@@ -13,6 +13,8 @@ import sys
 
 import csv
 
+DOC_NUM_OF_A_SET = 10000
+
 def chunk_iterator(files):
     for f in files:
         for chunk in pd.read_csv(f, chunksize=1000, encoding='utf-8', dtype=str, low_memory=False):
@@ -47,33 +49,34 @@ def get_cosine_similarity(count):
     print('Start computing, sorting and ranking Cosine similarity...')
     
     start_cos = time.time()
-    start_cos_set = time.time()
-    key_sim_pair = []
-    for i in range(tfidf_matrix.shape[0]):
+    for i in range(count+1):
+        print('current: set#'+str(i))
+        start_cos_set = time.time()
         # cosine similarity 연산
-        cosine_sim = cosine_similarity(tfidf_matrix[i,], tfidf_matrix)  
-        cosine_sim = cosine_sim[0] # [[sim1, sim2, sim3,..., sim100]] 형태임
+        print('\t computing cosine_similarity')
+        start_comp = time.time()
+        if i == count:
+            cosine_sim = cosine_similarity(tfidf_matrix[i*DOC_NUM_OF_A_SET:,], tfidf_matrix) 
+        else:
+            cosine_sim = cosine_similarity(tfidf_matrix[i*DOC_NUM_OF_A_SET:(i+1)*DOC_NUM_OF_A_SET,], tfidf_matrix) 
+        print('\t It took ', time.time()-start_comp, 'sec.')
+        start_sort = time.time()
+        key_sim_pair = []
+        print('\t sorting cosine_similarity')
+        for k in range(len(cosine_sim)):
+            tmp_pair = []
+            for j in range(len(cosine_sim[k])):
+                if not (hash_key[i*DOC_NUM_OF_A_SET+k] == hash_key[j]):
+                    tmp_pair.append((hash_key[j], cosine_sim[k][j]))
+            #descending order
+            tmp_pair.sort(key=lambda x:x[1], reverse=True)
+            key_sim_pair.append([hash_key[i*DOC_NUM_OF_A_SET+k], tmp_pair[0:5]])
+        print('\t It took ', time.time()-start_sort, 'sec.')
 
-        tmp_pair = []
-        for j in range(len(cosine_sim)):
-            if not (hash_key[i] == hash_key[j]): # 자신에 대한 cosin_sim값 제거
-                tmp_pair.append((hash_key[j], cosine_sim[j]))
-        
-        #descending order
-        tmp_pair.sort(key=lambda x:x[1], reverse=True)
-        key_sim_pair.append([hash_key[i], tmp_pair[0:5]])
-
-        if(i % 1000 == 0):
-            print('current: ',i)
-            print('It took ', time.time()-start_cos_set, 'sec.')
-            
-        if len(key_sim_pair) == 10000:
-            result = pd.DataFrame(key_sim_pair, columns=['hashKey', 'rcmdDocID,Score'])
-            result.to_csv("./rcmdFinal/rcmdsFinal_news"+str((i//10000)-1)+".csv", index=True)
-            key_sim_pair = []
-  
-
-    print('It took ', time.time()-start_cos, 'sec.')
+        start_cos_set = time.time()
+        result = pd.DataFrame(key_sim_pair, columns=['hashKey', 'rcmdDocID,Score'])
+        result.to_csv("./rcmdFinal/rcmdsFinal_news"+str(i)+".csv", index=True)
+        print(' Set#'+str(i),'took ', time.time()-start_cos_set, 'sec.')
     
     print("tfidf2doc_time: ", time.time() - start_tfidf, "sec.")    
     print("cos2doc_time: ", time.time() - start_cos, "sec.")

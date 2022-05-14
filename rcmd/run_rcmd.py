@@ -9,6 +9,7 @@ import cosine_similarity.cossim as cossim
 import tokenizer.tokenizer as tk
 import mongo_updater.mongo_updater as mu
 
+# c = 문서 수//10000
 c = get_es.get_es_data()
 tk.lexical_analyze(c)
 cossim.get_cosine_similarity(c)

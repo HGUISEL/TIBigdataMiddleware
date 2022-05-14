@@ -13,7 +13,7 @@ import ast
 
 def update_mongo(count, resetMongo = False):
     client = MongoClient(host=mAcc.host, port=mAcc.port)
-    db = client['topic_analysis']
+    db = client['analysis']
     collection = db['rcmds']
 
     for i in range(0, count+1):
