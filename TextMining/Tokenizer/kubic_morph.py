@@ -318,7 +318,7 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
     "titleList" : list(doc['title']),
     "addTitle" : "Yes"
     }
-    db.preprocessing.insert(mdoc)
+    db.preprocessing.insert_one(mdoc)
 
     logger.info(identification + 'MongoDB에 저장 되었습니다.')
 
