@@ -145,9 +145,15 @@ def search_in_mydoc_add_title(email, keyword, savedDate):
             postBody= response["hits"]["hits"][i]["_source"].get("post_body")
             fileContent = response["hits"]["hits"][i]["_source"].get("file_extracted_content")
             
-            fileContent = str(fileContent).replace("None",'')
+            # 빈 내용 공백처리
+            postBody = str(postBody).replace("None",' ')
+            postBody = hangul.sub('', postBody)
+            # 문장부호로 문장단위 끊기
+            postBody = re.split('[.!?]', postBody)
+            
+            # 빈 내용 공백처리
+            fileContent = str(fileContent).replace("None",' ')
             fileContent = hangul.sub('', fileContent)
-
             # 문장부호로 문장단위 끊기
             fileContent = re.split('[.!?]', fileContent)
 
@@ -158,124 +164,32 @@ def search_in_mydoc_add_title(email, keyword, savedDate):
             titleList.append(postTitle)
 
     except Exception as e:
+        err = traceback.format_exc()
+        print(err)
         return 'failed', "search_in_mydoc_add_title: es search 후 구조화 과정에서 문제가 생겼습니다. \n 세부사항: "+str(e)    
     
-    df = pd.DataFrame()
-    df['idList'] = idList
-    df['post_date'] = dateList
-    df['post_title'] = titleList
-    df['post_body'] = bodyList
-    df['file_content'] = fileList
-    df['all_content'] = df['file_content']
-    #df['all_content'] = df['post_body'].str.cat(df['file_content'], sep=' ', na_rep='No data')
-
-    return True, df[['idList', 'post_date', 'all_content', 'post_title', 'post_body']]
-
-# result, df = search_in_mydoc_add_title('21800520@handong.edu', '북한', "2021-09-07T07:01:07.137Z")
-# print(df["all_content"][0])
-
-##############################################################################################################
-def search_in_mydoc_for_research(email, keyword, savedDate, kkma = False):
-    idList = getMyDocByEmail2(email, keyword, savedDate) # es애서 삭제된 id도 포함
-    try:
-        print(idList)
-        if idList[0] == 'failed':
-            return 'failed', idList[1]
-    except Exception as e:
-        return 'failed', "getMyDocByEmail2의 리턴형식이 맞지 않습니다. "
 
     try:
-        response=es.search( 
-            index=index, 
-            body={
-                "_source":['hash_key', 'post_title', 'post_date','post_body', 'file_extracted_content'],
-                "size":2000
-            }
-        )
+        allContentList = []
+        for i in range(len(bodyList)):
+            sentenceList = bodyList[i] + fileList[i]
+            allContentList.append(sentenceList)
     except Exception as e:
         err = traceback.format_exc()
         print(err)
-        return 'failed', "search_in_mydoc_add_title: es search에서 문제가 생겼습니다. \n 세부사항: "+str(e)   
-    
-
-    countDoc =len(response['hits']['hits'])
-    print(countDoc)
-
-    # 실제로 받아온 response 에 근거하여, idlist 를 새로 만듦
-
-    hangul = re.compile('[^ ,;:?.!ㄱ-ㅣ가-힣]+') 
-    # hangul = re.compile('[^ [\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"a-zA-Z0-9ㄱ-ㅣ가-힣]+') 영어 및 특수문자 추가
-
-    idList=[]
-    dateList=[]
-    bodyList=[]
-    fileList=[]    
-    titleList=[]
-
-    def isKorean(input_s):
-        k_count = 0
-        e_count = 0
-        else_count = 0
-        for c in input_s:
-            if ord('가') <= ord(c) <= ord('힣'):
-                k_count+=1
-            elif ord('a') <= ord(c.lower()) <= ord('z'):
-                e_count+=1
-            else:
-                else_count +=1
-        if  k_count>e_count and k_count>else_count:
-            return True
-        else:
-            return False
-
-    for i in range(countDoc):
-        docId = response["hits"]["hits"][i]["_source"].get("hash_key")
-        postDate = response["hits"]["hits"][i]["_source"].get("post_date")
-        postTitle = response["hits"]["hits"][i]["_source"].get("post_title")
-        postBody= response["hits"]["hits"][i]["_source"].get("post_body")
-        fileContent = response["hits"]["hits"][i]["_source"].get("file_extracted_content")
-        # myText = open('/home/middleware/TIBigdataMiddleware/TextMining/Tokenizer/test.txt','w')
-        # myString = str(response["hits"]["hits"][i])
-        # myText.write(myString)
-        # myText.close()
-        # return True, True
-
-        if postTitle == None or fileContent == None:
-            continue
-        if len(fileContent) < 100 :
-            continue
-        if not isKorean(postTitle):
-            continue
-
-        fileContent = str(fileContent).replace("None",'')
-        fileContent = hangul.sub('', fileContent)
-
-        # 문장부호로 문장단위 끊기
-        fileContent = re.split('[.!?]', fileContent)
-        idList.append(docId)
-        dateList.append(postDate)
-        bodyList.append(postBody)
-        fileList.append(fileContent)
-        titleList.append(postTitle)
-
-        if len(idList) > 100:
-            break
-
+        return 'failed', "search_in_mydoc_add_title: 문서 내용 리스트 생성 중 오류가 발생했습니다. \n 세부사항: "+str(e)  
     df = pd.DataFrame()
     df['idList'] = idList
     df['post_date'] = dateList
     df['post_title'] = titleList
     df['post_body'] = bodyList
     df['file_content'] = fileList
-    df['all_content'] = df['file_content']
-    #df['all_content'] = df['post_body'].str.cat(df['file_content'], sep=' ', na_rep='No data')
-
-    # df.to_csv('/home/middleware/TIBigdataMiddleware/TextMining/Tokenizer/datas.csv', sep=',', na_rep='NaN')
+    df['all_content'] = allContentList
 
     return True, df[['idList', 'post_date', 'all_content', 'post_title', 'post_body']]
 
-# result, df = search_in_mydoc_for_research('21800520@handong.edu', '북한', "2021-09-07T07:01:07.137Z")
-# try:
-#     print(df["all_content"])
-# except:
+# result, df = search_in_mydoc_add_title('21800520@handong.ac.kr', '올림픽', "2022-05-16T14:39:08.448Z")
+# if result == True:
+#     print(df['all_content'])
+# else:
 #     print(df)
