@@ -25,7 +25,7 @@ import traceback
 logger = logging.getLogger("flask.app.wordCount")
 
 ## CountVectorizer 빈도수 계산
-def word_count(email, keyword, savedDate, optionList, analysisName, save = True):    
+def word_count(email, keyword, savedDate, optionList, analysisName, save = True, allWord = False):    
     # mongo에서 전처리 결과 가져오기
     identification = str(email)+'_'+analysisName+'_'+str(savedDate)+"// "
 
@@ -42,7 +42,7 @@ def word_count(email, keyword, savedDate, optionList, analysisName, save = True)
     try:
         logger.info(identification+ "전처리 내용을 가져옵니다.")
         docs, nTokens = getPreprocessing(email, keyword, savedDate, optionList)
-        print(docs[0][1:10])
+        # print(docs[0][1:10])
         if docs == "failed":
             return docs, nTokens
         else:
@@ -64,7 +64,10 @@ def word_count(email, keyword, savedDate, optionList, analysisName, save = True)
     
     try:
         logger.info(identification+ "전처리 내용을 벡터화 합니다.")
-        vectorizer = CountVectorizer(analyzer='word', max_features=int(optionList), tokenizer=None)
+        if allWord:
+            vectorizer = CountVectorizer(analyzer='word', tokenizer=None)
+        else:
+            vectorizer = CountVectorizer(analyzer='word', max_features=int(optionList), tokenizer=None)
         words=vectorizer.fit(tokenList)
         words_fit = vectorizer.fit_transform(tokenList)
     
@@ -197,5 +200,5 @@ def word_count(email, keyword, savedDate, optionList, analysisName, save = True)
 
 
 # 3차원 리스트 테스트 코드
-# result = word_count('21800520@handong.edu', '북한', "2021-09-07T07:01:07.137Z", 100, 'count')
-# print(result)
+# result = word_count('21800520@handong.ac.kr', '올림픽', "2022-05-16T14:39:08.448Z", 100, 'count', save = False)
+# print(result[0])
