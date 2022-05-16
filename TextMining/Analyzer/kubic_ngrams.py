@@ -81,6 +81,9 @@ def filter_links(edges, matrix, linkStrength, minWeight, maxWeight):
         print(minWeight, maxWeight, percentile, strengthVal+minWeight)
         return edgeList, linkedEdgeIDList
 
+
+
+
 # optionList: 분석할 ngram의 수
 def ngrams(email, keyword, savedDate, optionList, analysisName, n, linkStrength):
     logger.info("ngram start")
@@ -141,12 +144,14 @@ def ngrams(email, keyword, savedDate, optionList, analysisName, n, linkStrength)
         
         jsonDict["links"], linkedEdgeIDList = filter_links(network.edges, adjacent_matrix, linkStrength, np.min(adjacent_matrix[adjacent_matrix>0]), np.max(adjacent_matrix))
 
+        wordCount, graph = word_count(email, keyword, savedDate, optionList*2, "count", save = False, allWord = True)
         for n in network.nodes:
             if linkedEdgeIDList == None:
                 nodeDict = dict()
                 wrd = idToWord[n]
                 nodeDict["id"] = int(n)
                 nodeDict["name"] = wrd
+                nodeDict["count"] = wordCount[wrd]
 
                 nodeList.append(nodeDict)
                 
@@ -192,5 +197,5 @@ def ngrams(email, keyword, savedDate, optionList, analysisName, n, linkStrength)
         logger.error(identification+str(err))
         return False, err, None
 
-# result = ngrams('21800520@handong.ac.kr', '사드', '2022-04-24T06:51:40.934Z', 10, 'ngrams', 3, 100)
-# print(result)
+result = ngrams('21800520@handong.ac.kr', '올림픽', "2022-05-16T14:39:08.448Z", 10, 'ngrams', 3, 100)
+print(result)
