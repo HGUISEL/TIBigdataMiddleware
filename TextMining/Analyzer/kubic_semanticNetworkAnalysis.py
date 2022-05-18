@@ -47,9 +47,9 @@ def filter_links(edges, matrix, linkStrength, minWeight, maxWeight):
             edgeDict["weight"] = int(matrix[s][t])
             edgeList.append(edgeDict)
         logger.debug(str(len(edgeList)))
-        return edgeList
+        return edgeList, None
     elif linkStrength == 0:
-        return None
+        return None, None
     else:
         # 최대값에서 최소값을 뺴서 값으 범위값을 구하고, 그 범위에서 사용자가 원하는 퍼센트만큼의 임계치를 구한다.
         strengthVal = ( maxWeight - minWeight ) * (int(linkStrength) / 100) 
@@ -168,6 +168,11 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName,
                                 adjacent_matrix[i][j] +=1
         network = nx.from_numpy_matrix(adjacent_matrix)
         
+        # 연결되어있는 network가 아니라면 가장 큰 network 하나만 남기기
+        if not nx.is_connected(network):
+            connCompo = max(nx.connected_components(network), key=len)
+            network = network.subgraph(connCompo).copy()
+        
     except Exception as e:
         err = traceback.format_exc()
         logger.error(identification+"연결망 생성에 실패하였습니다. \n"+str(err))
@@ -187,11 +192,11 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName,
         # 각 단어:중심성 dict만들기
         logger.info(identification+"각 단어: 중심성 dict만들기")
         
-        if nx.is_connected(network):
-            degree_cen = id2word(nx.degree_centrality(network))
-            eigenvector_cen = id2word(nx.eigenvector_centrality(network))
-            closeness_cen = id2word(nx.closeness_centrality(network))
-            between_cen = id2word(nx.current_flow_betweenness_centrality(network))
+ 
+        degree_cen = id2word(nx.degree_centrality(network))
+        eigenvector_cen = id2word(nx.eigenvector_centrality(network))
+        closeness_cen = id2word(nx.closeness_centrality(network))
+        between_cen = id2word(nx.current_flow_betweenness_centrality(network))
 
     except Exception as e:
         err = traceback.format_exc()
@@ -210,36 +215,29 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName,
         
         print(idToWord)
         print(network.nodes)
-        if nx.is_connected(network):
-            for n in network.nodes:
-                # if int(n) in linkedEdgeIDList:
-                nodeDict = dict()
-                wrd = idToWord[n]
-                nodeDict["id"] = int(n)
-                nodeDict["name"] = wrd
-                nodeDict["degree_cen"] = degree_cen[wrd]
-                nodeDict["eigenvector_cen"] = eigenvector_cen[wrd]
-                nodeDict["closeness_cen"] = closeness_cen[wrd]
-                nodeDict["between_cen"] = between_cen[wrd]
-                nodeDict["count"] = top_words[wrd]
 
-                nodeList.append(nodeDict)
-        # else:
-        #     for n in network.nodes:
-        #         nodeDict = dict()
-        #         wrd = idToWord[n]
-        #         nodeDict["id"] = int(n)
-        #         nodeDict["name"] = wrd
+        for n in network.nodes:
+            # if int(n) in linkedEdgeIDList:
+            nodeDict = dict()
+            wrd = idToWord[n]
+            nodeDict["id"] = int(n)
+            nodeDict["name"] = wrd
+            nodeDict["degree_cen"] = degree_cen[wrd]
+            nodeDict["eigenvector_cen"] = eigenvector_cen[wrd]
+            nodeDict["closeness_cen"] = closeness_cen[wrd]
+            nodeDict["between_cen"] = between_cen[wrd]
+            nodeDict["count"] = top_words[wrd]
 
-        #         nodeList.append(nodeDict)
+            nodeList.append(nodeDict)
+
         
         jsonDict["nodes"] = nodeList
         # 큰 순서대로 sort
-        if nx.is_connected(network):
-            sorted_degree_cen = dict(sorted(degree_cen.items(), key=lambda item: item[1], reverse = True))
-            sorted_eigenvector_cen = dict(sorted(eigenvector_cen.items(), key=lambda item: item[1], reverse = True))
-            sorted_closeness_cen = dict(sorted(closeness_cen.items(), key=lambda item: item[1], reverse = True))
-            sorted_between_cen = dict(sorted(between_cen.items(), key=lambda item: item[1], reverse = True))
+
+        sorted_degree_cen = dict(sorted(degree_cen.items(), key=lambda item: item[1], reverse = True))
+        sorted_eigenvector_cen = dict(sorted(eigenvector_cen.items(), key=lambda item: item[1], reverse = True))
+        sorted_closeness_cen = dict(sorted(closeness_cen.items(), key=lambda item: item[1], reverse = True))
+        sorted_between_cen = dict(sorted(between_cen.items(), key=lambda item: item[1], reverse = True))
 
 
         def table_to_graph(t_dict):
@@ -252,14 +250,12 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName,
             return g_list
 
         # dataframe 만들기
-        if nx.is_connected(network):
-            cen_dict = { "count": table_to_graph(top_words), 
-                        "degree_cen": table_to_graph(sorted_between_cen) , 
-                        "eigenvector_cen": table_to_graph(sorted_eigenvector_cen), 
-                        "closeness_cen": table_to_graph(sorted_closeness_cen), 
-                        "between_cen": table_to_graph(sorted_between_cen)}
-        else:
-            cen_dict = {"count": table_to_graph(top_words)}
+
+        cen_dict = { "count": table_to_graph(top_words), 
+                    "degree_cen": table_to_graph(sorted_between_cen) , 
+                    "eigenvector_cen": table_to_graph(sorted_eigenvector_cen), 
+                    "closeness_cen": table_to_graph(sorted_closeness_cen), 
+                    "between_cen": table_to_graph(sorted_between_cen)}
         # print("MongoDB에 데이터를 저장합니다.")
     except Exception as e:
         err = traceback.format_exc()
