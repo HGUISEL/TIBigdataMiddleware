@@ -38,7 +38,8 @@ def cal_percentile(edges, matrix, linkStrength):
     for s,t in edges:
         weightList.append(int(matrix[s][t]))
     weightArr = np.array(weightList)
-    percentile = np.percentile(weightArr, linkStrength)
+    # top n%
+    percentile = np.percentile(weightArr, 100-linkStrength)
     return percentile
 
 
