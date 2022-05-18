@@ -765,4 +765,7 @@ if __name__ == "__main__": # 다른 코드에 import되어있을 경우에는 �
  
     context=(kubic_ssl.crt,kubic_ssl.key) #gitignore 비밀경로
     app.run(host=BEMW.hostIP, port=BEMW.port, ssl_context=context)   
-    # app.run(host=BEMW.hostIP, port=BEMW.port, ssl_context=context, debug=True)   
+    # app.run(host=BEMW.hostIP, port=BEMW.port, ssl_context=context, debug=True)
+    
+    # from waitress import serve
+    # serve(app, host=BEMW.hostIP, port=BEMW.port, ssl_context=context)
