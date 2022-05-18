@@ -136,7 +136,15 @@ def dataPrePrcs(corpus):
     num_doc = len(tokenized_doc)
     for i in range(num_doc):
         tokenized_doc[i] = [word for word in tokenized_doc[i] if len(word) > 1]
-    
+
+    # 원문과 WC result 파일로 저장하기
+    # text_file = open("text.txt", "w")
+    # text_file.write(contents[0])
+    # text_file.close()
+    # resultDict = {"hashList":hashList, "titles":titles, "tokenized_doc":tokenized_doc}
+    # df = pd.DataFrame(resultDict)
+    # df.to_csv("wcPrsResult.csv")
+
     return hashList, titles, tokenized_doc, contents
 
 def runAnalysis(resp):
@@ -310,5 +318,5 @@ def getAllCountTable(hash_key = False, isTest = False):
         return analysisResult
 
 if __name__ == "__main__":
-    print(getAllCountTable("10134412237507850583", True))
+    print(getAllCountTable("5581330687581762183", True))
     # getAllCountTable()
