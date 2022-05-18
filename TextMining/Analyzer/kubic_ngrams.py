@@ -151,7 +151,10 @@ def ngrams(email, keyword, savedDate, optionList, analysisName, n, linkStrength)
                 wrd = idToWord[n]
                 nodeDict["id"] = int(n)
                 nodeDict["name"] = wrd
-                nodeDict["count"] = wordCount[wrd]
+                try:
+                    nodeDict["count"] = wordCount[wrd]
+                except:
+                    nodeDict["count"] = 0
 
                 nodeList.append(nodeDict)
                 
@@ -160,6 +163,10 @@ def ngrams(email, keyword, savedDate, optionList, analysisName, n, linkStrength)
                 wrd = idToWord[n]
                 nodeDict["id"] = int(n)
                 nodeDict["name"] = wrd
+                try:
+                    nodeDict["count"] = wordCount[wrd]
+                except:
+                    nodeDict["count"] = 0
 
                 nodeList.append(nodeDict)
         
@@ -197,5 +204,5 @@ def ngrams(email, keyword, savedDate, optionList, analysisName, n, linkStrength)
         logger.error(identification+str(err))
         return False, err, None
 
-result = ngrams('21800520@handong.ac.kr', '올림픽', "2022-05-16T14:39:08.448Z", 10, 'ngrams', 3, 100)
-print(result)
+# result = ngrams('21800520@handong.ac.kr', '올림픽', "2022-05-16T14:39:08.448Z", 10, 'ngrams', 3, 100)
+# print(result)
