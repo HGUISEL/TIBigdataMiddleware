@@ -23,40 +23,7 @@ import traceback
 
 logger = logging.getLogger("flask.app.word2vec")
 
-def to_docList(corpus):
-    docList = []
-    for doc in corpus:
-        sentenceList = []
-        for sentence in doc:
-            sentenceList += sentence
-        docList.append(sentenceList)
-    return docList
-
-# 리스트 받아서 0~1값으로 min-maz normalize
-def normalization(x):
-    min_value = min(x)
-    max_value = max(x) 
-
-    return list(map(lambda x: (x-min_value)/(max_value-min_value), x))
-
-def make_normalization_model(un_norm_list):
-    norm_list = normalization(un_norm_list)
-    model_dict = dict()
-    for i in range(len(un_norm_list)):
-        model_dict[un_norm_list[i]] = norm_list[i]
-    return model_dict
-
-def cut_with_option(list,email, keyword, savedDate, optionList):
-    top_words = word_count(email, keyword, savedDate, optionList, "wordcount", save = False)[0]
-    result_lst = []
-    for word in top_words.keys():
-        if word in list:
-            result_lst.append(word)
-        else:
-            logger.info(identification + "단어가 모델에 존재하지 않습니다. 단어:" + word)
-    #print(top_words)
-
-    return result_lst, top_words
+identification = "identification"
 
 def word2vec(email, keyword, savedDate, optionList, analysisName):
     identification = str(email)+'_'+analysisName+'_'+str(savedDate)+"// "
@@ -77,9 +44,9 @@ def word2vec(email, keyword, savedDate, optionList, analysisName):
         preprocessed = to_docList(preprocessed)
         #logger.error(preprocessed)
 
-        print("문서의 개수:",len(preprocessed))
-        for i in range(len(preprocessed)):
-            print(i,"번째 문서의 단어 수:",len(preprocessed[i]))
+        # print("문서의 개수:",len(preprocessed))
+        # for i in range(len(preprocessed)):
+        #     print(i,"번째 문서의 단어 수:",len(preprocessed[i]))
     except Exception as e:
         err = traceback.format_exc()
         logger.error(identification+"전처리 정보를 가져오는데 실패하였습니다. \n"+str(err))
@@ -166,6 +133,43 @@ def word2vec(email, keyword, savedDate, optionList, analysisName):
         return "failed", "결과를 저장하는 과정에서 오류가 발생했습니다. \n 세부사항:" + str(e), None
 
     return True, textTSNEList, analysisInfo
+
+def to_docList(corpus):
+    docList = []
+    for doc in corpus:
+        sentenceList = []
+        for sentence in doc:
+            sentenceList += sentence
+        docList.append(sentenceList)
+    return docList
+
+# 리스트 받아서 0~1값으로 min-maz normalize
+def normalization(x):
+    min_value = min(x)
+    max_value = max(x) 
+
+    return list(map(lambda x: (x-min_value)/(max_value-min_value), x))
+
+def make_normalization_model(un_norm_list):
+    norm_list = normalization(un_norm_list)
+    model_dict = dict()
+    for i in range(len(un_norm_list)):
+        model_dict[un_norm_list[i]] = norm_list[i]
+    return model_dict
+
+def cut_with_option(list,email, keyword, savedDate, optionList):
+    top_words = word_count(email, keyword, savedDate, optionList, "wordcount", save = False, allWord = True)[0]
+    result_lst = []
+    for word in top_words.keys():
+        if word in list:
+            result_lst.append(word)
+        else:
+            logger.info(identification + "단어가 모델에 존재하지 않습니다. 단어:" + word)
+    #print(top_words)
+
+    return result_lst, top_words
+
+
 
 
 # result = word2vec('21800520@handong.edu', '북한', "2021-08-10T10:59:29.974Z", "20", 'word2vec')

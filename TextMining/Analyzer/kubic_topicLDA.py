@@ -94,8 +94,8 @@ def topicLDA(email, keyword, savedDate, optionList, analysisName):
         ldamodel = gensim.models.ldamodel.LdaModel(corpus, num_topics = NUM_TOPICS, id2word=dictionary, passes=NUM_PASSES)
         topics = ldamodel.print_topics(num_words = 4)#각 토픽의 단어 4개씩 프린트
 
-        for topic in topics:
-            print(topic)
+        # for topic in topics:
+        #     print(topic)
 
     except Exception as e:
         err = traceback.format_exc()
@@ -105,8 +105,8 @@ def topicLDA(email, keyword, savedDate, optionList, analysisName):
     try: # LDA시각화
 
         # 문서 별 토픽의 비율 확인
-        for i, topic_list in enumerate(ldamodel[corpus]):
-            print(i,'번째 문서의 topic 비율은',topic_list)
+        # for i, topic_list in enumerate(ldamodel[corpus]):
+        #     print(i,'번째 문서의 topic 비율은',topic_list)
 
         # 토픽별 단어의 비율 및 토픽의 분포(거리, 크기) 확인
         import pyLDAvis

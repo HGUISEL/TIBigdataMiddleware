@@ -37,7 +37,7 @@ def cal_percentile(edges, matrix, linkStrength):
     return percentile
 
 def filter_links(edges, matrix, linkStrength, minWeight, maxWeight):
-    print("최소, 최대값:",minWeight, maxWeight)
+    # print("최소, 최대값:",minWeight, maxWeight)
     if linkStrength == 100 or minWeight == maxWeight:
         edgeList = list()
         for s,t in edges:
@@ -72,7 +72,7 @@ def filter_links(edges, matrix, linkStrength, minWeight, maxWeight):
         
         linkedEdgeIDList = list(set(linkedEdgeIDList))
 
-        print(minWeight, maxWeight, percentile, strengthVal+minWeight)
+        # print(minWeight, maxWeight, percentile, strengthVal+minWeight)
         return edgeList, linkedEdgeIDList
     
         
@@ -213,8 +213,8 @@ def semanticNetworkAnalysis(email, keyword, savedDate, optionList, analysisName,
         # print(nodeList)
         jsonDict["links"],linkedEdgeIDList  = filter_links(network.edges, adjacent_matrix, int(linkStrength), np.min(adjacent_matrix[adjacent_matrix>0]), np.max(adjacent_matrix))
         
-        print(idToWord)
-        print(network.nodes)
+        # print(idToWord)
+        # print(network.nodes)
 
         for n in network.nodes:
             # if int(n) in linkedEdgeIDList:

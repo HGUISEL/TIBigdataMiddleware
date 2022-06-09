@@ -393,3 +393,22 @@ UnboundLocalError: local variable 'hash_key' referenced before assignment
 2022-05-10 10:54:09,305 INFO: 주제예측을 시작합니다. in SVM.py:151
 2022-05-10 11:00:10,222 INFO: MongoDB의 svm collection에 분석한 데이터의 주제를 저장을 시작합니다. in SVM.py:210
 2022-05-10 11:00:28,460 ERROR: MongoDB의 svm collection에 분석한 데이터를 저장하는데 실패했습니다. list index out of range in SVM.py:223
+2022-06-01 00:00:00,007 INFO: MongoDB에 연결을 시도합니다. in SVM.py:176
+2022-06-01 00:00:00,013 INFO: MongoDB에 연결을 성공했습니다. in SVM.py:180
+2022-06-01 00:00:00,031 ERROR: SVM을 통해 주제예측한 데이터 저장에 실패하였습니다. name 'logger' is not defined
+Traceback (most recent call last):
+  File "/home/middleware/TIBigdataMiddleware/topic_analysis/Post_date.py", line 20, in Post_date
+    logger.info('Elasticsearch server에 접속을 시도합니다.')
+NameError: name 'logger' is not defined
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/middleware/TIBigdataMiddleware/SVM.py", line 199, in MoEs
+    (hash_key, doc_title, tokenized_doc, contents, times)=Post_date(date)
+  File "/home/middleware/TIBigdataMiddleware/topic_analysis/Post_date.py", line 31, in Post_date
+    logger.error('Elasticsearch server 접속에 실패하였습니다. %s',message)
+NameError: name 'logger' is not defined
+ in SVM.py:205
+2022-06-01 00:00:00,037 INFO: MongoDB의 svm collection에 분석한 데이터의 주제를 저장을 시작합니다. in SVM.py:210
+2022-06-01 00:00:00,037 ERROR: MongoDB의 svm collection에 분석한 데이터를 저장하는데 실패했습니다. local variable 'hash_key' referenced before assignment in SVM.py:223

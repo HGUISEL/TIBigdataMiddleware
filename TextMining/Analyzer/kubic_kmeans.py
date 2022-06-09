@@ -57,8 +57,8 @@ def kmeans(email, keyword, savedDate, optionList, analysisName):
 
     except Exception as e:
         err = traceback.format_exc()
-        #logger.info(identification + "분석할 단어수는 양의 정수여야 합니다" +str(err))
-        print(identification + "군집수는 양의 정수여야 합니다" +str(err))
+        logger.error(identification + "분석할 단어수는 양의 정수여야 합니다" +str(err))
+        # print(identification + "군집수는 양의 정수여야 합니다" +str(err))
         return "failed", "군집수는 양의 정수여야 합니다. ", None
     
     try:
