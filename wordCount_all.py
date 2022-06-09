@@ -30,7 +30,7 @@ es = Elasticsearch(
         port= esAcc.port,
         verify_certs=False
 )
-index = esAcc.index
+index = esAcc.indexPaper
     
 
 DIR_HomeGraph = "./tfidfHomeGraphdata.json"
@@ -47,28 +47,42 @@ def makeCorpus (resp):
             # file_extracted_content는 글에 있는 첨부파일
             # post_body는 글의 본문
             if "file_extracted_content" in oneDoc["_source"].keys() and "post_body" in oneDoc["_source"].keys():
+                postBody = oneDoc["_source"]["post_body"]
+                fileExt = oneDoc["_source"]["file_extracted_content"]
+                if postBody == None:
+                    postBody = ""
+                if fileExt == None:
+                    fileExt = ""
+
+                oneDoc["_source"]["file_extracted_content"] == None
                 corpus.append(
                     {
                         "hash_key" : oneDoc["_source"]["hash_key"],
                         "post_title" : oneDoc["_source"]["post_title"],
-                        "content" : oneDoc["_source"]["post_body"] + oneDoc["_source"]["file_extracted_content"]
+                        "content" : postBody + fileExt
                     }
                 )
             elif "file_extracted_content" in oneDoc["_source"].keys():
+                fileExt = oneDoc["_source"]["file_extracted_content"]
+                if fileExt == None:
+                    fileExt = ""
                 corpus.append(
                     {
                         "hash_key" : oneDoc["_source"]["hash_key"],
                         "post_title" : oneDoc["_source"]["post_title"],
-                        "content" : oneDoc["_source"]["file_extracted_content"]
+                        "content" : fileExt
                         }
                     )
 
             elif "post_body" in oneDoc["_source"].keys():
+                postBody = oneDoc["_source"]["post_body"]
+                if postBody == None:
+                    postBody = ""
                 corpus.append(
                     {
                         "hash_key" : oneDoc["_source"]["hash_key"],
                         "post_title" : oneDoc["_source"]["post_title"],
-                        "content" : oneDoc["_source"]["post_body"]
+                        "content" : postBody
                         }
                     )
     # print(len(corpus[0]["content"]))
@@ -318,5 +332,5 @@ def getAllCountTable(hash_key = False, isTest = False):
         return analysisResult
 
 if __name__ == "__main__":
-    print(getAllCountTable("5581330687581762183", True))
-    # getAllCountTable()
+    # print(getAllCountTable("5581330687581762183", True))
+    getAllCountTable()
