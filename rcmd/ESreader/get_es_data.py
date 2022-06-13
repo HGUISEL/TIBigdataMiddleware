@@ -16,7 +16,7 @@ import esAccount as esAcc
 
 warnings.filterwarnings("ignore")
 
-def get_es_data():
+def get_es_data(idx):
     """
     NOTE:
     - Elastic search version: 7.12.1.
@@ -35,7 +35,11 @@ def get_es_data():
             port= esAcc.port,
             verify_certs=False
         )
-    index = esAcc.indexNews
+    if idx == "Paper":
+        index = esAcc.indexPaper
+    elif idx == "News":
+        index = esAcc.indexNews
+ 
     print("Selected index contains ",es.count(index=index), "documents.")
     
     """
@@ -54,25 +58,28 @@ def get_es_data():
     es_data = []
     for hit in s.scan():
         tmp_dict = hit.to_dict()
-        if 'file_extracted_content' in tmp_dict.keys():
-            es_data.append({
-                    'hashkey': tmp_dict.pop('hash_key'),
-                    'post_title': tmp_dict.pop('post_title'),
-                    'content': tmp_dict.pop('file_extracted_content')
-                    })
-        else:
-            es_data.append({
-                    'hashkey': tmp_dict.pop('hash_key'),
-                    'post_title': tmp_dict.pop('post_title'),
-                    'content': tmp_dict.pop('post_body')
-                    })
-        if(len(es_data) > 10000):
-            print(count * 10000)
-            os.makedirs('./data/',exist_ok=True)
-            df = pd.DataFrame(es_data)
-            df.to_csv('./data/d_'+str(count)+'.csv')
-            es_data.clear()
-            count = count + 1
+        try:
+            if 'file_extracted_content' in tmp_dict.keys():
+                es_data.append({
+                        'hashkey': tmp_dict.pop('hash_key'),
+                        'post_title': tmp_dict.pop('post_title'),
+                        'content': tmp_dict.pop('file_extracted_content')
+                        })
+            else:
+                es_data.append({
+                        'hashkey': tmp_dict.pop('hash_key'),
+                        'post_title': tmp_dict.pop('post_title'),
+                        'content': tmp_dict.pop('post_body')
+                        })
+            if(len(es_data) > 10000):
+                print(count * 10000)
+                os.makedirs('./data/',exist_ok=True)
+                df = pd.DataFrame(es_data)
+                df.to_csv('./data/d_'+str(count)+'.csv')
+                es_data.clear()
+                count = count + 1
+        except: 
+            print("오류발생", tmp_dict.keys())
     if(len(es_data) != 0):
         os.makedirs('./data/',exist_ok=True)
         df = pd.DataFrame(es_data)
