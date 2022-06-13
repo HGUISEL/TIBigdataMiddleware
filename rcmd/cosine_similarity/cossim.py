@@ -75,7 +75,7 @@ def get_cosine_similarity(count):
 
         start_cos_set = time.time()
         result = pd.DataFrame(key_sim_pair, columns=['hashKey', 'rcmdDocID,Score'])
-        result.to_csv("./rcmdFinal/rcmdsFinal_news"+str(i)+".csv", index=True)
+        result.to_csv("./rcmdFinal/rcmdsFinal"+str(i)+".csv", index=True)
         print(' Set#'+str(i),'took ', time.time()-start_cos_set, 'sec.')
     
     print("tfidf2doc_time: ", time.time() - start_tfidf, "sec.")    
