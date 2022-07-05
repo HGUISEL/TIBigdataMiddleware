@@ -278,14 +278,19 @@ import tarfile
 def install_mecab(dir, logger, identification):
     FILE_PATH = "/home/middleware/mecab-ko-dic-2.1.1-20180720.tar.gz"
     try:
-        if os.path.exists(dir) and os.path.isfile(FILE_PATH):
-            tar_file = tarfile.open(FILE_PATH)
-            tar_file.extractall(path=dir)
-            tar_file.close()
-            return True, None
+        if not os.path.exists(dir+"/mecab-ko-dic-2.1.1-20180720"):
+            logger.info(identification + "사용자사전 파일을 설치합니다.")
+            if os.path.exists(dir) and os.path.isfile(FILE_PATH):
+                tar_file = tarfile.open(FILE_PATH)
+                tar_file.extractall(path=dir)
+                tar_file.close()
+                return True, None
+            else:
+                logger.error(identification + "사용자폴더 혹은 메캅 사용자사전 파일이 없습니다.")
+                return False, identification + "사용자폴더 혹은 메캅 사용자사전 파일이 없습니다."
         else:
-            logger.error(identification + "사용자폴더 혹은 메캅 사용자사전 파일이 없습니다.")
-            return False, identification + "사용자폴더 혹은 메캅 사용자사전 파일이 없습니다."
+            logger.info(identification + "사용자사전 파일이 이미 설치되어있어 설치하지 않습니다.")
+            return True, None
     except Exception as e:
         err = traceback.format_exc()
         logger.error(identification + "사용자사전 폴더에 초기 사전설치를 실패했습니다. \n 실패사유:" + str(err))
