@@ -307,7 +307,7 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
 
     logger.info(identification + '전처리를 위한 사용자사전 폴더를 생성합니다.')
     USER_MECAB_DIR = MECAB_DIR+"/"+str(email)
-    USER_MECAB_DIR = MECAB_DIR
+    # USER_MECAB_DIR = MECAB_DIR
     
     result = create_dir(USER_MECAB_DIR, logger, identification)
     if not result[0]:
@@ -366,6 +366,7 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
         logger.info(identification + "\n<<add-userdic.sh>>")
         subprocess.call("ls")
 
+        subprocess.run('./autogen.sh')
         subprocess.run('./configure')
         subprocess.call("make")
 
@@ -453,10 +454,10 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
         }
     return success, return_mdoc #전체 형태소 분석한 단어들의 목록 (kubic 미리보기에 뜨도록) --> 출력 형태 변경
 
-# result, doc = compound_add_text('21800520@handong.ac.kr', '남북통일', "2022-06-29T16:01:37.217Z", "010", False, False, False)
+result, doc = compound_add_text('21800520@handong.ac.kr', '남북통일', "2022-06-29T16:01:37.217Z", "010", False, False, False)
 
 
-# if result:
-#     print(doc["tokenList"])
-# else:
-#     print(doc)
+if result:
+    print(doc["tokenList"])
+else:
+    print(doc)
