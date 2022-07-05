@@ -22,6 +22,10 @@ if os.name == "nt":# 윈도우 운영체제
     from eunjeon import Mecab
 else:# 현재 리눅스 서버 및 맥은 konlpy으로 미캡 모듈 import
     from konlpy.tag import Mecab
+import nltk
+from nltk.corpus import stopwords
+
+import re
 
 es = Elasticsearch(
         [esAcc.host],
@@ -34,8 +38,11 @@ index = esAcc.indexPaper
     
 
 DIR_HomeGraph = "./tfidfHomeGraphdata.json"
-DIR_EntireTfidf = "./tfidfs/tfidfTotaldata"  
+DIR_EntireTfidf = "./tfidfs/tfidfTotaldata"
 
+def is_english(title):
+    hangul = re.compile('[ㄱ-ㅣ가-힣]')
+    return title == hangul.sub("",title)
 
 def makeCorpus (resp):
     corpus = []
@@ -106,11 +113,10 @@ def dataPrePrcs(corpus):
     hashList = corpus["hash_key"]
     titles = corpus["titles"]
     contents = corpus["contents"]
-    # import re
-    # rex1 = re.compile('[^가-힣0-9*.?,!]')#한글 숫자 자주 쓰는 문자만 취급
-    # 영어나 한문일 경우 Mecab을 생략하고 countvectorizer에 analyze = 'word'옵션으로 돌려서 분석하기.
-    
-    tagger = Mecab()
+
+    import re
+    rex1 = re.compile('[^가-힣0-9a-zA-Z*.?,!]')#한글 숫자 영어 자주 쓰는 문자 취급
+
     for i,c in enumerate(contents):
         try:
             c = rex1.sub(" ",c)
@@ -124,23 +130,47 @@ def dataPrePrcs(corpus):
     failIdxList = []
     
     #tag가 startswith("n")이거나 태그가 숫자, 영어, 한문 일 경우 살리도록.
-    tagList = ["NNG", "NNP", "NNB", "NNBC", "NR", "NP", "SL", "SH", "SN"]
+    tagger = Mecab()
 
+    indx = 0
     for i, c in enumerate(contents):
         num_co = num_co + 1
+        if is_english(titles[indx]):
+            # if hashList[indx] == "883894918290590972":
+            #     print('883894918290590972 문서가 영어모드로 분석되었습니다.')
+            lan = "EN"
+            tagList = ["NN", "NNS", "NNP", "NNPS", "FW"]
+        else:
+            # if hashList[indx] == "883894918290590972":
+            #     print('883894918290590972 문서가 한글모드로 분석되었습니다.')
+            lan = "KR"
+            tagList = ["NNG", "NNP", "NNB", "NNBC", "NR", "NP", "SL", "SH", "SN"]
         try:
-            t = tagger.pos(c)
+            if lan == "KR":
+                t = tagger.pos(c)
+            if lan == "EN":
+                words = nltk.word_tokenize(c)
+                t = nltk.pos_tag(words)
+                
             token_list = []
             # [(word,tag),(word,tag)] 
-            # 반복문 이욯아여 tag가 startswith("n")이거나 태그가 숫자, 영어, 한문 일 경우 살리도록.
-            # data분석 전처리에서도 동일하게 적용시키기.
+            # 영어의 경우 stopwords 분석 추가
             for word, tag in t:
                 if tag in tagList:
-                    token_list.append(word)
+                    if lan == "EN":
+                        # stops = set(stopwords.words('english'))
+                        # if word not in stops:
+                            # token_list.append(word)
+                        token_list.append(word)
+                    else:
+                        token_list.append(word)
             tokenized_doc.append(token_list)
-
+         
         except:
             failIdxList.append(i)
+        # print(indx)
+        indx += 1  
+
     for idx in reversed(failIdxList):
         hashList.pop(idx)
         titles.pop(idx)
@@ -158,7 +188,6 @@ def dataPrePrcs(corpus):
     # resultDict = {"hashList":hashList, "titles":titles, "tokenized_doc":tokenized_doc}
     # df = pd.DataFrame(resultDict)
     # df.to_csv("wcPrsResult.csv")
-
     return hashList, titles, tokenized_doc, contents
 
 def runAnalysis(resp):
@@ -332,5 +361,5 @@ def getAllCountTable(hash_key = False, isTest = False):
         return analysisResult
 
 if __name__ == "__main__":
-    # print(getAllCountTable("5581330687581762183", True))
+    # print(getAllCountTable("883894918290590972", isTest = True))
     getAllCountTable()
