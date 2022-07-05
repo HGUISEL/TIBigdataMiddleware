@@ -1,3 +1,5 @@
+MECAB_DIR = "/home/middleware/mecab"
+
 from posixpath import join
 import sys, os
 from numpy.lib.npyio import save
@@ -12,7 +14,7 @@ import pandas as pd
 from numpy.core.fromnumeric import shape
 from TextMining.Tokenizer.kubic_data import *
 from TextMining.Tokenizer.kubic_mystorage import *
-import pandas as pd
+
 # from konlpy.tag import Mecab
 from jamo import h2j, j2hcj
 import re
@@ -257,8 +259,44 @@ def make_return_result_list(docList):
                     break
         result.append(docToken)
     return result
-                
-                
+
+
+# dir가 있는지 확인하고 없으면 dir만들어주는 함수.
+def create_dir(directory, logger, identification):
+    try:
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        else:
+            logger.info(identification + "사용자사전 폴더가 이미 있습니다. 생성하지 않습니다.")
+        return True, None
+    except Exception as e:
+        err = traceback.format_exc()
+        logger.error(identification + "사용자사전 폴더 만들기에 실패했습니다. \n 실패사유:" + str(err))
+        return False, identification + "사용자사전 폴더 만들기에 실패했습니다. \n 실패사유:" + str(err)
+
+# 원하는 위치(dir)에 mecab 한국어 사전파일(mecab-ko-dic-2.1.1-20180720.tar.gz)압축해제하여 설치하는 함수
+# 이미 있으면 설치하지 않는다. 
+import tarfile
+def install_mecab(dir, logger, identification):
+    FILE_PATH = "/home/middleware/mecab-ko-dic-2.1.1-20180720.tar.gz"
+    try:
+        if not os.path.exists(dir+"/mecab-ko-dic-2.1.1-20180720"):
+            logger.info(identification + "사용자사전 파일을 설치합니다.")
+            if os.path.exists(dir) and os.path.isfile(FILE_PATH):
+                tar_file = tarfile.open(FILE_PATH)
+                tar_file.extractall(path=dir)
+                tar_file.close()
+                return True, None
+            else:
+                logger.error(identification + "사용자폴더 혹은 메캅 사용자사전 파일이 없습니다.")
+                return False, identification + "사용자폴더 혹은 메캅 사용자사전 파일이 없습니다."
+        else:
+            logger.info(identification + "사용자사전 파일이 이미 설치되어있어 설치하지 않습니다.")
+            return True, None
+    except Exception as e:
+        err = traceback.format_exc()
+        logger.error(identification + "사용자사전 폴더에 초기 사전설치를 실패했습니다. \n 실패사유:" + str(err))
+        return False, identification + "사용자사전 폴더에 초기 사전설치를 실패했습니다. \n 실패사유:" + str(err)
 
 
 def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymTF, compoundTF):
@@ -267,8 +305,20 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
     identification = str(email)+'_'+'preprocessing(compound)'+'_'+str(savedDate)+"// "
     logger.info(identification + '전처리(compound함수)를 시작합니다.')
 
-    file_data = []
+    logger.info(identification + '전처리를 위한 사용자사전 폴더를 생성합니다.')
+    USER_MECAB_DIR = MECAB_DIR+"/"+str(email)
+    # USER_MECAB_DIR = MECAB_DIR
+    
+    result = create_dir(USER_MECAB_DIR, logger, identification)
+    if not result[0]:
+        return result[0], result[1] 
 
+    logger.info(identification+ '사용자사전 폴더에 기본 사용자사전을 설치합니다.')
+    result = install_mecab(USER_MECAB_DIR, logger, identification)
+    if not result[0]:
+        return result[0], result[1] 
+
+    file_data = []
     if compoundTF == True:
         try:
             compound_file = getCompound(email, keyword, savedDate)  #사용자가 등록한 사전 적용
@@ -291,7 +341,7 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
         return False, "복합어사전 형식 오류"
     
     try:
-        with open("/home/middleware/mecab/mecab-ko-dic-2.1.1-20180720/user-dic/my-dic.csv", 'w', encoding='utf-8') as f: 
+        with open(USER_MECAB_DIR+"/mecab-ko-dic-2.1.1-20180720/user-dic/my-dic.csv", 'w', encoding='utf-8') as f: 
             for line in file_data: 
                 f.write(line)
     except Exception as e:
@@ -310,24 +360,26 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
         def __exit__(self, etype, value, traceback):
             os.chdir(self.savedPath)
     
-    with cd("/home/middleware/mecab/mecab-ko-dic-2.1.1-20180720"):
+    with cd(USER_MECAB_DIR+"/mecab-ko-dic-2.1.1-20180720"):
         
         #subprocess.call("ls")
         logger.info(identification + "\n<<add-userdic.sh>>")
         subprocess.call("ls")
 
-        # subprocess.run('./autogen.sh')
-        # subprocess.call("make")
+        subprocess.run('./configure')
+        subprocess.call("make")
 
-        subprocess.run("./tools/add-userdic.sh") #####error my-dic.csv을 메캅ko안에 
+        subprocess.run("./tools/add-userdic.sh")
         subprocess.call("ls")
 
+        subprocess.call(["make", "clean"])
+
         logger.info(identification + "\n<<make install>>")
-        subprocess.call(["make", "install", 'DESTDIR=../userlocallibmecab/'])
+        subprocess.call(["make", "install", 'DESTDIR='+USER_MECAB_DIR+'/userlocallibmecab/'])
     
     # usr 권한이 없어 사용 불가능하기 때문에, /home/dapi2/TIBigdataMiddleware/TextMining/userlocallibmecab 을 새로 만들고 사용
     # make install 시에 DESDIR 지정
-    mecab = Mecab( dicpath = '/home/middleware/mecab/userlocallibmecab/usr/local/lib/mecab/dic/mecab-ko-dic') #/usr/local/lib/mecab/dic/mecab-ko-dic을 자동으로 참조
+    mecab = Mecab( dicpath = USER_MECAB_DIR+'/userlocallibmecab/usr/local/lib/mecab/dic/mecab-ko-dic') #/usr/local/lib/mecab/dic/mecab-ko-dic을 자동으로 참조
    
     #success, doc = stop_syn(email, keyword, savedDate, mecab, wordclass)
     success, doc = stop_syn_add_title(email, keyword, savedDate, mecab, wordclass, stopwordTF, synonymTF)
@@ -401,12 +453,10 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
         }
     return success, return_mdoc #전체 형태소 분석한 단어들의 목록 (kubic 미리보기에 뜨도록) --> 출력 형태 변경
 
-
-# result, doc = compound_add_text('21800520@handong.ac.kr', '사드', "2022-05-10T10:53:47.746Z", "010", False, False, False)
-# result, doc = compound_add_text('21800520@handong.ac.kr', 'kim', "2022-06-13T18:31:52.137Z", "010", False, False, False)
+result, doc = compound_add_text('21800520@handong.ac.kr', '남북통일', "2022-06-29T16:01:37.217Z", "010", False, False, False)
 
 
-# if result:
-#     print(doc["tokenList"])
-# else:
-#     print(doc)
+if result:
+    print(doc["tokenList"])
+else:
+    print(doc)
