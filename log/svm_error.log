@@ -1,0 +1,579 @@
+2021-08-16 11:21:02,330 INFO: 훈련할 데이터를 불러옵니다. in SVM.py:69
+2021-08-16 11:21:05,286 INFO: train data를 불러오는데 성공하였습니다. in SVM.py:74
+2021-08-16 11:21:05,286 INFO: 키워드 데이터의 가중치를 구합니다. in SVM.py:83
+2021-08-16 11:21:21,604 INFO: 키워드 데이터의 가중치를 구하는데 성공하였습니다. in SVM.py:86
+2021-08-16 11:21:21,604 INFO: SVM 모델학습을 시작합니다. in SVM.py:95
+2021-08-16 11:21:26,976 INFO: SVM 모델학습을 완료하였습니다. in SVM.py:98
+2021-08-16 11:21:27,339 INFO: 훈련한 모델을 저장하였습니다. in SVM.py:115
+2022-01-08 13:44:45,647 INFO: MongoDB에 연결을 시도합니다. in SVM.py:174
+2022-01-08 13:44:45,658 INFO: 훈련할 데이터를 불러옵니다. in SVM.py:69
+2022-01-08 13:44:45,724 INFO: MongoDB에 연결을 성공했습니다. in SVM.py:178
+2022-01-08 13:44:45,740 ERROR: SVM을 통해 주제예측한 데이터 저장에 실패하였습니다. name 'logger' is not defined in SVM.py:202
+2022-01-08 13:44:45,741 INFO: MongoDB의 svm collection에 분석한 데이터의 주제를 저장을 시작합니다. in SVM.py:207
+2022-01-08 13:44:45,741 ERROR: MongoDB의 svm collection에 분석한 데이터를 저장하는데 실패했습니다. local variable 'hash_key' referenced before assignment in SVM.py:220
+2022-01-08 13:44:49,049 INFO: train data를 불러오는데 성공하였습니다. in SVM.py:74
+2022-01-08 13:44:49,049 INFO: 키워드 데이터의 가중치를 구합니다. in SVM.py:83
+2022-01-08 13:45:05,570 INFO: 키워드 데이터의 가중치를 구하는데 성공하였습니다. in SVM.py:86
+2022-01-08 13:45:05,570 INFO: SVM 모델학습을 시작합니다. in SVM.py:95
+2022-01-08 13:45:11,002 INFO: SVM 모델학습을 완료하였습니다. in SVM.py:98
+2022-01-08 13:45:11,390 INFO: 훈련한 모델을 저장하였습니다. in SVM.py:115
+2022-03-30 16:29:26,879 INFO: svm 모델 train data가 저장될 ./train_data 디렉토리를 생성하였습니다. in SVM.py:55
+2022-03-30 16:29:26,879 INFO: 훈련할 데이터를 불러옵니다. in SVM.py:69
+2022-03-30 16:29:26,889 ERROR: train data를 불러오는데 실패하였습니다. [Errno 2] No such file or directory: './train_data/single_20110224-20210224.csv' in SVM.py:78
+2022-03-30 16:29:26,890 INFO: 키워드 데이터의 가중치를 구합니다. in SVM.py:83
+2022-03-30 16:29:26,890 ERROR: 가중치를 구하는데 실패하였습니다. local variable 'data' referenced before assignment in SVM.py:90
+2022-03-30 16:29:26,890 INFO: SVM 모델학습을 시작합니다. in SVM.py:95
+2022-03-30 16:29:26,890 ERROR: SVM 모델학습에 실패하였습니다. local variable 'tvc_data' referenced before assignment in SVM.py:102
+2022-03-30 16:29:26,890 ERROR: SVM모델저장에 실패하였습니다. local variable 'model' referenced before assignment in SVM.py:119
+2022-03-30 16:39:07,370 INFO: 훈련할 데이터를 불러옵니다. in SVM.py:69
+2022-03-30 16:39:07,372 ERROR: train data를 불러오는데 실패하였습니다. [Errno 2] No such file or directory: './train_data/single_20110224-20210224.csv' in SVM.py:78
+2022-03-30 16:39:07,374 INFO: 키워드 데이터의 가중치를 구합니다. in SVM.py:83
+2022-03-30 16:39:07,374 ERROR: 가중치를 구하는데 실패하였습니다. local variable 'data' referenced before assignment in SVM.py:90
+2022-03-30 16:39:07,375 INFO: SVM 모델학습을 시작합니다. in SVM.py:95
+2022-03-30 16:39:07,375 ERROR: SVM 모델학습에 실패하였습니다. local variable 'tvc_data' referenced before assignment in SVM.py:102
+2022-03-30 16:39:07,375 ERROR: SVM모델저장에 실패하였습니다. local variable 'model' referenced before assignment in SVM.py:119
+2022-03-30 16:40:34,952 INFO: 훈련할 데이터를 불러옵니다. in SVM.py:69
+2022-03-30 16:40:34,953 ERROR: train data를 불러오는데 실패하였습니다. [Errno 2] No such file or directory: './train_data/single_20110224-20210224.csv' in SVM.py:78
+2022-03-30 16:40:34,954 INFO: 키워드 데이터의 가중치를 구합니다. in SVM.py:83
+2022-03-30 16:40:34,954 ERROR: 가중치를 구하는데 실패하였습니다. local variable 'data' referenced before assignment in SVM.py:90
+2022-03-30 16:40:34,954 INFO: SVM 모델학습을 시작합니다. in SVM.py:95
+2022-03-30 16:40:34,954 ERROR: SVM 모델학습에 실패하였습니다. local variable 'tvc_data' referenced before assignment in SVM.py:102
+2022-03-30 16:40:34,955 ERROR: SVM모델저장에 실패하였습니다. local variable 'model' referenced before assignment in SVM.py:119
+2022-03-30 16:41:24,967 INFO: 훈련할 데이터를 불러옵니다. in SVM.py:69
+2022-03-30 16:41:25,221 ERROR: train data를 불러오는데 실패하였습니다. Error tokenizing data. C error: EOF inside string starting at row 59811 in SVM.py:78
+2022-03-30 16:41:25,222 INFO: 키워드 데이터의 가중치를 구합니다. in SVM.py:83
+2022-03-30 16:41:25,222 ERROR: 가중치를 구하는데 실패하였습니다. local variable 'data' referenced before assignment in SVM.py:90
+2022-03-30 16:41:25,222 INFO: SVM 모델학습을 시작합니다. in SVM.py:95
+2022-03-30 16:41:25,222 ERROR: SVM 모델학습에 실패하였습니다. local variable 'tvc_data' referenced before assignment in SVM.py:102
+2022-03-30 16:41:25,222 ERROR: SVM모델저장에 실패하였습니다. local variable 'model' referenced before assignment in SVM.py:119
+2022-03-30 16:42:53,731 INFO: 훈련할 데이터를 불러옵니다. 제발 in SVM.py:69
+2022-03-30 16:42:53,986 ERROR: train data를 불러오는데 실패하였습니다. Error tokenizing data. C error: EOF inside string starting at row 59811 in SVM.py:78
+2022-03-30 16:42:53,987 INFO: 키워드 데이터의 가중치를 구합니다. in SVM.py:83
+2022-03-30 16:42:53,987 ERROR: 가중치를 구하는데 실패하였습니다. local variable 'data' referenced before assignment in SVM.py:90
+2022-03-30 16:42:53,987 INFO: SVM 모델학습을 시작합니다. in SVM.py:95
+2022-03-30 16:42:53,988 ERROR: SVM 모델학습에 실패하였습니다. local variable 'tvc_data' referenced before assignment in SVM.py:102
+2022-03-30 16:42:53,988 ERROR: SVM모델저장에 실패하였습니다. local variable 'model' referenced before assignment in SVM.py:119
+2022-03-30 16:45:46,767 INFO: 훈련할 데이터를 불러옵니다. 제발 in SVM.py:69
+2022-03-30 16:45:47,022 ERROR: train data를 불러오는데 실패하였습니다. Error tokenizing data. C error: EOF inside string starting at row 59811 in SVM.py:78
+2022-03-30 16:45:47,023 INFO: 키워드 데이터의 가중치를 구합니다. in SVM.py:83
+2022-03-30 16:45:47,023 ERROR: 가중치를 구하는데 실패하였습니다. local variable 'data' referenced before assignment in SVM.py:90
+2022-03-30 16:45:47,023 INFO: SVM 모델학습을 시작합니다. in SVM.py:95
+2022-03-30 16:45:47,023 ERROR: SVM 모델학습에 실패하였습니다. local variable 'tvc_data' referenced before assignment in SVM.py:102
+2022-03-30 16:45:47,023 ERROR: SVM모델저장에 실패하였습니다. local variable 'model' referenced before assignment in SVM.py:119
+2022-03-30 16:47:50,650 INFO: 훈련할 데이터를 불러옵니다. 제발 in SVM.py:69
+2022-03-30 16:47:50,903 ERROR: train data를 불러오는데 실패하였습니다. Error tokenizing data. C error: EOF inside string starting at row 59811 in SVM.py:78
+2022-03-30 16:47:50,904 INFO: 키워드 데이터의 가중치를 구합니다. in SVM.py:83
+2022-03-30 16:47:50,904 ERROR: 가중치를 구하는데 실패하였습니다. local variable 'data' referenced before assignment in SVM.py:90
+2022-03-30 16:47:50,904 INFO: SVM 모델학습을 시작합니다. in SVM.py:95
+2022-03-30 16:47:50,904 ERROR: SVM 모델학습에 실패하였습니다. local variable 'tvc_data' referenced before assignment in SVM.py:102
+2022-03-30 16:47:50,904 ERROR: SVM모델저장에 실패하였습니다. local variable 'model' referenced before assignment in SVM.py:119
+2022-03-30 16:49:45,708 INFO: 훈련할 데이터를 불러옵니다. in SVM.py:69
+2022-03-30 16:49:45,991 ERROR: train data를 불러오는데 실패하였습니다. Error tokenizing data. C error: EOF inside string starting at row 59811 in SVM.py:79
+2022-03-30 16:49:45,992 INFO: 키워드 데이터의 가중치를 구합니다. in SVM.py:84
+2022-03-30 16:49:45,992 ERROR: 가중치를 구하는데 실패하였습니다. local variable 'data' referenced before assignment in SVM.py:91
+2022-03-30 16:49:45,992 INFO: SVM 모델학습을 시작합니다. in SVM.py:96
+2022-03-30 16:49:45,992 ERROR: SVM 모델학습에 실패하였습니다. local variable 'tvc_data' referenced before assignment in SVM.py:103
+2022-03-30 16:49:45,992 ERROR: SVM모델저장에 실패하였습니다. local variable 'model' referenced before assignment in SVM.py:120
+2022-03-30 16:51:43,976 INFO: 훈련할 데이터를 불러옵니다. in SVM.py:69
+2022-03-30 16:51:44,782 ERROR: train data를 불러오는데 실패하였습니다. unexpected end of data in SVM.py:79
+2022-03-30 16:51:44,799 INFO: 키워드 데이터의 가중치를 구합니다. in SVM.py:84
+2022-03-30 16:51:44,800 ERROR: 가중치를 구하는데 실패하였습니다. local variable 'data' referenced before assignment in SVM.py:91
+2022-03-30 16:51:44,800 INFO: SVM 모델학습을 시작합니다. in SVM.py:96
+2022-03-30 16:51:44,800 ERROR: SVM 모델학습에 실패하였습니다. local variable 'tvc_data' referenced before assignment in SVM.py:103
+2022-03-30 16:51:44,800 ERROR: SVM모델저장에 실패하였습니다. local variable 'model' referenced before assignment in SVM.py:120
+2022-03-30 16:56:21,680 INFO: 훈련할 데이터를 불러옵니다. in SVM.py:69
+2022-03-30 16:56:22,611 INFO: 훈련할 csv파일을 가져왔습니다. in SVM.py:71
+2022-03-30 16:56:23,029 INFO: train data를 불러오는데 성공하였습니다. in SVM.py:75
+2022-03-30 16:56:23,029 INFO: 키워드 데이터의 가중치를 구합니다. in SVM.py:84
+2022-03-30 16:56:29,586 INFO: 키워드 데이터의 가중치를 구하는데 성공하였습니다. in SVM.py:87
+2022-03-30 16:56:29,586 INFO: SVM 모델학습을 시작합니다. in SVM.py:96
+2022-03-30 16:56:31,892 INFO: SVM 모델학습을 완료하였습니다. in SVM.py:99
+2022-03-30 16:56:32,001 INFO: 훈련한 모델을 저장하였습니다. in SVM.py:116
+2022-03-30 17:06:45,548 INFO: MongoDB에 연결을 시도합니다. in SVM.py:175
+2022-03-30 17:06:45,554 INFO: MongoDB에 연결을 성공했습니다. in SVM.py:179
+2022-03-30 17:06:45,563 ERROR: SVM을 통해 주제예측한 데이터 저장에 실패하였습니다. name 'logger' is not defined in SVM.py:203
+2022-03-30 17:06:45,566 INFO: MongoDB의 svm collection에 분석한 데이터의 주제를 저장을 시작합니다. in SVM.py:208
+2022-03-30 17:06:45,566 ERROR: MongoDB의 svm collection에 분석한 데이터를 저장하는데 실패했습니다. local variable 'hash_key' referenced before assignment in SVM.py:221
+2022-03-30 17:08:39,164 INFO: MongoDB에 연결을 시도합니다. in SVM.py:175
+2022-03-30 17:08:39,167 INFO: MongoDB에 연결을 성공했습니다. in SVM.py:179
+2022-03-30 17:08:39,172 ERROR: SVM을 통해 주제예측한 데이터 저장에 실패하였습니다. name 'logger' is not defined in SVM.py:203
+2022-03-30 17:08:39,172 INFO: MongoDB의 svm collection에 분석한 데이터의 주제를 저장을 시작합니다. in SVM.py:208
+2022-03-30 17:08:39,172 ERROR: MongoDB의 svm collection에 분석한 데이터를 저장하는데 실패했습니다. local variable 'hash_key' referenced before assignment in SVM.py:221
+2022-03-30 17:08:41,025 INFO: MongoDB에 연결을 시도합니다. in SVM.py:175
+2022-03-30 17:08:41,027 INFO: MongoDB에 연결을 성공했습니다. in SVM.py:179
+2022-03-30 17:08:41,032 ERROR: SVM을 통해 주제예측한 데이터 저장에 실패하였습니다. name 'logger' is not defined in SVM.py:203
+2022-03-30 17:08:41,032 INFO: MongoDB의 svm collection에 분석한 데이터의 주제를 저장을 시작합니다. in SVM.py:208
+2022-03-30 17:08:41,032 ERROR: MongoDB의 svm collection에 분석한 데이터를 저장하는데 실패했습니다. local variable 'hash_key' referenced before assignment in SVM.py:221
+2022-03-30 17:13:17,600 INFO: MongoDB에 연결을 시도합니다. in SVM.py:175
+2022-03-30 17:13:17,605 INFO: MongoDB에 연결을 성공했습니다. in SVM.py:179
+2022-03-30 17:13:17,612 ERROR: SVM을 통해 주제예측한 데이터 저장에 실패하였습니다. name 'logger' is not defined in SVM.py:203
+2022-03-30 17:13:17,614 INFO: MongoDB의 svm collection에 분석한 데이터의 주제를 저장을 시작합니다. in SVM.py:208
+2022-03-30 17:13:17,614 ERROR: MongoDB의 svm collection에 분석한 데이터를 저장하는데 실패했습니다. local variable 'hash_key' referenced before assignment in SVM.py:221
+2022-03-30 17:14:28,066 INFO: MongoDB에 연결을 시도합니다. in SVM.py:175
+2022-03-30 17:14:28,072 INFO: MongoDB에 연결을 성공했습니다. in SVM.py:179
+2022-03-30 17:14:28,077 ERROR: SVM을 통해 주제예측한 데이터 저장에 실패하였습니다. name 'logger' is not defined in SVM.py:203
+2022-03-30 17:14:28,080 INFO: MongoDB의 svm collection에 분석한 데이터의 주제를 저장을 시작합니다. in SVM.py:208
+2022-03-30 17:14:28,080 ERROR: MongoDB의 svm collection에 분석한 데이터를 저장하는데 실패했습니다. local variable 'hash_key' referenced before assignment in SVM.py:221
+2022-03-30 17:15:34,245 INFO: MongoDB에 연결을 시도합니다. in SVM.py:175
+2022-03-30 17:15:34,251 INFO: MongoDB에 연결을 성공했습니다. in SVM.py:179
+2022-03-30 17:15:34,265 ERROR: SVM을 통해 주제예측한 데이터 저장에 실패하였습니다. name 'logger' is not defined
+Traceback (most recent call last):
+  File "/home/middleware/TIBigdataMiddleware/topic_analysis/Pre_date.py", line 20, in Pre_date
+    logger.info('Elasticsearch server에 접속을 시도합니다.')
+NameError: name 'logger' is not defined
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/middleware/TIBigdataMiddleware/SVM.py", line 192, in MoEs
+    (hash_key, doc_title, tokenized_doc, contents, times)=Pre_date(date)
+  File "/home/middleware/TIBigdataMiddleware/topic_analysis/Pre_date.py", line 31, in Pre_date
+    logger.error('Elasticsearch server 접속에 실패하였습니다. %s',message)
+NameError: name 'logger' is not defined
+ in SVM.py:203
+2022-03-30 17:15:34,268 INFO: MongoDB의 svm collection에 분석한 데이터의 주제를 저장을 시작합니다. in SVM.py:208
+2022-03-30 17:15:34,268 ERROR: MongoDB의 svm collection에 분석한 데이터를 저장하는데 실패했습니다. local variable 'hash_key' referenced before assignment in SVM.py:221
+2022-03-30 17:16:33,323 INFO: MongoDB에 연결을 시도합니다. in SVM.py:175
+2022-03-30 17:16:33,328 INFO: MongoDB에 연결을 성공했습니다. in SVM.py:179
+2022-03-30 17:16:33,332 INFO: Elasticsearch server에 접속을 시도합니다. in Pre_date.py:21
+2022-03-30 17:16:33,333 INFO: Elasticsearch server에 성공적으로 접속하였습니다. in Pre_date.py:28
+2022-03-30 17:16:33,334 INFO: Elasticsearch server에 데이터를 요청합니다. in Pre_date.py:37
+2022-03-30 17:16:33,449 ERROR: Elasticsearch server 데이터를 불러오는데 실패하였습니다. ConnectionError([SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:852)) caused by: SSLError([SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:852)) in Pre_date.py:96
+2022-03-30 17:16:33,451 INFO: 형태소 분석기를 실행합니다.  in Pre_date.py:101
+2022-03-30 17:16:33,451 ERROR: 형태소 분석기 실행에 실패하였습니다. local variable 'contents' referenced before assignment in Pre_date.py:107
+2022-03-30 17:16:33,451 ERROR: SVM을 통해 주제예측한 데이터 저장에 실패하였습니다. local variable 'hash_key' referenced before assignment
+Traceback (most recent call last):
+  File "/home/middleware/TIBigdataMiddleware/SVM.py", line 192, in MoEs
+    (hash_key, doc_title, tokenized_doc, contents, times)=Pre_date(date)
+  File "/home/middleware/TIBigdataMiddleware/topic_analysis/Pre_date.py", line 109, in Pre_date
+    return hash_key, titles, tokenized_doc, contents, times
+UnboundLocalError: local variable 'hash_key' referenced before assignment
+ in SVM.py:203
+2022-03-30 17:16:33,451 INFO: MongoDB의 svm collection에 분석한 데이터의 주제를 저장을 시작합니다. in SVM.py:208
+2022-03-30 17:16:33,452 ERROR: MongoDB의 svm collection에 분석한 데이터를 저장하는데 실패했습니다. local variable 'hash_key' referenced before assignment in SVM.py:221
+2022-03-30 17:17:32,723 INFO: MongoDB에 연결을 시도합니다. in SVM.py:175
+2022-03-30 17:17:32,729 INFO: MongoDB에 연결을 성공했습니다. in SVM.py:179
+2022-03-30 17:17:32,733 INFO: Elasticsearch server에 접속을 시도합니다. in Pre_date.py:21
+2022-03-30 17:17:32,734 INFO: Elasticsearch server에 성공적으로 접속하였습니다. in Pre_date.py:29
+2022-03-30 17:17:32,735 INFO: Elasticsearch server에 데이터를 요청합니다. in Pre_date.py:38
+2022-03-30 17:17:56,924 INFO: Elasticsearch로부터 데이터를 불러왔습니다. in Pre_date.py:93
+2022-03-30 17:17:56,925 INFO: 형태소 분석기를 실행합니다.  in Pre_date.py:102
+2022-03-30 17:17:56,926 INFO: mecab 형태소 분석기를 실행합니다. in dataPrePrcs.py:26
+2022-03-30 17:17:56,927 INFO: 한글 외의 글자를 삭제합니다. in dataPrePrcs.py:35
+2022-03-30 17:18:18,949 INFO: 각 문서의 명사를 추출합니다. in dataPrePrcs.py:49
+2022-03-30 17:34:46,754 INFO: 각 문서의 명사추출을 완료했습니다. in dataPrePrcs.py:54
+2022-03-30 17:34:46,755 INFO: 한 글자 단어를 삭제합니다. in dataPrePrcs.py:63
+2022-03-30 17:34:59,871 INFO: 한 글자 단어를 삭제를 완료했습니다. in dataPrePrcs.py:70
+2022-03-30 17:34:59,903 INFO: 형태소 분석기를 실행을 완료하였습니다.  in Pre_date.py:104
+2022-03-30 17:34:59,905 INFO: 저장된 모델을 불러옵니다.  in SVM.py:131
+2022-03-30 17:34:59,913 INFO: SGDClassifier(alpha=1e-05, random_state=42) in SVM.py:137
+2022-03-30 17:35:00,001 INFO: TfidfVectorizer() in SVM.py:140
+2022-03-30 17:35:00,002 INFO: 저장된 모델을 불러오는 데 성공했습니다.  in SVM.py:141
+2022-03-30 17:35:00,002 INFO: 주제예측을 시작합니다. in SVM.py:150
+2022-03-30 17:39:47,828 INFO: MongoDB의 svm collection에 분석한 데이터의 주제를 저장을 시작합니다. in SVM.py:208
+2022-03-30 17:39:58,893 INFO: MongoDB의 svm collection에 분석한 데이터를 저장을 완료했습니다. in SVM.py:217
+2022-03-31 09:02:48,470 INFO: MongoDB에 연결을 시도합니다. in SVM.py:175
+2022-03-31 09:02:48,477 INFO: MongoDB에 연결을 성공했습니다. in SVM.py:179
+2022-03-31 09:02:48,564 INFO: Elasticsearch server에 접속을 시도합니다. in Pre_date.py:21
+2022-03-31 09:02:48,566 INFO: Elasticsearch server에 성공적으로 접속하였습니다. in Pre_date.py:29
+2022-03-31 09:02:48,566 INFO: Elasticsearch server에 데이터를 요청합니다. in Pre_date.py:38
+2022-03-31 09:02:48,874 ERROR: Elasticsearch server 데이터를 불러오는데 실패하였습니다. 'hash_key' in Pre_date.py:106
+2022-03-31 09:02:48,875 INFO: 형태소 분석기를 실행합니다.  in Pre_date.py:111
+2022-03-31 09:02:48,875 INFO: mecab 형태소 분석기를 실행합니다. in dataPrePrcs.py:26
+2022-03-31 09:02:49,081 INFO: 각 문서의 명사를 추출합니다. in dataPrePrcs.py:49
+2022-03-31 09:02:57,947 INFO: 각 문서의 명사추출을 완료했습니다. in dataPrePrcs.py:54
+2022-03-31 09:02:57,948 INFO: 한 글자 단어를 삭제합니다. in dataPrePrcs.py:63
+2022-03-31 09:02:58,058 INFO: 형태소 분석기를 실행을 완료하였습니다.  in Pre_date.py:113
+2022-03-31 09:02:58,060 INFO: 저장된 모델을 불러옵니다.  in SVM.py:131
+2022-03-31 09:02:58,067 INFO: SGDClassifier(alpha=1e-05, random_state=42) in SVM.py:137
+2022-03-31 09:02:58,140 INFO: TfidfVectorizer() in SVM.py:140
+2022-03-31 09:02:58,140 INFO: 저장된 모델을 불러오는 데 성공했습니다.  in SVM.py:141
+2022-03-31 09:02:58,141 INFO: 주제예측을 시작합니다. in SVM.py:150
+2022-03-31 09:03:00,799 INFO: MongoDB의 svm collection에 분석한 데이터의 주제를 저장을 시작합니다. in SVM.py:209
+2022-03-31 09:03:00,830 INFO: MongoDB의 svm collection에 분석한 데이터를 저장을 완료했습니다. in SVM.py:218
+2022-03-31 09:04:35,742 INFO: MongoDB에 연결을 시도합니다. in SVM.py:175
+2022-03-31 09:04:35,748 INFO: MongoDB에 연결을 성공했습니다. in SVM.py:179
+2022-03-31 09:04:35,757 INFO: Elasticsearch server에 접속을 시도합니다. in Pre_date.py:21
+2022-03-31 09:04:35,758 INFO: Elasticsearch server에 성공적으로 접속하였습니다. in Pre_date.py:29
+2022-03-31 09:04:35,758 INFO: Elasticsearch server에 데이터를 요청합니다. in Pre_date.py:38
+2022-03-31 09:04:36,112 ERROR: Elasticsearch server 데이터를 불러오는데 실패하였습니다. 'hash_key' in Pre_date.py:106
+2022-03-31 09:04:36,113 INFO: 형태소 분석기를 실행합니다.  in Pre_date.py:111
+2022-03-31 09:04:36,113 INFO: mecab 형태소 분석기를 실행합니다. in dataPrePrcs.py:26
+2022-03-31 09:04:36,321 INFO: 각 문서의 명사를 추출합니다. in dataPrePrcs.py:49
+2022-03-31 09:04:45,526 INFO: 각 문서의 명사추출을 완료했습니다. in dataPrePrcs.py:54
+2022-03-31 09:04:45,526 INFO: 한 글자 단어를 삭제합니다. in dataPrePrcs.py:63
+2022-03-31 09:04:45,649 INFO: 형태소 분석기를 실행을 완료하였습니다.  in Pre_date.py:113
+2022-03-31 09:04:45,650 INFO: 저장된 모델을 불러옵니다.  in SVM.py:131
+2022-03-31 09:04:45,659 INFO: SGDClassifier(alpha=1e-05, random_state=42) in SVM.py:137
+2022-03-31 09:04:45,736 INFO: TfidfVectorizer() in SVM.py:140
+2022-03-31 09:04:45,737 INFO: 저장된 모델을 불러오는 데 성공했습니다.  in SVM.py:141
+2022-03-31 09:04:45,737 INFO: 주제예측을 시작합니다. in SVM.py:150
+2022-03-31 09:04:48,412 INFO: MongoDB의 svm collection에 분석한 데이터의 주제를 저장을 시작합니다. in SVM.py:209
+2022-03-31 09:04:48,444 INFO: MongoDB의 svm collection에 분석한 데이터를 저장을 완료했습니다. in SVM.py:218
+2022-03-31 09:08:48,092 INFO: MongoDB에 연결을 시도합니다. in SVM.py:175
+2022-03-31 09:08:48,098 INFO: MongoDB에 연결을 성공했습니다. in SVM.py:179
+2022-03-31 09:08:48,106 INFO: Elasticsearch server에 접속을 시도합니다. in Pre_date.py:21
+2022-03-31 09:08:48,108 INFO: Elasticsearch server에 성공적으로 접속하였습니다. in Pre_date.py:29
+2022-03-31 09:08:48,108 INFO: Elasticsearch server에 데이터를 요청합니다. in Pre_date.py:38
+2022-03-31 09:09:11,215 INFO: Elasticsearch로부터 데이터를 불러왔습니다. in Pre_date.py:114
+2022-03-31 09:09:11,215 INFO: 형태소 분석기를 실행합니다.  in Pre_date.py:123
+2022-03-31 09:09:11,216 INFO: mecab 형태소 분석기를 실행합니다. in dataPrePrcs.py:26
+2022-03-31 09:09:34,492 INFO: 각 문서의 명사를 추출합니다. in dataPrePrcs.py:49
+2022-03-31 09:24:37,317 INFO: 각 문서의 명사추출을 완료했습니다. in dataPrePrcs.py:54
+2022-03-31 09:24:37,317 INFO: 한 글자 단어를 삭제합니다. in dataPrePrcs.py:63
+2022-03-31 09:24:50,308 INFO: 형태소 분석기를 실행을 완료하였습니다.  in Pre_date.py:125
+2022-03-31 09:24:50,309 INFO: 저장된 모델을 불러옵니다.  in SVM.py:131
+2022-03-31 09:24:50,315 INFO: SGDClassifier(alpha=1e-05, random_state=42) in SVM.py:137
+2022-03-31 09:24:50,399 INFO: TfidfVectorizer() in SVM.py:140
+2022-03-31 09:24:50,400 INFO: 저장된 모델을 불러오는 데 성공했습니다.  in SVM.py:141
+2022-03-31 09:24:50,400 INFO: 주제예측을 시작합니다. in SVM.py:150
+2022-03-31 09:30:01,364 INFO: MongoDB의 svm collection에 분석한 데이터의 주제를 저장을 시작합니다. in SVM.py:209
+2022-03-31 09:30:16,211 INFO: MongoDB의 svm collection에 분석한 데이터를 저장을 완료했습니다. in SVM.py:218
+2022-03-31 10:09:35,742 INFO: 훈련할 데이터를 불러옵니다. in SVM.py:69
+2022-03-31 10:09:36,668 INFO: 훈련할 csv파일을 가져왔습니다. in SVM.py:71
+2022-03-31 10:09:37,086 INFO: train data를 불러오는데 성공하였습니다. in SVM.py:75
+2022-03-31 10:09:37,086 INFO: 키워드 데이터의 가중치를 구합니다. in SVM.py:84
+2022-03-31 10:09:43,594 INFO: 키워드 데이터의 가중치를 구하는데 성공하였습니다. in SVM.py:87
+2022-03-31 10:09:43,594 INFO: SVM 모델학습을 시작합니다. in SVM.py:96
+2022-03-31 10:09:45,856 INFO: SVM 모델학습을 완료하였습니다. in SVM.py:100
+2022-03-31 10:09:45,959 INFO: 훈련한 모델을 저장하였습니다. in SVM.py:117
+2022-03-31 10:12:07,309 INFO: 훈련할 데이터를 불러옵니다. in SVM.py:69
+2022-03-31 10:12:08,067 INFO: 훈련할 csv파일을 가져왔습니다. in SVM.py:71
+2022-03-31 10:12:08,505 INFO: train data를 불러오는데 성공하였습니다. in SVM.py:75
+2022-03-31 10:12:08,505 INFO: 키워드 데이터의 가중치를 구합니다. in SVM.py:84
+2022-03-31 10:12:15,161 INFO: 키워드 데이터의 가중치를 구하는데 성공하였습니다. in SVM.py:87
+2022-03-31 10:12:15,161 INFO: SVM 모델학습을 시작합니다. in SVM.py:96
+2022-03-31 10:12:17,393 INFO: SVM 모델학습을 완료하였습니다. in SVM.py:100
+2022-03-31 10:12:17,498 INFO: 훈련한 모델을 저장하였습니다. in SVM.py:117
+2022-03-31 10:12:42,509 INFO: MongoDB에 연결을 시도합니다. in SVM.py:176
+2022-03-31 10:12:42,512 INFO: MongoDB에 연결을 성공했습니다. in SVM.py:180
+2022-03-31 10:12:42,642 INFO: Elasticsearch server에 접속을 시도합니다. in Pre_date.py:21
+2022-03-31 10:12:42,645 INFO: Elasticsearch server에 성공적으로 접속하였습니다. in Pre_date.py:29
+2022-03-31 10:12:42,645 INFO: Elasticsearch server에 데이터를 요청합니다. in Pre_date.py:38
+2022-03-31 10:13:06,605 INFO: Elasticsearch로부터 데이터를 불러왔습니다. in Pre_date.py:114
+2022-03-31 10:13:06,605 INFO: 형태소 분석기를 실행합니다.  in Pre_date.py:123
+2022-03-31 10:13:06,606 INFO: mecab 형태소 분석기를 실행합니다. in dataPrePrcs.py:26
+2022-03-31 10:13:28,158 INFO: 각 문서의 명사를 추출합니다. in dataPrePrcs.py:49
+2022-03-31 10:28:33,238 INFO: 각 문서의 명사추출을 완료했습니다. in dataPrePrcs.py:54
+2022-03-31 10:28:33,238 INFO: 한 글자 단어를 삭제합니다. in dataPrePrcs.py:63
+2022-03-31 10:28:46,116 INFO: 형태소 분석기를 실행을 완료하였습니다.  in Pre_date.py:125
+2022-03-31 10:28:46,117 INFO: 저장된 모델을 불러옵니다.  in SVM.py:132
+2022-03-31 10:28:46,123 INFO: SGDClassifier(alpha=1e-05, random_state=42) in SVM.py:138
+2022-03-31 10:28:46,204 INFO: TfidfVectorizer() in SVM.py:141
+2022-03-31 10:28:46,205 INFO: 저장된 모델을 불러오는 데 성공했습니다.  in SVM.py:142
+2022-03-31 10:28:46,205 INFO: 주제예측을 시작합니다. in SVM.py:151
+2022-03-31 10:33:50,876 INFO: MongoDB의 svm collection에 분석한 데이터의 주제를 저장을 시작합니다. in SVM.py:210
+2022-03-31 10:34:05,700 INFO: MongoDB의 svm collection에 분석한 데이터를 저장을 완료했습니다. in SVM.py:219
+2022-04-05 09:54:10,373 INFO: 훈련할 데이터를 불러옵니다. in SVM.py:69
+2022-04-05 09:54:11,237 INFO: 훈련할 csv파일을 가져왔습니다. in SVM.py:71
+2022-04-05 09:54:11,702 INFO: train data를 불러오는데 성공하였습니다. in SVM.py:75
+2022-04-05 09:54:11,702 INFO: 키워드 데이터의 가중치를 구합니다. in SVM.py:84
+2022-04-05 09:54:19,139 INFO: 키워드 데이터의 가중치를 구하는데 성공하였습니다. in SVM.py:87
+2022-04-05 09:54:19,139 INFO: SVM 모델학습을 시작합니다. in SVM.py:96
+2022-04-05 09:54:22,675 INFO: SVM 모델학습을 완료하였습니다. in SVM.py:100
+2022-04-05 09:54:22,829 INFO: 훈련한 모델을 저장하였습니다. in SVM.py:117
+2022-04-05 09:56:10,069 INFO: MongoDB에 연결을 시도합니다. in SVM.py:176
+2022-04-05 09:56:10,073 INFO: MongoDB에 연결을 성공했습니다. in SVM.py:180
+2022-04-05 09:56:10,203 INFO: Elasticsearch server에 접속을 시도합니다. in Pre_date.py:21
+2022-04-05 09:56:10,205 INFO: Elasticsearch server에 성공적으로 접속하였습니다. in Pre_date.py:29
+2022-04-05 09:56:10,205 INFO: Elasticsearch server에 데이터를 요청합니다. in Pre_date.py:38
+2022-04-05 09:56:36,915 INFO: Elasticsearch로부터 데이터를 불러왔습니다. in Pre_date.py:114
+2022-04-05 09:56:36,915 INFO: 형태소 분석기를 실행합니다.  in Pre_date.py:123
+2022-04-05 09:56:36,916 INFO: mecab 형태소 분석기를 실행합니다. in dataPrePrcs.py:26
+2022-04-05 09:56:59,347 INFO: 각 문서의 명사를 추출합니다. in dataPrePrcs.py:49
+2022-04-05 10:12:24,750 INFO: 각 문서의 명사추출을 완료했습니다. in dataPrePrcs.py:54
+2022-04-05 10:12:24,750 INFO: 한 글자 단어를 삭제합니다. in dataPrePrcs.py:63
+2022-04-05 10:12:38,052 INFO: 형태소 분석기를 실행을 완료하였습니다.  in Pre_date.py:125
+2022-04-05 10:12:38,054 INFO: 저장된 모델을 불러옵니다.  in SVM.py:132
+2022-04-05 10:12:38,060 INFO: SGDClassifier(alpha=1e-05, random_state=42) in SVM.py:138
+2022-04-05 10:12:38,143 INFO: TfidfVectorizer() in SVM.py:141
+2022-04-05 10:12:38,144 INFO: 저장된 모델을 불러오는 데 성공했습니다.  in SVM.py:142
+2022-04-05 10:12:38,144 INFO: 주제예측을 시작합니다. in SVM.py:151
+2022-04-05 10:17:55,105 INFO: MongoDB의 svm collection에 분석한 데이터의 주제를 저장을 시작합니다. in SVM.py:210
+2022-04-05 10:18:07,366 INFO: MongoDB의 svm collection에 분석한 데이터를 저장을 완료했습니다. in SVM.py:219
+2022-04-12 09:34:33,333 INFO: MongoDB에 연결을 시도합니다. in SVM.py:177
+2022-04-12 09:34:33,341 INFO: MongoDB에 연결을 성공했습니다. in SVM.py:181
+2022-04-12 09:34:33,469 INFO: Elasticsearch server에 접속을 시도합니다. in Pre_date.py:21
+2022-04-12 09:34:33,470 INFO: Elasticsearch server에 성공적으로 접속하였습니다. in Pre_date.py:29
+2022-04-12 09:34:33,470 INFO: Elasticsearch server에 데이터를 요청합니다. in Pre_date.py:38
+2022-04-12 09:34:58,145 INFO: Elasticsearch로부터 데이터를 불러왔습니다. in Pre_date.py:114
+2022-04-12 09:34:58,145 INFO: 형태소 분석기를 실행합니다.  in Pre_date.py:123
+2022-04-12 09:34:58,145 INFO: mecab 형태소 분석기를 실행합니다. in dataPrePrcs.py:26
+2022-04-12 09:35:20,720 INFO: 각 문서의 명사를 추출합니다. in dataPrePrcs.py:49
+2022-04-12 09:51:24,267 INFO: 훈련할 데이터를 불러옵니다. in SVM.py:69
+2022-04-12 09:51:26,403 INFO: 훈련할 csv파일을 가져왔습니다. in SVM.py:71
+2022-04-12 09:51:27,221 INFO: train data를 불러오는데 성공하였습니다. in SVM.py:75
+2022-04-12 09:51:27,221 INFO: 키워드 데이터의 가중치를 구합니다. in SVM.py:84
+2022-04-12 09:51:43,731 INFO: 키워드 데이터의 가중치를 구하는데 성공하였습니다. in SVM.py:87
+2022-04-12 09:51:43,731 INFO: SVM 모델학습을 시작합니다. in SVM.py:96
+2022-04-12 09:51:49,415 INFO: SVM 모델학습을 완료하였습니다. in SVM.py:100
+2022-04-12 09:51:49,701 INFO: 훈련한 모델을 저장하였습니다. in SVM.py:117
+2022-04-12 09:55:03,970 INFO: MongoDB에 연결을 시도합니다. in SVM.py:177
+2022-04-12 09:55:03,974 INFO: MongoDB에 연결을 성공했습니다. in SVM.py:181
+2022-04-12 09:55:03,981 INFO: Elasticsearch server에 접속을 시도합니다. in Pre_date.py:21
+2022-04-12 09:55:03,983 INFO: Elasticsearch server에 성공적으로 접속하였습니다. in Pre_date.py:29
+2022-04-12 09:55:03,984 INFO: Elasticsearch server에 데이터를 요청합니다. in Pre_date.py:38
+2022-04-12 09:55:27,403 INFO: Elasticsearch로부터 데이터를 불러왔습니다. in Pre_date.py:114
+2022-04-12 09:55:27,403 INFO: 형태소 분석기를 실행합니다.  in Pre_date.py:123
+2022-04-12 09:55:27,404 INFO: mecab 형태소 분석기를 실행합니다. in dataPrePrcs.py:26
+2022-04-12 09:55:49,688 INFO: 각 문서의 명사를 추출합니다. in dataPrePrcs.py:49
+2022-04-12 10:11:15,057 INFO: 각 문서의 명사추출을 완료했습니다. in dataPrePrcs.py:54
+2022-04-12 10:11:15,057 INFO: 한 글자 단어를 삭제합니다. in dataPrePrcs.py:63
+2022-04-12 10:11:28,516 INFO: 형태소 분석기를 실행을 완료하였습니다.  in Pre_date.py:125
+2022-04-12 10:11:28,518 INFO: 저장된 모델을 불러옵니다.  in SVM.py:132
+2022-04-12 10:11:28,541 INFO: SGDClassifier(alpha=1e-05, random_state=42) in SVM.py:138
+2022-04-12 10:11:28,741 INFO: TfidfVectorizer() in SVM.py:141
+2022-04-12 10:11:28,741 INFO: 저장된 모델을 불러오는 데 성공했습니다.  in SVM.py:142
+2022-04-12 10:11:28,742 INFO: 주제예측을 시작합니다. in SVM.py:152
+2022-04-12 10:17:42,293 INFO: MongoDB의 svm collection에 분석한 데이터의 주제를 저장을 시작합니다. in SVM.py:211
+2022-04-12 10:17:55,342 INFO: MongoDB의 svm collection에 분석한 데이터를 저장을 완료했습니다. in SVM.py:220
+2022-04-18 01:03:51,443 INFO: MongoDB에 연결을 시도합니다. in SVM.py:176
+2022-04-18 01:03:51,449 INFO: MongoDB에 연결을 성공했습니다. in SVM.py:180
+2022-04-18 01:03:51,540 INFO: Elasticsearch server에 접속을 시도합니다. in Pre_date.py:21
+2022-04-18 01:03:51,541 INFO: Elasticsearch server에 성공적으로 접속하였습니다. in Pre_date.py:29
+2022-04-18 01:03:51,542 INFO: Elasticsearch server에 데이터를 요청합니다. in Pre_date.py:38
+2022-04-18 01:04:15,223 INFO: Elasticsearch로부터 데이터를 불러왔습니다. in Pre_date.py:114
+2022-04-18 01:04:15,223 INFO: 형태소 분석기를 실행합니다.  in Pre_date.py:123
+2022-04-18 01:04:15,223 INFO: mecab 형태소 분석기를 실행합니다. in dataPrePrcs.py:26
+2022-04-18 01:04:37,861 INFO: 각 문서의 명사를 추출합니다. in dataPrePrcs.py:49
+2022-04-18 01:19:49,077 INFO: 각 문서의 명사추출을 완료했습니다. in dataPrePrcs.py:54
+2022-04-18 01:19:49,078 INFO: 한 글자 단어를 삭제합니다. in dataPrePrcs.py:63
+2022-04-18 01:20:02,090 INFO: 형태소 분석기를 실행을 완료하였습니다.  in Pre_date.py:125
+2022-04-18 01:20:02,091 INFO: 저장된 모델을 불러옵니다.  in SVM.py:132
+2022-04-18 01:20:02,116 INFO: SGDClassifier(alpha=1e-05, random_state=42) in SVM.py:138
+2022-04-18 01:20:02,300 INFO: TfidfVectorizer() in SVM.py:141
+2022-04-18 01:20:02,301 INFO: 저장된 모델을 불러오는 데 성공했습니다.  in SVM.py:142
+2022-04-18 01:20:02,301 INFO: 주제예측을 시작합니다. in SVM.py:151
+2022-04-18 01:26:17,309 INFO: MongoDB의 svm collection에 분석한 데이터의 주제를 저장을 시작합니다. in SVM.py:210
+2022-04-18 01:26:29,437 INFO: MongoDB의 svm collection에 분석한 데이터를 저장을 완료했습니다. in SVM.py:219
+2022-05-01 00:00:00,005 INFO: MongoDB에 연결을 시도합니다. in SVM.py:176
+2022-05-01 00:00:00,013 INFO: MongoDB에 연결을 성공했습니다. in SVM.py:180
+2022-05-01 00:00:00,150 INFO: Elasticsearch server에 접속을 시도합니다. in Pre_date.py:21
+2022-05-01 00:00:00,154 INFO: Elasticsearch server에 성공적으로 접속하였습니다. in Pre_date.py:29
+2022-05-01 00:00:00,155 INFO: Elasticsearch server에 데이터를 요청합니다. in Pre_date.py:38
+2022-05-01 00:00:23,503 INFO: Elasticsearch로부터 데이터를 불러왔습니다. in Pre_date.py:114
+2022-05-01 00:00:23,503 INFO: 형태소 분석기를 실행합니다.  in Pre_date.py:123
+2022-05-01 00:00:23,504 INFO: mecab 형태소 분석기를 실행합니다. in dataPrePrcs.py:26
+2022-05-01 00:00:46,196 INFO: 각 문서의 명사를 추출합니다. in dataPrePrcs.py:49
+2022-05-01 00:15:58,301 INFO: 각 문서의 명사추출을 완료했습니다. in dataPrePrcs.py:54
+2022-05-01 00:15:58,301 INFO: 한 글자 단어를 삭제합니다. in dataPrePrcs.py:63
+2022-05-01 00:16:11,231 INFO: 형태소 분석기를 실행을 완료하였습니다.  in Pre_date.py:125
+2022-05-01 00:16:11,232 INFO: 저장된 모델을 불러옵니다.  in SVM.py:132
+2022-05-01 00:16:11,252 INFO: SGDClassifier(alpha=1e-05, random_state=42) in SVM.py:138
+2022-05-01 00:16:11,436 INFO: TfidfVectorizer() in SVM.py:141
+2022-05-01 00:16:11,436 INFO: 저장된 모델을 불러오는 데 성공했습니다.  in SVM.py:142
+2022-05-01 00:16:11,437 INFO: 주제예측을 시작합니다. in SVM.py:151
+2022-05-01 00:22:26,519 INFO: MongoDB의 svm collection에 분석한 데이터의 주제를 저장을 시작합니다. in SVM.py:210
+2022-05-01 00:22:39,173 INFO: MongoDB의 svm collection에 분석한 데이터를 저장을 완료했습니다. in SVM.py:219
+2022-05-10 10:36:45,767 INFO: MongoDB에 연결을 시도합니다. in SVM.py:176
+2022-05-10 10:36:45,769 INFO: MongoDB에 연결을 성공했습니다. in SVM.py:180
+2022-05-10 10:36:45,774 INFO: Elasticsearch server에 접속을 시도합니다. in Pre_date.py:21
+2022-05-10 10:36:45,775 INFO: Elasticsearch server에 성공적으로 접속하였습니다. in Pre_date.py:29
+2022-05-10 10:36:45,775 INFO: Elasticsearch server에 데이터를 요청합니다. in Pre_date.py:38
+2022-05-10 10:37:12,166 INFO: Elasticsearch로부터 데이터를 불러왔습니다. in Pre_date.py:114
+2022-05-10 10:37:12,167 INFO: 형태소 분석기를 실행합니다.  in Pre_date.py:123
+2022-05-10 10:37:12,167 INFO: mecab 형태소 분석기를 실행합니다. in dataPrePrcs.py:26
+2022-05-10 10:37:37,604 INFO: 각 문서의 명사를 추출합니다. in dataPrePrcs.py:49
+2022-05-10 10:43:03,960 INFO: MongoDB에 연결을 시도합니다. in SVM.py:176
+2022-05-10 10:43:03,963 INFO: MongoDB에 연결을 성공했습니다. in SVM.py:180
+2022-05-10 10:43:03,968 INFO: Elasticsearch server에 접속을 시도합니다. in Pre_date.py:21
+2022-05-10 10:43:03,968 INFO: Elasticsearch server에 성공적으로 접속하였습니다. in Pre_date.py:29
+2022-05-10 10:43:03,968 INFO: Elasticsearch server에 데이터를 요청합니다. in Pre_date.py:38
+2022-05-10 10:43:23,396 ERROR: Elasticsearch server 데이터를 불러오는데 실패하였습니다. must be str, not NoneType in Pre_date.py:118
+2022-05-10 10:43:23,397 INFO: 형태소 분석기를 실행합니다.  in Pre_date.py:123
+2022-05-10 10:43:23,397 INFO: mecab 형태소 분석기를 실행합니다. in dataPrePrcs.py:26
+2022-05-10 10:43:38,995 INFO: 각 문서의 명사를 추출합니다. in dataPrePrcs.py:49
+2022-05-10 10:54:00,453 INFO: 각 문서의 명사추출을 완료했습니다. in dataPrePrcs.py:54
+2022-05-10 10:54:00,453 INFO: 한 글자 단어를 삭제합니다. in dataPrePrcs.py:63
+2022-05-10 10:54:09,090 INFO: 형태소 분석기를 실행을 완료하였습니다.  in Pre_date.py:125
+2022-05-10 10:54:09,092 INFO: 저장된 모델을 불러옵니다.  in SVM.py:132
+2022-05-10 10:54:09,116 INFO: SGDClassifier(alpha=1e-05, random_state=42) in SVM.py:138
+2022-05-10 10:54:09,304 INFO: TfidfVectorizer() in SVM.py:141
+2022-05-10 10:54:09,305 INFO: 저장된 모델을 불러오는 데 성공했습니다.  in SVM.py:142
+2022-05-10 10:54:09,305 INFO: 주제예측을 시작합니다. in SVM.py:151
+2022-05-10 11:00:10,222 INFO: MongoDB의 svm collection에 분석한 데이터의 주제를 저장을 시작합니다. in SVM.py:210
+2022-05-10 11:00:28,460 ERROR: MongoDB의 svm collection에 분석한 데이터를 저장하는데 실패했습니다. list index out of range in SVM.py:223
+2022-06-01 00:00:00,007 INFO: MongoDB에 연결을 시도합니다. in SVM.py:176
+2022-06-01 00:00:00,013 INFO: MongoDB에 연결을 성공했습니다. in SVM.py:180
+2022-06-01 00:00:00,031 ERROR: SVM을 통해 주제예측한 데이터 저장에 실패하였습니다. name 'logger' is not defined
+Traceback (most recent call last):
+  File "/home/middleware/TIBigdataMiddleware/topic_analysis/Post_date.py", line 20, in Post_date
+    logger.info('Elasticsearch server에 접속을 시도합니다.')
+NameError: name 'logger' is not defined
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/middleware/TIBigdataMiddleware/SVM.py", line 199, in MoEs
+    (hash_key, doc_title, tokenized_doc, contents, times)=Post_date(date)
+  File "/home/middleware/TIBigdataMiddleware/topic_analysis/Post_date.py", line 31, in Post_date
+    logger.error('Elasticsearch server 접속에 실패하였습니다. %s',message)
+NameError: name 'logger' is not defined
+ in SVM.py:205
+2022-06-01 00:00:00,037 INFO: MongoDB의 svm collection에 분석한 데이터의 주제를 저장을 시작합니다. in SVM.py:210
+2022-06-01 00:00:00,037 ERROR: MongoDB의 svm collection에 분석한 데이터를 저장하는데 실패했습니다. local variable 'hash_key' referenced before assignment in SVM.py:223
+2022-07-01 00:00:00,007 INFO: MongoDB에 연결을 시도합니다. in SVM.py:176
+2022-07-01 00:00:00,012 INFO: MongoDB에 연결을 성공했습니다. in SVM.py:180
+2022-07-01 00:00:00,031 ERROR: SVM을 통해 주제예측한 데이터 저장에 실패하였습니다. name 'logger' is not defined
+Traceback (most recent call last):
+  File "/home/middleware/TIBigdataMiddleware/topic_analysis/Post_date.py", line 20, in Post_date
+    logger.info('Elasticsearch server에 접속을 시도합니다.')
+NameError: name 'logger' is not defined
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/middleware/TIBigdataMiddleware/SVM.py", line 199, in MoEs
+    (hash_key, doc_title, tokenized_doc, contents, times)=Post_date(date)
+  File "/home/middleware/TIBigdataMiddleware/topic_analysis/Post_date.py", line 31, in Post_date
+    logger.error('Elasticsearch server 접속에 실패하였습니다. %s',message)
+NameError: name 'logger' is not defined
+ in SVM.py:205
+2022-07-01 00:00:00,038 INFO: MongoDB의 svm collection에 분석한 데이터의 주제를 저장을 시작합니다. in SVM.py:210
+2022-07-01 00:00:00,038 ERROR: MongoDB의 svm collection에 분석한 데이터를 저장하는데 실패했습니다. local variable 'hash_key' referenced before assignment in SVM.py:223
+2022-07-05 06:07:03,313 INFO: MongoDB에 연결을 시도합니다. in SVM.py:176
+2022-07-05 06:07:03,316 INFO: MongoDB에 연결을 성공했습니다. in SVM.py:180
+2022-07-05 06:07:03,322 INFO: Elasticsearch server에 접속을 시도합니다. in Post_date.py:21
+2022-07-05 06:07:03,323 INFO: Elasticsearch server에 성공적으로 접속하였습니다. in Post_date.py:28
+2022-07-05 06:07:03,323 INFO: Elasticsearch server에 데이터를 요청합니다. in Post_date.py:37
+2022-07-05 06:07:03,423 ERROR: Elasticsearch server 데이터를 불러오는데 실패하였습니다. ConnectionError([SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:852)) caused by: SSLError([SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:852)) in Post_date.py:116
+2022-07-05 06:07:03,423 INFO: 형태소 분석기를 실행합니다.  in Post_date.py:121
+2022-07-05 06:07:03,424 ERROR: 형태소 분석기 실행에 실패하였습니다. local variable 'contents' referenced before assignment in Post_date.py:127
+2022-07-05 06:07:03,424 ERROR: SVM을 통해 주제예측한 데이터 저장에 실패하였습니다. local variable 'hash_key' referenced before assignment
+Traceback (most recent call last):
+  File "SVM.py", line 199, in MoEs
+    (hash_key, doc_title, tokenized_doc, contents, times)=Post_date(date)
+  File "/home/middleware/TIBigdataMiddleware/topic_analysis/Post_date.py", line 129, in Post_date
+    return hash_key, titles, tokenized_doc, contents, times
+UnboundLocalError: local variable 'hash_key' referenced before assignment
+ in SVM.py:205
+2022-07-05 06:07:03,424 INFO: MongoDB의 svm collection에 분석한 데이터의 주제를 저장을 시작합니다. in SVM.py:210
+2022-07-05 06:07:03,424 ERROR: MongoDB의 svm collection에 분석한 데이터를 저장하는데 실패했습니다. local variable 'hash_key' referenced before assignment in SVM.py:223
+2022-07-05 06:11:34,944 INFO: MongoDB에 연결을 시도합니다. in SVM.py:176
+2022-07-05 06:11:34,946 INFO: MongoDB에 연결을 성공했습니다. in SVM.py:180
+2022-07-05 06:11:34,952 INFO: Elasticsearch server에 접속을 시도합니다. in Post_date.py:21
+2022-07-05 06:11:34,952 INFO: Elasticsearch server에 성공적으로 접속하였습니다. in Post_date.py:28
+2022-07-05 06:11:34,952 INFO: Elasticsearch server에 데이터를 요청합니다. in Post_date.py:37
+2022-07-05 06:11:35,057 ERROR: Elasticsearch server 데이터를 불러오는데 실패하였습니다. ConnectionError([SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:852)) caused by: SSLError([SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:852)) in Post_date.py:116
+2022-07-05 06:11:35,058 INFO: 형태소 분석기를 실행합니다.  in Post_date.py:121
+2022-07-05 06:11:35,058 ERROR: 형태소 분석기 실행에 실패하였습니다. local variable 'contents' referenced before assignment in Post_date.py:127
+2022-07-05 06:11:35,058 ERROR: SVM을 통해 주제예측한 데이터 저장에 실패하였습니다. local variable 'hash_key' referenced before assignment
+Traceback (most recent call last):
+  File "SVM.py", line 199, in MoEs
+    (hash_key, doc_title, tokenized_doc, contents, times)=Post_date(date)
+  File "/home/middleware/TIBigdataMiddleware/topic_analysis/Post_date.py", line 129, in Post_date
+    return hash_key, titles, tokenized_doc, contents, times
+UnboundLocalError: local variable 'hash_key' referenced before assignment
+ in SVM.py:205
+2022-07-05 06:11:35,058 INFO: MongoDB의 svm collection에 분석한 데이터의 주제를 저장을 시작합니다. in SVM.py:210
+2022-07-05 06:11:35,059 ERROR: MongoDB의 svm collection에 분석한 데이터를 저장하는데 실패했습니다. local variable 'hash_key' referenced before assignment in SVM.py:223
+2022-07-05 06:14:47,245 INFO: MongoDB에 연결을 시도합니다. in SVM.py:176
+2022-07-05 06:14:47,247 INFO: MongoDB에 연결을 성공했습니다. in SVM.py:180
+2022-07-05 06:14:47,254 INFO: Elasticsearch server에 접속을 시도합니다. in Post_date.py:21
+2022-07-05 06:14:47,255 INFO: Elasticsearch server에 성공적으로 접속하였습니다. in Post_date.py:28
+2022-07-05 06:14:47,255 INFO: Elasticsearch server에 데이터를 요청합니다. in Post_date.py:37
+2022-07-05 06:14:47,367 ERROR: Elasticsearch server 데이터를 불러오는데 실패하였습니다. ConnectionError([SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:852)) caused by: SSLError([SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:852)) in Post_date.py:116
+2022-07-05 06:14:47,368 INFO: 형태소 분석기를 실행합니다.  in Post_date.py:121
+2022-07-05 06:14:47,369 ERROR: 형태소 분석기 실행에 실패하였습니다. local variable 'contents' referenced before assignment in Post_date.py:127
+2022-07-05 06:14:47,369 ERROR: SVM을 통해 주제예측한 데이터 저장에 실패하였습니다. local variable 'hash_key' referenced before assignment
+Traceback (most recent call last):
+  File "SVM.py", line 199, in MoEs
+    (hash_key, doc_title, tokenized_doc, contents, times)=Post_date(date)
+  File "/home/middleware/TIBigdataMiddleware/topic_analysis/Post_date.py", line 129, in Post_date
+    return hash_key, titles, tokenized_doc, contents, times
+UnboundLocalError: local variable 'hash_key' referenced before assignment
+ in SVM.py:205
+2022-07-05 06:14:47,369 INFO: MongoDB의 svm collection에 분석한 데이터의 주제를 저장을 시작합니다. in SVM.py:210
+2022-07-05 06:14:47,369 ERROR: MongoDB의 svm collection에 분석한 데이터를 저장하는데 실패했습니다. local variable 'hash_key' referenced before assignment in SVM.py:223
+2022-07-05 06:23:01,268 INFO: MongoDB에 연결을 시도합니다. in SVM.py:176
+2022-07-05 06:23:01,270 INFO: MongoDB에 연결을 성공했습니다. in SVM.py:180
+2022-07-05 06:23:01,274 INFO: Elasticsearch server에 접속을 시도합니다. in Post_date.py:21
+2022-07-05 06:23:01,275 INFO: Elasticsearch server에 성공적으로 접속하였습니다. in Post_date.py:29
+2022-07-05 06:23:01,275 INFO: Elasticsearch server에 데이터를 요청합니다. in Post_date.py:38
+2022-07-05 06:23:10,407 ERROR: Elasticsearch server 데이터를 불러오는데 실패하였습니다. must be str, not NoneType in Post_date.py:117
+2022-07-05 06:23:10,408 INFO: 형태소 분석기를 실행합니다.  in Post_date.py:122
+2022-07-05 06:23:10,408 INFO: mecab 형태소 분석기를 실행합니다. in dataPrePrcs.py:26
+2022-07-05 06:23:18,362 INFO: 각 문서의 명사를 추출합니다. in dataPrePrcs.py:49
+2022-07-05 06:26:45,131 INFO: MongoDB에 연결을 시도합니다. in SVM.py:176
+2022-07-05 06:26:45,133 INFO: MongoDB에 연결을 성공했습니다. in SVM.py:180
+2022-07-05 06:26:45,137 INFO: Elasticsearch server에 접속을 시도합니다. in Pre_date.py:21
+2022-07-05 06:26:45,139 INFO: Elasticsearch server에 성공적으로 접속하였습니다. in Pre_date.py:29
+2022-07-05 06:26:45,139 INFO: Elasticsearch server에 데이터를 요청합니다. in Pre_date.py:38
+2022-07-05 06:26:53,797 ERROR: Elasticsearch server 데이터를 불러오는데 실패하였습니다. must be str, not NoneType in Pre_date.py:118
+2022-07-05 06:26:53,798 INFO: 형태소 분석기를 실행합니다.  in Pre_date.py:123
+2022-07-05 06:26:53,799 INFO: mecab 형태소 분석기를 실행합니다. in dataPrePrcs.py:26
+2022-07-05 06:27:01,792 INFO: 각 문서의 명사를 추출합니다. in dataPrePrcs.py:49
+2022-07-05 06:28:36,225 INFO: MongoDB에 연결을 시도합니다. in SVM.py:176
+2022-07-05 06:28:36,227 INFO: MongoDB에 연결을 성공했습니다. in SVM.py:180
+2022-07-05 06:28:36,229 INFO: Elasticsearch server에 접속을 시도합니다. in Pre_date.py:21
+2022-07-05 06:28:36,230 INFO: Elasticsearch server에 성공적으로 접속하였습니다. in Pre_date.py:29
+2022-07-05 06:28:36,230 INFO: Elasticsearch server에 데이터를 요청합니다. in Pre_date.py:38
+2022-07-05 06:28:44,993 ERROR: Elasticsearch server 데이터를 불러오는데 실패하였습니다. must be str, not NoneType in Pre_date.py:118
+2022-07-05 06:28:44,994 INFO: 형태소 분석기를 실행합니다.  in Pre_date.py:123
+2022-07-05 06:28:44,994 INFO: mecab 형태소 분석기를 실행합니다. in dataPrePrcs.py:26
+2022-07-05 06:28:52,938 INFO: 각 문서의 명사를 추출합니다. in dataPrePrcs.py:49
+2022-07-05 06:31:01,972 INFO: MongoDB에 연결을 시도합니다. in SVM.py:176
+2022-07-05 06:31:01,975 INFO: MongoDB에 연결을 성공했습니다. in SVM.py:180
+2022-07-05 06:31:01,977 INFO: Elasticsearch server에 접속을 시도합니다. in Pre_date.py:21
+2022-07-05 06:31:01,978 INFO: Elasticsearch server에 성공적으로 접속하였습니다. in Pre_date.py:29
+2022-07-05 06:31:01,978 INFO: Elasticsearch server에 데이터를 요청합니다. in Pre_date.py:38
+2022-07-05 06:31:02,006 ERROR: Elasticsearch server 데이터를 불러오는데 실패하였습니다. RequestError(400, 'illegal_argument_exception', 'query malformed, empty clause found at [1:22]') in Pre_date.py:118
+2022-07-05 06:31:02,007 INFO: 형태소 분석기를 실행합니다.  in Pre_date.py:123
+2022-07-05 06:31:02,007 ERROR: 형태소 분석기 실행에 실패하였습니다. local variable 'contents' referenced before assignment in Pre_date.py:129
+2022-07-05 06:31:02,007 ERROR: SVM을 통해 주제예측한 데이터 저장에 실패하였습니다. local variable 'hash_key' referenced before assignment
+Traceback (most recent call last):
+  File "SVM.py", line 195, in MoEs
+    (hash_key, doc_title, tokenized_doc, contents, times)=Pre_date(date)
+  File "/home/middleware/TIBigdataMiddleware/topic_analysis/Pre_date.py", line 131, in Pre_date
+    return hash_key, titles, tokenized_doc, contents, times
+UnboundLocalError: local variable 'hash_key' referenced before assignment
+ in SVM.py:206
+2022-07-05 06:31:02,217 INFO: MongoDB의 svm collection에 분석한 데이터의 주제를 저장을 시작합니다. in SVM.py:212
+2022-07-05 06:31:02,218 ERROR: MongoDB의 svm collection에 분석한 데이터를 저장하는데 실패했습니다. local variable 'hash_key' referenced before assignment in SVM.py:225
+2022-07-05 06:38:50,479 INFO: MongoDB에 연결을 시도합니다. in SVM.py:176
+2022-07-05 06:38:50,482 INFO: MongoDB에 연결을 성공했습니다. in SVM.py:180
+2022-07-05 06:38:50,485 INFO: Elasticsearch server에 접속을 시도합니다. in Pre_date.py:21
+2022-07-05 06:38:50,487 INFO: Elasticsearch server에 성공적으로 접속하였습니다. in Pre_date.py:29
+2022-07-05 06:38:50,488 INFO: Elasticsearch server에 데이터를 요청합니다. in Pre_date.py:38
+2022-07-05 06:40:50,460 INFO: MongoDB에 연결을 시도합니다. in SVM.py:176
+2022-07-05 06:40:50,462 INFO: MongoDB에 연결을 성공했습니다. in SVM.py:180
+2022-07-05 06:40:50,466 INFO: Elasticsearch server에 접속을 시도합니다. in Pre_date.py:21
+2022-07-05 06:40:50,468 INFO: Elasticsearch server에 성공적으로 접속하였습니다. in Pre_date.py:29
+2022-07-05 06:40:50,468 INFO: Elasticsearch server에 데이터를 요청합니다. in Pre_date.py:38
+2022-07-05 06:40:59,874 ERROR: Elasticsearch server 데이터를 불러오는데 실패하였습니다. must be str, not NoneType in Pre_date.py:119
+2022-07-05 06:41:42,753 INFO: MongoDB에 연결을 시도합니다. in SVM.py:176
+2022-07-05 06:41:42,756 INFO: MongoDB에 연결을 성공했습니다. in SVM.py:180
+2022-07-05 06:41:42,757 INFO: Elasticsearch server에 접속을 시도합니다. in Pre_date.py:21
+2022-07-05 06:41:42,760 INFO: Elasticsearch server에 성공적으로 접속하였습니다. in Pre_date.py:29
+2022-07-05 06:41:42,760 INFO: Elasticsearch server에 데이터를 요청합니다. in Pre_date.py:38
+2022-07-05 06:41:51,151 ERROR: Elasticsearch server 데이터를 불러오는데 실패하였습니다. must be str, not NoneType
+Traceback (most recent call last):
+  File "/home/middleware/TIBigdataMiddleware/topic_analysis/Pre_date.py", line 103, in Pre_date
+    contents.append(doc["_source"]["post_body"] + doc["_source"]["file_extracted_content"])
+TypeError: must be str, not NoneType
+ in Pre_date.py:119
+2022-07-05 06:45:46,905 INFO: MongoDB에 연결을 시도합니다. in SVM.py:176
+2022-07-05 06:45:46,907 INFO: MongoDB에 연결을 성공했습니다. in SVM.py:180
+2022-07-05 06:45:46,909 INFO: Elasticsearch server에 접속을 시도합니다. in Pre_date.py:21
+2022-07-05 06:45:46,910 INFO: Elasticsearch server에 성공적으로 접속하였습니다. in Pre_date.py:29
+2022-07-05 06:45:46,910 INFO: Elasticsearch server에 데이터를 요청합니다. in Pre_date.py:38
+2022-07-05 06:46:18,316 INFO: Elasticsearch로부터 데이터를 불러왔습니다. in Pre_date.py:124
+2022-07-05 06:46:37,413 INFO: MongoDB에 연결을 시도합니다. in SVM.py:176
+2022-07-05 06:46:37,417 INFO: MongoDB에 연결을 성공했습니다. in SVM.py:180
+2022-07-05 06:46:37,419 INFO: Elasticsearch server에 접속을 시도합니다. in Pre_date.py:21
+2022-07-05 06:46:37,420 INFO: Elasticsearch server에 성공적으로 접속하였습니다. in Pre_date.py:29
+2022-07-05 06:46:37,420 INFO: Elasticsearch server에 데이터를 요청합니다. in Pre_date.py:38
+2022-07-05 06:47:07,377 INFO: Elasticsearch로부터 데이터를 불러왔습니다. in Pre_date.py:124
+2022-07-05 06:47:07,377 INFO: 형태소 분석기를 실행합니다.  in Pre_date.py:133
+2022-07-05 06:47:07,378 INFO: mecab 형태소 분석기를 실행합니다. in dataPrePrcs.py:26
+2022-07-05 06:47:33,207 INFO: 각 문서의 명사를 추출합니다. in dataPrePrcs.py:49
+2022-07-05 07:04:29,266 INFO: 각 문서의 명사추출을 완료했습니다. in dataPrePrcs.py:54
+2022-07-05 07:04:29,267 INFO: 한 글자 단어를 삭제합니다. in dataPrePrcs.py:63
+2022-07-05 07:04:43,745 INFO: 형태소 분석기를 실행을 완료하였습니다.  in Pre_date.py:135
+2022-07-05 07:04:43,746 INFO: 저장된 모델을 불러옵니다.  in SVM.py:132
+2022-07-05 07:04:43,831 INFO: SGDClassifier(alpha=1e-05, random_state=42) in SVM.py:138
+2022-07-05 07:04:44,058 INFO: TfidfVectorizer() in SVM.py:141
+2022-07-05 07:04:44,059 INFO: 저장된 모델을 불러오는 데 성공했습니다.  in SVM.py:142
+2022-07-05 07:04:44,059 INFO: 주제예측을 시작합니다. in SVM.py:151
+2022-07-05 07:13:03,234 INFO: MongoDB의 svm collection에 분석한 데이터의 주제를 저장을 시작합니다. in SVM.py:212
+2022-07-05 07:13:27,520 INFO: MongoDB의 svm collection에 분석한 데이터를 저장을 완료했습니다. in SVM.py:221

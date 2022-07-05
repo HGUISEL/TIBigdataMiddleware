@@ -1,3 +1,4 @@
+# This Python file uses the following encoding: utf-8
 # KUBIC module : prs.py
 # created Data : 어제 :(
 # purpose : 데이터 전처리 모듈
