@@ -16,14 +16,16 @@ import re
 import logging
 
 def Post_date(date):
+    logger=__get_logger()
     try:
         logger.info('Elasticsearch server에 접속을 시도합니다.')
         es = Elasticsearch(
-        [esAcc.host],
-        http_auth=(esAcc.id, esAcc.password),
-        scheme="https",
-        port= esAcc.port
-    )
+            [esAcc.host],
+            http_auth=(esAcc.id, esAcc.password),
+            scheme="https",
+            port= esAcc.port,
+            verify_certs=False
+        )
         logger.info('Elasticsearch server에 성공적으로 접속하였습니다.')
     except Exception as e:
         trace_back=traceback.format_exc()
@@ -35,14 +37,14 @@ def Post_date(date):
     try:
         logger.info('Elasticsearch server에 데이터를 요청합니다.')
         resp=es.search( 
-            index= esAcc.index, 
+            index= esAcc.indexPaper, 
             body={   
                 "size":100,
                 "query":{
                     "range" :{
                         "timestamp":{
-                            "gt":str(date)#이후
-                            ,"format" : "yyyy-MM-dd"
+                            "gt":str(date),#이후
+                            "format" : "yyyy-MM-dd"
 
                         }
                     },
@@ -111,7 +113,7 @@ def Post_date(date):
         logger.info("Elasticsearch로부터 데이터를 불러왔습니다.")
     except Exception as e:
         trace_back=traceback.format_exc()
-        message=str(e)#+"\n"+ str(trace_back)
+        message=str(e)+"\n"+ str(trace_back)
         logger.error('Elasticsearch server 데이터를 불러오는데 실패하였습니다. %s',message)
         #sys.exit()
              
@@ -122,7 +124,7 @@ def Post_date(date):
         logger.info('형태소 분석기를 실행을 완료하였습니다. ')
     except Exception as e:
         trace_back=traceback.format_exc()
-        message=str(e)#+"\n"+ str(trace_back)
+        message=str(e)+"\n"+ str(trace_back)
         logger.error('형태소 분석기 실행에 실패하였습니다. %s',message)
         #sys.exit()
     return hash_key, titles, tokenized_doc, contents, times

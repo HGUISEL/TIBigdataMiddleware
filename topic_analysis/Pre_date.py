@@ -37,7 +37,7 @@ def Pre_date(date):
     try:
         logger.info('Elasticsearch server에 데이터를 요청합니다.')
         resp=es.search( 
-            index= esAcc.index, 
+            index= esAcc.indexPaper, 
             body={   
                 "size":100,
                 "query":{
@@ -57,7 +57,7 @@ def Pre_date(date):
         
         print("fetched: ",fetched)
         #fetched =len(resp['hits']['hits'])
-
+    
         hash_key=[]
         titles=[]
         contents=[]
@@ -96,28 +96,37 @@ def Pre_date(date):
             fetched=len(resp['hits']['hits'])
             for doc in resp['hits']['hits']: 
                 if "post_body" in doc["_source"].keys() and "file_extracted_content" in doc["_source"].keys():
-                    hash_key.append((doc["_source"]["hash_key"])) 
-                    titles.append((doc["_source"]["post_title"]))
-                    times.append((doc["_source"]["timestamp"])) 
-                    contents.append(doc["_source"]["post_body"] + doc["_source"]["file_extracted_content"])
+                    if doc["_source"]["post_body"] == None or doc["_source"]["file_extracted_content"] == None :
+                        pass
+                    else:
+                        hash_key.append((doc["_source"]["hash_key"])) 
+                        titles.append((doc["_source"]["post_title"]))
+                        times.append((doc["_source"]["timestamp"])) 
+                        contents.append(doc["_source"]["post_body"] + doc["_source"]["file_extracted_content"])
                 elif "post_body" in doc["_source"].keys():
-                    hash_key.append((doc["_source"]["hash_key"])) 
-                    titles.append((doc["_source"]["post_title"]))
-                    times.append((doc["_source"]["timestamp"]))
-                    contents.append(doc["_source"]["post_body"])
+                    if doc["_source"]["post_body"] == None:
+                        pass
+                    else:
+                        hash_key.append((doc["_source"]["hash_key"])) 
+                        titles.append((doc["_source"]["post_title"]))
+                        times.append((doc["_source"]["timestamp"]))
+                        contents.append(doc["_source"]["post_body"])
                 elif "file_extracted_content" in doc["_source"].keys(): 
-                    hash_key.append((doc["_source"]["hash_key"])) 
-                    titles.append((doc["_source"]["post_title"]))
-                    times.append((doc["_source"]["timestamp"])) 
-                    contents.append(doc["_source"]["file_extracted_content"])
+                    if doc["_source"]["file_extracted_content"] == None :
+                        pass
+                    else:
+                        hash_key.append((doc["_source"]["hash_key"])) 
+                        titles.append((doc["_source"]["post_title"]))
+                        times.append((doc["_source"]["timestamp"])) 
+                        contents.append(doc["_source"]["file_extracted_content"])
 
         logger.info("Elasticsearch로부터 데이터를 불러왔습니다.")
     except Exception as e:
         trace_back=traceback.format_exc()
-        message=str(e)#+"\n"+ str(trace_back)
+        message=str(e)+"\n"+ str(trace_back)
         logger.error('Elasticsearch server 데이터를 불러오는데 실패하였습니다. %s',message)
         #sys.exit()
-             
+        
     #형태소 분석기
     try:
         logger.info('형태소 분석기를 실행합니다. ')
