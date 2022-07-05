@@ -307,6 +307,7 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
 
     logger.info(identification + '전처리를 위한 사용자사전 폴더를 생성합니다.')
     USER_MECAB_DIR = MECAB_DIR+"/"+str(email)
+    # USER_MECAB_DIR = MECAB_DIR
     
     result = create_dir(USER_MECAB_DIR, logger, identification)
     if not result[0]:
@@ -365,14 +366,16 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
         logger.info(identification + "\n<<add-userdic.sh>>")
         subprocess.call("ls")
 
-        # subprocess.run('./autogen.sh')
-        # subprocess.call("make")
+        subprocess.run('./configure')
+        subprocess.call("make")
 
-        subprocess.run("./tools/add-userdic.sh") #####error my-dic.csv을 메캅ko안에 
+        subprocess.run("./tools/add-userdic.sh")
         subprocess.call("ls")
 
+        subprocess.call(["make", "clean"])
+
         logger.info(identification + "\n<<make install>>")
-        subprocess.call(["make", "install", 'DESTDIR=../userlocallibmecab/'])
+        subprocess.call(["make", "install", 'DESTDIR='+USER_MECAB_DIR+'/userlocallibmecab/'])
     
     # usr 권한이 없어 사용 불가능하기 때문에, /home/dapi2/TIBigdataMiddleware/TextMining/userlocallibmecab 을 새로 만들고 사용
     # make install 시에 DESDIR 지정
