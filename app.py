@@ -357,7 +357,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.jobstores.base import JobLookupError
 from topic_analysis.__get_logger import __get_logger
 
-@app.route('/svm', methods=['GET'])#app객체로 라우팅 경로 설정
+# @app.route('/svm', methods=['GET'])#app객체로 라우팅 경로 설정
 def svm():
     #app=Flask(__name__)
     #app.config['JSONIFY_PRETTYPRINT_REGULAR']=True
@@ -374,7 +374,8 @@ def svm():
     result=SVM.MoEs(date)
 
     return json.dumps(result, ensure_ascii=False)
-@app.route('/train', methods=['GET'])#app객체로 라우팅 경로 설정
+    
+# @app.route('/train', methods=['GET'])#app객체로 라우팅 경로 설정
 def svm_train():
     #app = Flask(__name__)
     #app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
