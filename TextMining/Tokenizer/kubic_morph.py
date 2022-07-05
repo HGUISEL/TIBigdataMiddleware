@@ -1,3 +1,5 @@
+MECAB_DIR = "/home/middleware/mecab"
+
 from posixpath import join
 import sys, os
 from numpy.lib.npyio import save
@@ -12,7 +14,7 @@ import pandas as pd
 from numpy.core.fromnumeric import shape
 from TextMining.Tokenizer.kubic_data import *
 from TextMining.Tokenizer.kubic_mystorage import *
-import pandas as pd
+
 # from konlpy.tag import Mecab
 from jamo import h2j, j2hcj
 import re
@@ -257,9 +259,20 @@ def make_return_result_list(docList):
                     break
         result.append(docToken)
     return result
-                
-                
 
+
+# dir가 있는지 확인하고 없으면 dir만들어주는 함수.
+def create_dir(directory, logger):
+    try:
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        else:
+            print("경로가 이미 있습니다. 생성하지 않습니다.")
+        return True
+    except Exception as e:
+        err = traceback.format_exc()
+        logger.error(identification + "사용자사전 폴더 만들기에 실패했습니다. \n 실패사유:" + str(err))
+        return False
 
 def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymTF, compoundTF):
 #def compound(email, keyword, savedDate, wordclass): 
@@ -267,8 +280,11 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
     identification = str(email)+'_'+'preprocessing(compound)'+'_'+str(savedDate)+"// "
     logger.info(identification + '전처리(compound함수)를 시작합니다.')
 
-    file_data = []
+    logger.info(identification + '전처리를 위한 사용자사전 폴더를 생성합니다.')
+    
+    create_dir(MECAB_DIR+"/"+str(email))
 
+    file_data = []
     if compoundTF == True:
         try:
             compound_file = getCompound(email, keyword, savedDate)  #사용자가 등록한 사전 적용
@@ -401,12 +417,10 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
         }
     return success, return_mdoc #전체 형태소 분석한 단어들의 목록 (kubic 미리보기에 뜨도록) --> 출력 형태 변경
 
-
-# result, doc = compound_add_text('21800520@handong.ac.kr', '사드', "2022-05-10T10:53:47.746Z", "010", False, False, False)
-# result, doc = compound_add_text('21800520@handong.ac.kr', 'kim', "2022-06-13T18:31:52.137Z", "010", False, False, False)
+result, doc = compound_add_text('21800520@handong.ac.kr', '남북통일', "2022-06-29T16:01:37.217Z", "010", False, False, False)
 
 
-# if result:
-#     print(doc["tokenList"])
-# else:
-#     print(doc)
+if result:
+    print(doc["tokenList"])
+else:
+    print(doc)
