@@ -262,17 +262,35 @@ def make_return_result_list(docList):
 
 
 # dir가 있는지 확인하고 없으면 dir만들어주는 함수.
-def create_dir(directory, logger):
+def create_dir(directory, logger, identification):
     try:
         if not os.path.exists(directory):
             os.makedirs(directory)
         else:
-            print("경로가 이미 있습니다. 생성하지 않습니다.")
-        return True
+            logger.info(identification + "사용자사전 폴더가 이미 있습니다. 생성하지 않습니다.")
+        return True, None
     except Exception as e:
         err = traceback.format_exc()
         logger.error(identification + "사용자사전 폴더 만들기에 실패했습니다. \n 실패사유:" + str(err))
-        return False
+        return False, identification + "사용자사전 폴더 만들기에 실패했습니다. \n 실패사유:" + str(err)
+
+import tarfile
+def install_mecab(dir, logger, identification):
+    FILE_PATH = "/home/middleware/mecab-ko-dic-2.1.1-20180720.tar.gz"
+    try:
+        if os.path.exists(dir) and os.path.isfile(FILE_PATH):
+            tar_file = tarfile.open(FILE_PATH)
+            tar_file.extractall(path=dir)
+            tar_file.close()
+            return True, None
+        else:
+            logger.error(identification + "사용자폴더 혹은 메캅 사용자사전 파일이 없습니다.")
+            return False, identification + "사용자폴더 혹은 메캅 사용자사전 파일이 없습니다."
+    except Exception as e:
+        err = traceback.format_exc()
+        logger.error(identification + "사용자사전 폴더에 초기 사전설치를 실패했습니다. \n 실패사유:" + str(err))
+        return False, identification + "사용자사전 폴더에 초기 사전설치를 실패했습니다. \n 실패사유:" + str(err)
+
 
 def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymTF, compoundTF):
 #def compound(email, keyword, savedDate, wordclass): 
@@ -281,8 +299,16 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
     logger.info(identification + '전처리(compound함수)를 시작합니다.')
 
     logger.info(identification + '전처리를 위한 사용자사전 폴더를 생성합니다.')
+    USER_MECAB_DIR = MECAB_DIR+"/"+str(email)
     
-    create_dir(MECAB_DIR+"/"+str(email))
+    result = create_dir(USER_MECAB_DIR, logger, identification)
+    if not result[0]:
+        return result[0], result[1] 
+
+    logger.info(identification+ '사용자사전 폴더에 기본 사용자사전을 설치합니다.')
+    result = install_mecab(USER_MECAB_DIR, logger, identification)
+    if not result[0]:
+        return result[0], result[1] 
 
     file_data = []
     if compoundTF == True:
