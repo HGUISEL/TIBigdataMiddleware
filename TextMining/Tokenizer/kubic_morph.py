@@ -307,7 +307,7 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
 
     logger.info(identification + '전처리를 위한 사용자사전 폴더를 생성합니다.')
     USER_MECAB_DIR = MECAB_DIR+"/"+str(email)
-    # USER_MECAB_DIR = MECAB_DIR
+    USER_MECAB_DIR = MECAB_DIR
     
     result = create_dir(USER_MECAB_DIR, logger, identification)
     if not result[0]:
