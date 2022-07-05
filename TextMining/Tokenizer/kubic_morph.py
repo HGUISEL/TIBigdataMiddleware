@@ -274,6 +274,8 @@ def create_dir(directory, logger, identification):
         logger.error(identification + "사용자사전 폴더 만들기에 실패했습니다. \n 실패사유:" + str(err))
         return False, identification + "사용자사전 폴더 만들기에 실패했습니다. \n 실패사유:" + str(err)
 
+# 원하는 위치(dir)에 mecab 한국어 사전파일(mecab-ko-dic-2.1.1-20180720.tar.gz)압축해제하여 설치하는 함수
+# 이미 있으면 설치하지 않는다. 
 import tarfile
 def install_mecab(dir, logger, identification):
     FILE_PATH = "/home/middleware/mecab-ko-dic-2.1.1-20180720.tar.gz"
@@ -338,7 +340,7 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
         return False, "복합어사전 형식 오류"
     
     try:
-        with open("/home/middleware/mecab/mecab-ko-dic-2.1.1-20180720/user-dic/my-dic.csv", 'w', encoding='utf-8') as f: 
+        with open(USER_MECAB_DIR+"/mecab-ko-dic-2.1.1-20180720/user-dic/my-dic.csv", 'w', encoding='utf-8') as f: 
             for line in file_data: 
                 f.write(line)
     except Exception as e:
@@ -357,7 +359,7 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
         def __exit__(self, etype, value, traceback):
             os.chdir(self.savedPath)
     
-    with cd("/home/middleware/mecab/mecab-ko-dic-2.1.1-20180720"):
+    with cd(USER_MECAB_DIR+"/mecab-ko-dic-2.1.1-20180720"):
         
         #subprocess.call("ls")
         logger.info(identification + "\n<<add-userdic.sh>>")
@@ -374,7 +376,7 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
     
     # usr 권한이 없어 사용 불가능하기 때문에, /home/dapi2/TIBigdataMiddleware/TextMining/userlocallibmecab 을 새로 만들고 사용
     # make install 시에 DESDIR 지정
-    mecab = Mecab( dicpath = '/home/middleware/mecab/userlocallibmecab/usr/local/lib/mecab/dic/mecab-ko-dic') #/usr/local/lib/mecab/dic/mecab-ko-dic을 자동으로 참조
+    mecab = Mecab( dicpath = USER_MECAB_DIR+'/userlocallibmecab/usr/local/lib/mecab/dic/mecab-ko-dic') #/usr/local/lib/mecab/dic/mecab-ko-dic을 자동으로 참조
    
     #success, doc = stop_syn(email, keyword, savedDate, mecab, wordclass)
     success, doc = stop_syn_add_title(email, keyword, savedDate, mecab, wordclass, stopwordTF, synonymTF)
