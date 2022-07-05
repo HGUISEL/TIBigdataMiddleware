@@ -21,6 +21,7 @@ import account.MongoAccount as monAcc
 
 ## Morphological analysis(형태소 분석)
 from konlpy.tag import Kkma
+import nltk
 
 import logging
 import traceback
@@ -39,6 +40,99 @@ def get_jongsung_TF(sample_word):
     jongsung_TF = "F" 
   return jongsung_TF
 
+def is_english(title):
+    hangul = re.compile('[ㄱ-ㅣ가-힣]')
+    return title == hangul.sub("",title)
+
+def makePosListEN(datas, wordclass, logger, stopword_file):
+    posList=[]
+    # nltk.download('averaged_perceptron_tagger')
+
+    for j in range(len(datas)):
+        sentencePosList = []
+        tokenToAnalyze=[]
+        poss = nltk.word_tokenize(datas[j])
+        poss = nltk.pos_tag(poss)
+        # datas['result'] = posList
+        # print(poss[:100])
+
+        # 대상토큰 저장 리스트
+        targetPosTagLst = []
+        # 경우에 따라 대상토큰 추가
+        if wordclass[0]=='1': # 동사만
+            for tag in ["VB", "VBD", "VBG", "VBN", "VBP", "VBZ"]:
+                targetPosTagLst.append(tag)
+        if wordclass[1]=='1': # 명사
+            for tag in ["NN", "NNS", "NNP", "NNPS"]:
+                targetPosTagLst.append(tag)
+        if wordclass[2]=='1': # 형용사 
+           for tag in ["JJ", "JJR", "JJS"]:
+                targetPosTagLst.append(tag)
+
+        for token, pos in poss:
+            if  pos in targetPosTagLst: # 대상 토큰인 경우
+                tokenToAnalyze.append(token)
+        
+        #print("저장된 토큰\n", tokenToAnalyze)
+        # 불용어처리
+        if(stopword_file != False):
+            for k in range(len(tokenToAnalyze)):
+                if tokenToAnalyze[k] not in stopword_file:
+                    sentencePosList.append(tokenToAnalyze[k]) ############
+        else:
+            logger.error(identification +"불용어 처리에서 오류가 발생했습니다.")
+            return False, "불용어사전 형식 오류"   
+            #print("전처리 결과\n", posList[:100])
+        posList.append(sentencePosList)
+    return posList
+
+def makePosListKR(mecab, datas, wordclass, logger, stopword_file):
+    posList=[]
+
+    for j in range(len(datas)):
+        sentencePosList = []
+        tokenToAnalyze=[]
+        poss = mecab.pos(datas[j])
+        # datas['result'] = posList
+        # print(poss[:100])
+
+        # 대상토큰 저장 리스트
+        targetPosTagLst = []
+        # 경우에 따라 대상토큰 추가
+        if wordclass[0]=='1': # 동사만
+            targetPosTagLst.append("VV")
+        if wordclass[1]=='1': # 명사
+            for tag in ["NNG", "NNP", "NNB", "NNBC", "NR"]:
+                targetPosTagLst.append(tag)
+        if wordclass[2]=='1': # 형용사 
+            targetPosTagLst.append("VA")
+
+        for token, pos in poss:
+            if  pos in targetPosTagLst: # 대상 토큰인 경우
+                tokenToAnalyze.append(token)
+        
+        #print("저장된 토큰\n", tokenToAnalyze)
+        # 불용어처리
+        if(stopword_file != False):
+            for k in range(len(tokenToAnalyze)):
+                if tokenToAnalyze[k] not in stopword_file:
+                    sentencePosList.append(tokenToAnalyze[k]) ############
+        else:
+            logger.error(identification +"불용어 처리에서 오류가 발생했습니다.")
+            return False, "불용어사전 형식 오류"   
+            #print("전처리 결과\n", posList[:100])
+        posList.append(sentencePosList)
+    return posList
+
+def makePosList(mecab, datas, wordclass, logger, engIdxList, stopword_file):
+    result = []
+    for i in range(len(datas['all_content'])):
+        if i in engIdxList:
+            posList = makePosListEN(datas['all_content'][i], wordclass, logger, stopword_file)
+        else:
+            posList = makePosListKR(mecab, datas['all_content'][i], wordclass, logger, stopword_file)
+        result.append(posList)
+    return result
 
 def stop_syn_add_title(email, keyword, savedDate, mecab, wordclass, stopwordTF, synonymTF):
     
@@ -96,42 +190,14 @@ def stop_syn_add_title(email, keyword, savedDate, mecab, wordclass, stopwordTF, 
         resultList = []   
         # datas = datas[0:1]
         # print(datas['all_content'][1][200:300])
-        for i in range(len(datas['all_content'])):
-            posList=[]
-            for j in range(len(datas['all_content'][i])):
-                sentencePosList = []
-                tokenToAnalyze=[]
-                poss = mecab.pos(datas['all_content'][i][j])
-                # datas['result'] = posList
-                # print(poss[:100])
-
-                # 대상토큰 저장 리스트
-                targetPosTagLst = []
-                # 경우에 따라 대상토큰 추가
-                if wordclass[0]=='1': # 동사만
-                    targetPosTagLst.append("VV")
-                if wordclass[1]=='1': # 명사
-                    for tag in ["NNG", "NNP", "NNB", "NNBC", "NR"]:
-                        targetPosTagLst.append(tag)
-                if wordclass[2]=='1': # 형용사 
-                    targetPosTagLst.append("VA")
-
-                for token, pos in poss:
-                    if  pos in targetPosTagLst: # 대상 토큰인 경우
-                        tokenToAnalyze.append(token)
-                
-                #print("저장된 토큰\n", tokenToAnalyze)
-                # 불용어처리
-                if(stopword_file != False):
-                    for k in range(len(tokenToAnalyze)):
-                        if tokenToAnalyze[k] not in stopword_file:
-                            sentencePosList.append(tokenToAnalyze[k]) ############
-                else:
-                    logger.error(identification +"불용어 처리에서 오류가 발생했습니다.")
-                    return False, "불용어사전 형식 오류"   
-                    #print("전처리 결과\n", posList[:100])
-                posList.append(sentencePosList)
-            resultList.append(posList)
+        
+        # 영어title인 index 저장
+        engIdxList = []
+        for idx in range(len(datas['post_title'])):
+            if is_english(datas['post_title'][idx]):
+                engIdxList.append(idx)
+        
+        resultList = makePosList(mecab, datas, wordclass, logger, engIdxList, stopword_file)
         logger.info(identification +"형태소 추출 및 불용어사전 처리를 완료하였습니다.")
 
     except Exception as e:
@@ -335,6 +401,12 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
         }
     return success, return_mdoc #전체 형태소 분석한 단어들의 목록 (kubic 미리보기에 뜨도록) --> 출력 형태 변경
 
-# result, doc = compound_add_text('21800520@handong.edu', '북한', "2021-09-07T07:01:07.137Z", "010", False, False, False)
 
-# print(doc["tokenList"])
+# result, doc = compound_add_text('21800520@handong.ac.kr', '사드', "2022-05-10T10:53:47.746Z", "010", False, False, False)
+# result, doc = compound_add_text('21800520@handong.ac.kr', 'kim', "2022-06-13T18:31:52.137Z", "010", False, False, False)
+
+
+# if result:
+#     print(doc["tokenList"])
+# else:
+#     print(doc)
