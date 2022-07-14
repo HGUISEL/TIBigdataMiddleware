@@ -64,8 +64,8 @@ def search_in_mydoc_add_title(email, keyword, savedDate):
     
         # 실제로 받아온 response 에 근거하여, idlist 를 새로 만듦
 
-        # hangul = re.compile('[^ ㄱ-ㅣ가-힣]+') 영어 및 특수문자 추가
-        hangul = re.compile('[^ [\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"a-zA-Z0-9ㄱ-ㅣ가-힣]+')
+        # hangul = re.compile('[^ ㄱ-ㅣ가-힣]+') 영어 및 특수문자 추가 + 한자 추가
+        hangul = re.compile('[^ [\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"a-zA-Z0-9ㄱ-ㅣ가-힣一-龥]+')
 
         idList=[]
         dateList=[]
