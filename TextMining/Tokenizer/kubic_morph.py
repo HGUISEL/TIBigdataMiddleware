@@ -366,9 +366,11 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
         logger.info(identification + "\n<<add-userdic.sh>>")
         subprocess.call("ls")
 
-        subprocess.run('./autogen.sh')
-        subprocess.run('./configure')
-        subprocess.call("make")
+        if not os.path.exists(USER_MECAB_DIR+"/userlocallibmecab"):
+            print("최초컴파일을 진행합니다.")
+            subprocess.run('./autogen.sh')
+            subprocess.run('./configure')
+            subprocess.call("make")
 
         subprocess.run("./tools/add-userdic.sh")
         subprocess.call("ls")
