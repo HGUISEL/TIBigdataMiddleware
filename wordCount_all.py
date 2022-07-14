@@ -23,6 +23,7 @@ if os.name == "nt":# 윈도우 운영체제
 else:# 현재 리눅스 서버 및 맥은 konlpy으로 미캡 모듈 import
     from konlpy.tag import Mecab
 import nltk
+nltk.download('stopwords')
 from nltk.corpus import stopwords
 
 import re
@@ -153,17 +154,15 @@ def dataPrePrcs(corpus):
                 t = nltk.pos_tag(words)
                 
             token_list = []
-            # [(word,tag),(word,tag)] 
-            # 영어의 경우 stopwords 분석 추가
             for word, tag in t:
                 if tag in tagList:
                     if lan == "EN":
-                        # stops = set(stopwords.words('english'))
                         # if word not in stops:
                             # token_list.append(word)
                         token_list.append(word)
                     else:
-                        token_list.append(word)
+                        if word not in stopwords.words('english'):
+                            token_list.append(word)
             tokenized_doc.append(token_list)
          
         except:
