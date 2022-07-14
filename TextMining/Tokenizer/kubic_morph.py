@@ -1,5 +1,5 @@
 MECAB_DIR = "/home/middleware/mecab"
-COMPILE_DICT = True
+
 
 from posixpath import join
 import sys, os
@@ -308,6 +308,7 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
 
     logger.info(identification + '전처리를 위한 사용자사전 폴더를 생성합니다.')
     USER_MECAB_DIR = MECAB_DIR+"/"+str(email)
+    COMPILE_DICT = True
     # USER_MECAB_DIR = MECAB_DIR
     
     result = create_dir(USER_MECAB_DIR, logger, identification)
@@ -342,10 +343,11 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
         return False, "복합어사전 형식 오류"
     
     try:
-        with open(USER_MECAB_DIR+"/mecab-ko-dic-2.1.1-20180720/user-dic/my-dic.csv", 'r', encoding='utf-8') as f: 
-            my_dict = f.readlines()
-            if my_dict == file_data:
-                COMPILE_DICT = False
+        if os.path.isfile(USER_MECAB_DIR+"/mecab-ko-dic-2.1.1-20180720/user-dic/my-dic.csv"):
+            with open(USER_MECAB_DIR+"/mecab-ko-dic-2.1.1-20180720/user-dic/my-dic.csv", 'r', encoding='utf-8') as f: 
+                my_dict = f.readlines()
+                if my_dict == file_data:
+                    COMPILE_DICT = False
 
     except Exception as e:
         err = traceback.format_exc()
