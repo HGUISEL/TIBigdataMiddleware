@@ -44,10 +44,10 @@ def getMyDocByEmail2(email, keyword, savedDate):
 # 해킹대비 mongodb에 저장된 회원가입한 이메일인지 확인
 def checkEmail(email):
     if db.users.find( {'email': email}).count() == 0 :
-        print("등록된 회원 이메일이 아닙니다.")
+        logger.error(identification + "등록된 회원 이메일이 아닙니다.")
         return False
     else:
-        print("회원확인이 완료되었습니다.")
+        logger.info("회원확인이 완료되었습니다.")
         return True
 
 dbTM = client.textMining
@@ -67,7 +67,7 @@ def getStopword(email, keyword, savedDate): # ,json_file):
     doc = dbTM.usersDic.find({"userEmail": email})
     json_stopfile = json.dumps(doc[0]['stopword'], ensure_ascii=False)
     dict_stopfile = json.loads(json_stopfile)
-    print("DB에 저장된 stopword파일입니다.\n", dict_stopfile)  
+    # print("DB에 저장된 stopword파일입니다.\n", dict_stopfile)  
 
     # 불용어사전 형식오류시 False반환
     for key, value in dict_stopfile.items():
@@ -80,7 +80,7 @@ def getSynonym(email, keyword, savedDate): # ,json_file):
     doc = dbTM.usersDic.find({"userEmail": email})
     json_synfile = json.dumps(doc[0]['synonym'], ensure_ascii=False)
     dict_synfile = json.loads(json_synfile)
-    print("DB에 저장된 synonym파일입니다.\n", dict_synfile)  
+    # print("DB에 저장된 synonym파일입니다.\n", dict_synfile)  
 
     # 유의어사전 형식오류시 False반환
     for key, value in dict_synfile.items():
@@ -124,14 +124,14 @@ def getCompound(email, keyword, savedDate):
         newdict = dict()
         for key, value in dict_compfile.items():
             key = key.strip()
-            print(type(value))
+            # print(type(value))
             # FE에서 csv를 저장할 떄 태그 이름을 리스트 안에 저장하는 오류 방지용
             if str(type(value)) == "<class 'list'>" and len(value) > 0:
                 value = value[0]
             if str(type(value)) == "<class 'str'>":
                 value = value.strip()
             else:
-                print(key,value,"이(가) 복합어 형식에 맞지 않아 제거되었습니다.")
+                logger.info(identification,key,value,"이(가) 복합어 형식에 맞지 않아 제거되었습니다.")
                 continue
             # 파일에 공백이 있는 경우 저장안하고 넘김(패스). 프론트엔드 차원에서 한번 더 확인 해야할 필요 있음.
             # 파일에 공백이 아닌경우 공백제거 후 사전에 저장
@@ -143,7 +143,7 @@ def getCompound(email, keyword, savedDate):
 
         #복합어사전 형식오류시 False반환
         for key, value in dict_compfile.items():
-            print(key, value)
+            # print(key, value)
             if value not in mecabPosList:
                 return False
         logger.info("최종 적용될 복합어사전: \n", newdict)
