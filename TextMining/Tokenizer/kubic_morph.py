@@ -1,4 +1,5 @@
 MECAB_DIR = "/home/middleware/mecab"
+COMPILE_DICT = True
 
 from posixpath import join
 import sys, os
@@ -219,8 +220,8 @@ def stop_syn_add_title(email, keyword, savedDate, mecab, wordclass, stopwordTF, 
         for key, item in syn_dict.items():
             for word in item:
                 syn_temp_dict[word] = key
-        print(syn_dict)
-        print(syn_temp_dict)
+        # print(syn_dict)
+        # print(syn_temp_dict)
         
         #print("유의어사전\n", syn_df, len(syn_df), len(syn_df.columns), syn_df.columns[0])
         #print("[0,1]", syn_df.iloc[0,1], " [0,2]", syn_df.iloc[0,2], "[1,0]", syn_df.iloc[1,0], " [1,1]", syn_df.iloc[1,1], " [1,2]", syn_df.iloc[1,2])
@@ -341,12 +342,24 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
         return False, "복합어사전 형식 오류"
     
     try:
+        with open(USER_MECAB_DIR+"/mecab-ko-dic-2.1.1-20180720/user-dic/my-dic.csv", 'r', encoding='utf-8') as f: 
+            my_dict = f.readlines()
+            if my_dict == file_data:
+                COMPILE_DICT = False
+
+    except Exception as e:
+        err = traceback.format_exc()
+        logger.error(identification + "파일 내용 확인 오류 세부사항: " + str(err))
+        return False, "파일 내용 확인 오류  세부사항: "+ str(e)
+
+
+    try:
         with open(USER_MECAB_DIR+"/mecab-ko-dic-2.1.1-20180720/user-dic/my-dic.csv", 'w', encoding='utf-8') as f: 
             for line in file_data: 
                 f.write(line)
     except Exception as e:
         err = traceback.format_exc()
-        logger.info(identification + "파일 열기 오류 세부사항: " + str(err))
+        logger.error(identification + "파일 열기 오류 세부사항: " + str(err))
         return False, "파일 열기 오류  세부사항: "+ str(e)
 
     class cd:
@@ -359,26 +372,32 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
  
         def __exit__(self, etype, value, traceback):
             os.chdir(self.savedPath)
-    
-    with cd(USER_MECAB_DIR+"/mecab-ko-dic-2.1.1-20180720"):
+    if COMPILE_DICT:
+        logger.info(identification + "새로 사용자사전을 컴파일합니다.")
+        print("새로 사용자사전을 컴파일합니다.")
+        with cd(USER_MECAB_DIR+"/mecab-ko-dic-2.1.1-20180720"):
+            
+            #subprocess.call("ls")
+            logger.info(identification + "\n<<add-userdic.sh>>")
+            subprocess.call("ls")
+
+            if not os.path.exists(USER_MECAB_DIR+"/userlocallibmecab"):
+                print("최초컴파일을 진행합니다.")
+                subprocess.run('./autogen.sh')
+                subprocess.run('./configure')
+                subprocess.call("make")
+
+            subprocess.run("./tools/add-userdic.sh")
+            subprocess.call("ls")
+
+            subprocess.call(["make", "clean"])
+
+            logger.info(identification + "\n<<make install>>")
+            subprocess.call(["make", "install", 'DESTDIR='+USER_MECAB_DIR+'/userlocallibmecab/'])
+    else:
+        logger.info(identification + "기존에 컴파일된 사용자사전을 사용합니다.")
+        print("기존에 컴파일된 사용자사전을 사용합니다.")
         
-        #subprocess.call("ls")
-        logger.info(identification + "\n<<add-userdic.sh>>")
-        subprocess.call("ls")
-
-        if not os.path.exists(USER_MECAB_DIR+"/userlocallibmecab"):
-            print("최초컴파일을 진행합니다.")
-            subprocess.run('./autogen.sh')
-            subprocess.run('./configure')
-            subprocess.call("make")
-
-        subprocess.run("./tools/add-userdic.sh")
-        subprocess.call("ls")
-
-        subprocess.call(["make", "clean"])
-
-        logger.info(identification + "\n<<make install>>")
-        subprocess.call(["make", "install", 'DESTDIR='+USER_MECAB_DIR+'/userlocallibmecab/'])
     
     # usr 권한이 없어 사용 불가능하기 때문에, /home/dapi2/TIBigdataMiddleware/TextMining/userlocallibmecab 을 새로 만들고 사용
     # make install 시에 DESDIR 지정
@@ -456,10 +475,10 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
         }
     return success, return_mdoc #전체 형태소 분석한 단어들의 목록 (kubic 미리보기에 뜨도록) --> 출력 형태 변경
 
-# result, doc = compound_add_text('21800520@handong.ac.kr', '남북통일', "2022-06-29T16:01:37.217Z", "010", False, False, False)
+result, doc = compound_add_text('21800520@handong.ac.kr', '남북통일', "2022-06-29T16:01:37.217Z", "010", False, False, False)
 
 
-# if result:
-#     print(doc["tokenList"])
-# else:
-#     print(doc)
+if result:
+    print(doc["tokenList"])
+else:
+    print(doc)
