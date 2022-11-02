@@ -64,9 +64,18 @@ def word_count(email, keyword, savedDate, optionList, analysisName, save = True,
     try:
         logger.info(identification+ "전처리 내용을 벡터화 합니다.")
         if allWord:
-            vectorizer = CountVectorizer(analyzer='word', tokenizer=None)
+            vectorizer = CountVectorizer(
+                analyzer='word', 
+                tokenizer=None, 
+                token_pattern = r"(?u)\b\w+\b"
+                )
         else:
-            vectorizer = CountVectorizer(analyzer='word', max_features=int(optionList), tokenizer=None)
+            vectorizer = CountVectorizer(
+                analyzer='word', 
+                max_features=int(optionList), 
+                tokenizer=None, 
+                token_pattern = r"(?u)\b\w+\b"
+                )
         words=vectorizer.fit(tokenList)
         words_fit = vectorizer.fit_transform(tokenList)
     
