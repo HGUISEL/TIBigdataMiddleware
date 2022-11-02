@@ -16,7 +16,7 @@ import esAccount as esAcc
 
 warnings.filterwarnings("ignore")
 
-def get_es_data(idx):
+def get_es_data(idx="all"):
     """
     NOTE:
     - Elastic search version: 7.12.1.
