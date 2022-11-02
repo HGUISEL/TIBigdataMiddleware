@@ -75,7 +75,11 @@ import logging
 import traceback
 
 log_filename = "kubic_flask_" + str(datetime.datetime.now()) + ".log"
-logging.basicConfig(filename = "log_flask/"+log_filename, level=logging.INFO, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
+# INFO 확인용(서비스용)
+# logging.basicConfig(filename = "log_flask/"+log_filename, level=logging.INFO, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
+# debug 확인용(개발자용)
+logging.basicConfig(filename = "log_flask/"+log_filename, level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
+
 app.logger.info("log start")
 
 #########################################
