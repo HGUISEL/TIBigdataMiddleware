@@ -117,8 +117,8 @@ def kmeans(email, keyword, savedDate, optionList, analysisName):
         return "failed", "문서 개수보다 군집 수가 많습니다. \n군집수를 문서개수보다 적게 해주시기 바랍니다. \n 현재 문서 수: " + str(len(preprocessed)) + " 입력한 군집 수: " + optionList, None
 
     try:
-        logger.info(identification + "분할군집분석 실행(군집수 3개)")
-        logger.debug(kmeans.labels_)
+        logger.info(identification + f"분할군집분석 실행(군집수 {optionList}개)")
+        logger.debug(f"{kmeans.labels_}")
 
         pca = PCA(n_components=2)
         principalComponents=pca.fit_transform(df)

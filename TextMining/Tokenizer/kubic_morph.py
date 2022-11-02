@@ -343,6 +343,8 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
         return False, "복합어사전 형식 오류"
     
     try:
+        # 이미 저장된 파일과 현재 컴파일할 파일이 일치하는지 확인하는 코드
+        # 일치한다면 컴파일 자체를 생략한다
         if os.path.isfile(USER_MECAB_DIR+"/mecab-ko-dic-2.1.1-20180720/user-dic/my-dic.csv"):
             with open(USER_MECAB_DIR+"/mecab-ko-dic-2.1.1-20180720/user-dic/my-dic.csv", 'r', encoding='utf-8') as f: 
                 my_dict = f.readlines()
@@ -477,10 +479,10 @@ def compound_add_text(email, keyword, savedDate, wordclass, stopwordTF, synonymT
         }
     return success, return_mdoc #전체 형태소 분석한 단어들의 목록 (kubic 미리보기에 뜨도록) --> 출력 형태 변경
 
-result, doc = compound_add_text('21800520@handong.ac.kr', '남북통일', "2022-06-29T16:01:37.217Z", "010", False, False, False)
+# result, doc = compound_add_text('21800520@handong.ac.kr', '남북통일', "2022-06-29T16:01:37.217Z", "010", False, False, False)
 
 
-if result:
-    print(doc["tokenList"])
-else:
-    print(doc)
+# if result:
+#     print(doc["tokenList"])
+# else:
+#     print(doc)

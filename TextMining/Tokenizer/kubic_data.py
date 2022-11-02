@@ -120,6 +120,7 @@ def search_in_mydoc_add_title(email, keyword, savedDate):
     df['post_body'] = bodyList
     df['file_content'] = fileList
     df['all_content'] = allContentList
+    # df.to_csv("/home/middleware/TIBigdataMiddleware/TextMining/Tokenizer/kor-hanja.csv")
 
     return True, df[['idList', 'post_date', 'all_content', 'post_title', 'post_body']]
 

@@ -42,7 +42,7 @@ def word_count(email, keyword, savedDate, optionList, analysisName, save = True,
     try:
         logger.info(identification+ "전처리 내용을 가져옵니다.")
         docs, nTokens = getPreprocessing(email, keyword, savedDate, optionList)
-        # print(docs[0][1:10])
+        logger.debug("전처리 첫 문서의 첫 10개 문장\n"+identification+f"{docs[0][:10]}")
         if docs == "failed":
             return docs, nTokens
         else:
@@ -54,11 +54,10 @@ def word_count(email, keyword, savedDate, optionList, analysisName, save = True,
                 tokenList += sentence
 
             logger.info(identification+ "전처리 내용을 성공적으로 가져왔습니다.")
-            #print(doc, nTokens)    
+            logger.debug("전처리 내용 토큰 리스트\n"+identification+f"{tokenList}")    
     except Exception as e:
         err = traceback.format_exc()
         logger.info(identification + "전처리 내용을 가져오는데 실패했습니다." +str(err))
-        #print(identification + "분석할 단어수는 양의 정수여야 합니다" +str(err))
         return "failed", "전처리 내용을 가져오는데 실패했습니다. " + str(e), None
 
     
@@ -71,8 +70,8 @@ def word_count(email, keyword, savedDate, optionList, analysisName, save = True,
         words=vectorizer.fit(tokenList)
         words_fit = vectorizer.fit_transform(tokenList)
     
-        word_list=vectorizer.get_feature_names() #=sorted(vectorizer.vocabulary_)
-        #print("Vec사전:", word_list, '\n빈도수:', words_fit.toarray().sum(axis=0))
+        word_list=vectorizer.get_feature_names() 
+        logger.debug("벡터화 결과.\n"+identification+f"Vec사전:{word_list}"+ f'\n빈도수:{words_fit.toarray().sum(axis=0)}')
         count_list = words_fit.toarray().sum(axis=0)
 
     except Exception as e:
@@ -185,6 +184,7 @@ def word_count(email, keyword, savedDate, optionList, analysisName, save = True,
         }
         insterted_doc = db.count.insert_one(doc) 
         logger.info(identification+ "MongoDB에 결과 저장 완료") 
+        logger.debug("저장된 전처리 결과\n"+identification+f"{doc}")
 
         analysisInfo = { "doc_id" : insterted_doc.inserted_id, "analysis_date": str(doc['analysisDate'])}
 
